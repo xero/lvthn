@@ -8,23 +8,16 @@
   "types": "dist/index.d.ts",
   "scripts": {
     "build": "tsc -p ./src",
-    "pretest": "tsc -p ./test",
-    "test": "mocha ./test/out/test/**/*_test.js",
-    "dev": "lite-server"
+    "test": "vitest run",
+    "test:watch": "vitest"
   },
   "files": [
     "dist"
   ],
-  "dependencies": {},
   "devDependencies": {
-    "typescript": "latest",
-    "lite-server": "latest",
-    "ts-node": "^6.0.0",
-    "chai": "^4.1.2",
-    "mocha": "^5.1.1",
-    "@types/chai": "^4.1.3",
-    "@types/mocha": "^5.2.0",
-    "@types/node": "9.6.6"
+    "@types/node": "^20.0.0",
+    "typescript": "5.4.5",
+    "vitest": "^3.2.4"
   },
   "repository": {
     "type": "git",

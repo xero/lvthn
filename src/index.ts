@@ -28,14 +28,12 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 export { Convert, Util, version } from './base';
-export { CBC, CTR, ECB } from './blockmode';
-export { AES, AES_CBC, AES_CTR, AES_CBC_PKCS7, AES_CTR_PKCS7 } from './aes';
+export { CBC, CTR } from './blockmode';
 export { Serpent, Serpent_CBC, Serpent_CTR, Serpent_CBC_PKCS7, Serpent_CTR_PKCS7 } from './serpent';
 export { ChaCha20 } from './chacha20';
 export { Curve25519, Ed25519 } from './x25519';
 export { PBKDF2 } from './pbkdf2';
-export { HMAC, HMAC_SHA1, HMAC_SHA256, HMAC_SHA512 } from './hmac';
-export { SHA1 } from './sha1';
+export { HMAC, HMAC_SHA256, HMAC_SHA512 } from './hmac';
 export { SHA256 } from './sha256';
 export { SHA512 } from './sha512';
 export { Keccak, Keccak_256, Keccak_384, Keccak_512, SHA3_256, SHA3_384, SHA3_512, SHAKE128, SHAKE256 } from './sha3';

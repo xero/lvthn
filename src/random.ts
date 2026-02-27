@@ -31,7 +31,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 import { Convert, Util } from './base';
-import { AES } from './aes';
+import { Serpent } from './serpent';
 import { SHA256 } from './sha256';
 
 
@@ -43,7 +43,7 @@ export class Random {
   RESEED_LIMIT: number;
   MILLISECONDS_PER_RESEED: number;
 
-  gen: AES;
+  gen: Serpent;
   genKey: Uint8Array;
   genCnt: Uint8Array;
   poolData: Array<SHA256>;
@@ -54,7 +54,7 @@ export class Random {
   reseedCnt: number;
   lastReseed: number;
   active: boolean;
-  timer: number;
+  timer: ReturnType<typeof setInterval>;
 
 
   /**
@@ -68,7 +68,7 @@ export class Random {
     this.RESEED_LIMIT = 64;                 // reseed trigger level
     this.MILLISECONDS_PER_RESEED = 10000;   // reseed force after milliseconds
 
-    this.gen           = new AES();
+    this.gen           = new Serpent();
     this.genKey        = new Uint8Array(32);
     this.genCnt        = new Uint8Array(16);
     this.poolData      = [];      // SHA objects

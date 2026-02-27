@@ -29,8 +29,6 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 import { Convert, Util, Hash, KeyedHash } from './base';
-import { ZeroPadding } from './padding';
-import { SHA1 } from './sha1';
 import { SHA256 } from './sha256';
 import { SHA512 } from './sha512';
 
@@ -71,7 +69,12 @@ export class HMAC implements KeyedHash {
       this.hasher.init();
       _key = this.hasher.digest(key);
     }
-    _key = (new ZeroPadding()).pad(_key, this.B);
+    // Zero-pad key to block size (inlined from ZeroPadding.pad)
+    if (_key.length < this.B) {
+      const padded = new Uint8Array(this.B);
+      padded.set(_key, 0);
+      _key = padded;
+    }
 
     // setup the key pads
     this.iKeyPad = new Uint8Array(this.B);
@@ -137,13 +140,6 @@ export class HMAC implements KeyedHash {
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-
-
-export class HMAC_SHA1 extends HMAC {
-  constructor() {
-    super(new SHA1());
-  }
-}
 
 
 export class HMAC_SHA256 extends HMAC {

@@ -41,10 +41,21 @@ import { PKCS7 } from './padding';
 /**
  * Serpent class
  */
+/**
+ * Optional debug callback invoked after each encryption round.
+ * round: round index 0–31
+ * state: 5-element working register array r[0..4] (snapshot, not live)
+ * ec: the EC/DC constant for this round; use ec%5, ec%7, ec%11, ec%13 to
+ *     identify which r[] slots hold X0, X1, X2, X3 respectively.
+ */
+export type RoundHook = (round: number, state: number[], ec: number) => void;
+
 export class Serpent implements Blockcipher {
   blockSize: number;
   key: Uint32Array;
   wMax: number;
+  /** Optional hook called after every cipher round during encrypt/decrypt. */
+  roundHook: RoundHook | null;
   rotW: Function;
   getW: Function;
   setW: Function;
@@ -61,6 +72,7 @@ export class Serpent implements Blockcipher {
   constructor() {
     this.blockSize = 16;    // Serpent has a fixed block size of 16 bytes
     this.wMax = 0xffffffff;
+    this.roundHook = null;
 
     this.rotW = function (w: number, n: number) {
       return (w << n | w >>> (32 - n)) & this.wMax;
@@ -277,6 +289,18 @@ export class Serpent implements Blockcipher {
 
 
   /**
+   * Expose the derived subkeys for testing/verification.
+   * Returns a copy of the 132-word subkey array (33 subkeys × 4 words each).
+   * this.key[4*i .. 4*i+3] = [X0, X1, X2, X3] of subkey i (i=0..32).
+   * Note: ecb_iv.txt SK[] values are printed by render() in REVERSED word order
+   * (word[3] first, word[0] last), so SK[i] from file = X3|X2|X1|X0 in hex.
+   */
+  getSubkeys(key: Uint8Array): Uint32Array {
+    this.init(key);
+    return new Uint32Array(this.key);
+  }
+
+  /**
    * Serpent block encryption
    * @param {Uint8Array} key Key
    * @param {Uint8Array} pt The plaintext
@@ -300,8 +324,17 @@ export class Serpent implements Blockcipher {
     while (this.S[n % 8](r, m % 5, m % 7, m % 11, m % 13, m % 17), n < 31) {
       m = EC[++n];
       this.LK(r, m % 5, m % 7, m % 11, m % 13, m % 17, n);
+      // §debug-hook: called after round (n-1) completes (after LT + subkey XOR)
+      // X0=r[m%5], X1=r[m%7], X2=r[m%11], X3=r[m%13] for ec=m
+      if (this.roundHook) { this.roundHook(n - 1, r.slice(), m); }
     }
+    // Round 31: S-box applied above (loop exit), XOR final subkey K32
+    // EC[31]=76143: X0=r[3], X1=r[4], X2=r[1], X3=r[2] before K(32)
+    // After K(32) with hardcoded indices (0,1,2,3), the assignment shifts:
+    // r[0]=temp^key128, r[1]=X2^key129, r[2]=X3^key130, r[3]=X0^key131
     this.K(r, 0, 1, 2, 3, 32);
+    // Report round 31 post-K32 using EC[31] so hook caller can decode slots
+    if (this.roundHook) { this.roundHook(31, r.slice(), EC[31]); }
 
     let ct = new Uint8Array(pt.length);
     this.setWInv(ct, 0, r[3]); this.setWInv(ct, 4, r[2]); this.setWInv(ct, 8, r[1]); this.setWInv(ct, 12, r[0]);
@@ -334,8 +367,10 @@ export class Serpent implements Blockcipher {
     while (this.SI[7 - n % 8](r, m % 5, m % 7, m % 11, m % 13, m % 17), n < 31) {
       m = DC[++n];
       this.KL(r, m % 5, m % 7, m % 11, m % 13, m % 17, 32 - n);
+      if (this.roundHook) { this.roundHook(32 - n, r.slice(), m); }
     }
     this.K(r, 2, 3, 1, 4, 0);
+    if (this.roundHook) { this.roundHook(0, r.slice(), DC[31]); }
 
     let pt = new Uint8Array(ct.length);
     this.setWInv(pt, 0, r[4]); this.setWInv(pt, 4, r[1]); this.setWInv(pt, 8, r[3]); this.setWInv(pt, 12, r[2]);
@@ -349,36 +384,15 @@ export class Serpent implements Blockcipher {
    * @return {Boolean} True if successful
    */
   selftest(): boolean {
-    const tv_CBC_PKCS7 = [
-      {
-        key: '06a9214036b8a15b512e03d534120006',
-        iv: '3dafba429d9eb430b422da802c9fac41',
-        pt: '000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f',
-        ct: '714373e9991e8a58f79efa62b46f7652fbfa5de596b93acaafbdb2412311ac13e365c4170a4166dd1b95cfde3a21f6b2'
-      },
-      {
-        key: '0x6c3ea0477630ce21a2ce334aa746c2cd',
-        iv: '0xc782dc4c098c66cbd9cd27d825682c81',
-        pt: 'a0a1a2a3a4a5a6a7a8a9aaabacadaeafb0b1b2b3b4b5b6b7b8b9babbbcbdbebfc0c1c2c3c4c5c6c7c8c9cacbcccdcecfd0d1d2d3d4d5d6d7d8d9dadbdcdddedf',
-        ct: '90d0d1d8340ef5e8b9922f3c173ea1066632c5fec470be3935b5bfaeef033a0dd50a459d5c70fc8417540ae43cc507339b0085a268528f2d1de93cf65e96037685ebf5a6bcc81b70f132aba9b782ea99'
-      }
-    ];
-
-    let aes = new Serpent();
-    let res = true;
-/*
-    for (let i = 0; i < tv_CBC_PKCS7.length; i++) {
-      let key = Convert.hex2bin(tv_CBC_PKCS7[i].key);
-      let pt = Convert.hex2bin(tv_CBC_PKCS7[i].pt);
-      let ct = Convert.hex2bin(tv_CBC_PKCS7[i].ct);
-      let iv = Convert.hex2bin(tv_CBC_PKCS7[i].iv);
-      let ct2 = aes.encrypt(key, pt, iv);
-      res = res && Util.compare(ct2, ct);
-      let pt2 = aes.decrypt(key, ct, iv);
-      res = res && Util.compare(pt2, pt);
-    }
-*/
-    return res;
+    // AES submission KAT: 128-bit all-zero key, variable plaintext (ecb_vt.txt I=1)
+    // Verified against the original AES candidate submission by Ross Anderson.
+    const key128 = Convert.hex2bin('00000000000000000000000000000000');
+    const pt128  = Convert.hex2bin('80000000000000000000000000000000');
+    const ct128  = Convert.hex2bin('10b5ffb720b8cb9002a1142b0ba2e94a');
+    const s = new Serpent();
+    const enc = s.encrypt(key128, pt128);
+    const dec = s.decrypt(key128, ct128);
+    return Util.compare(enc, ct128) && Util.compare(dec, pt128);
   }
 
 }

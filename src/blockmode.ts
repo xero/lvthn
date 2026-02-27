@@ -31,39 +31,6 @@
 import { Blockcipher } from './base';
 
 
-export class ECB {
-  blockcipher: Blockcipher;
-
-  /**
-   * ECB ctor
-   * @param {Object} blockcipher The block cipher algorithm to use
-   */
-  constructor(blockcipher: Blockcipher) {
-    this.blockcipher = blockcipher;
-  }
-
-  /**
-   * ECB mode encryption
-   * This mode just passes the input to the output - unsecure, use just for testing!
-   * iv is unused
-   */
-  encrypt(key: any, pt: any, iv: any): Uint8Array {
-    return this.blockcipher.encrypt(key, pt);
-  }
-
-  /**
-   * ECB mode decryption
-   * This mode just passes the input to the output - unsecure, use just for testing!
-   * iv is unused
-   */
-  decrypt(key: any, ct: any, iv: any): Uint8Array {
-    return this.blockcipher.decrypt(key, ct);
-  }
-}
-
-//////////////////////////////////////////////////////////////////////////
-
-
 export class CBC {
   blockcipher: Blockcipher;
 

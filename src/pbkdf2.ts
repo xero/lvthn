@@ -37,6 +37,7 @@ import { HMAC } from './hmac';
 
 /**
  * PBKDF2 class
+ * @deprecated PBKDF2 has low memory hardness. Use Argon2id or scrypt for new key derivation.
  */
 export class PBKDF2 {
 

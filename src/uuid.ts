@@ -34,6 +34,7 @@ import { Convert } from './base';
 
 /**
  * UUID class
+ * @deprecated Use the Web Crypto API (`crypto.randomUUID()`) instead.
  */
 export class UUID {
   msec:     number;
