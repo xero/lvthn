@@ -406,12 +406,21 @@ output. Fixed with explicit `bytes_to_block` / `block_to_bytes` conversion using
 
 ### Remaining Known Issues / Recommended Future Work
 
-1. **Constant-time not guaranteed**: JavaScript does not provide constant-time guarantees;
-   the implementation is vulnerable to timing side-channels in principle. For high-security
-   applications requiring strict constant-time, a WASM or native implementation is needed.
+1. **Constant-time — partially mitigated (Phase 7)**: JavaScript cannot guarantee constant-time
+   execution of arbitrary code due to JIT compilation.  However, the Serpent bitslice core has
+   **no data-dependent branches by design** — S-boxes are implemented as Boolean gate circuits
+   that process all bits unconditionally, making them the most timing-safe implementation
+   approach available in JS.  All explicit security-sensitive byte comparisons (`Ed25519.verify`,
+   `neq25519`) now use `constantTimeEqual` (XOR-accumulate, no early return).  `Util.compare`
+   delegates to `constantTimeEqual` to prevent independent drift.  JIT non-determinism remains
+   a theoretical concern for the core operations but is not practically exploitable for
+   Serpent's bitslice construction.  For formally guaranteed constant-time, a WASM or native
+   implementation is required.
 
-2. **TypeScript strictness**: `"strict": true` not enabled; some `any` types remain in
-   the S-box callbacks and working register arrays. Low risk for a well-tested crypto primitive.
+2. ~~**TypeScript strictness**: `"strict": true` not enabled; some `any` types remain in
+   the S-box callbacks and working register arrays.~~ **Resolved in Phase 6.** `strict: true`
+   was already set in `tsconfig.json`; all implicit-`any` and strict-null errors have been
+   eliminated. `tsc --noEmit` now produces zero errors.
 
 3. **No AEAD mode**: Only CBC and CTR modes are present. EAX or GCM-style authenticated
    encryption would be needed for secure protocol use.
@@ -419,3 +428,182 @@ output. Fixed with explicit `bytes_to_block` / `block_to_bytes` conversion using
 4. **Monte Carlo tests are slow**: Each ECB/CBC Monte Carlo suite takes ~50 s on
    Apple M-series hardware. Acceptable for CI but would benefit from a compiled WASM
    backend for faster test iteration.
+
+---
+
+### Phase 6 Changelog (TypeScript Strict Mode & Type Cleanup)
+
+All changes are type-level only; no runtime behavior was altered. After all edits,
+`npx tsc --noEmit` reports **zero errors** and the full test suite reports **4705/4705 passed**.
+
+#### serpent.ts
+
+| Item | Change |
+|------|--------|
+| `key: Uint32Array` (class property) | Added `!` definite-assignment assertion; property is set in `init()`, not the constructor |
+| `getW`, `setW`, `setWInv` parameter `a` | `a` → `a: Uint8Array` (call sites pass `blk`/`ct`, both `Uint8Array`) |
+| `keyIt`, `keyLoad`, `keyStore` last parameter `r` | `r` → `r: number[]` (register array created as array literal) |
+| All 8 `S[]` and 8 `SI[]` anonymous functions, parameter `r` | `r` → `r: number[]` (16 occurrences, replaced with `replace_all`) |
+| `K`, `LK`, `KL` parameter `r: any` | `r: any` → `r: number[]` |
+
+#### chacha20.ts
+
+| Item | Change |
+|------|--------|
+| `input: Uint32Array` | Added `!`; set in `init()` |
+| `U32TO8_LITTLE(x: any, ...)` | `x: any` → `x: Uint8Array` (caller passes `buf`) |
+| `QUARTERROUND(x: any, ...)` | `x: any` → `x: Uint32Array` (caller passes `s`) |
+
+#### hmac.ts
+
+| Item | Change |
+|------|--------|
+| `iKeyPad: Uint8Array`, `oKeyPad: Uint8Array` | Added `!`; both set in `init()` |
+
+#### sha256.ts / sha512.ts / sha3.ts
+
+| Item | Change |
+|------|--------|
+| `bufferIndex: number`, `count: Uint32Array`, `H: Uint32Array` | Added `!` to each; all set by `init()` called at end of constructor |
+
+#### random.ts
+
+| Item | Change |
+|------|--------|
+| `timer: ReturnType<typeof setInterval>` | Added `!`; assigned inside `startCollectors()` |
+| `get(): Uint8Array` return type | `Uint8Array` → `Uint8Array \| undefined` (bare `return;` path when not seeded) |
+| `startCollectors`/`stopCollectors` — TS2774 always-true conditions | `&& window.addEventListener` / `&& document.addEventListener` removed; DOM types declare these as always present |
+| `throttle` — `scope?: Object` | `Object` → `object` (TypeScript prefers lowercase object type) |
+| `throttle` — `let last, deferTimer;` | `let last: number \| undefined; let deferTimer: ReturnType<typeof setTimeout> \| undefined;` |
+| `throttle` — `return function () {` | `return function (this: unknown) {` to eliminate implicit-`this` any |
+| `collectorKeyboard(ev: any)` | `ev: KeyboardEvent`; `ev.char` (IE-era fallback) accessed via `(ev as KeyboardEvent & { char?: string }).char` |
+| `collectorMouse(ev: any)` | `ev: MouseEvent` |
+| `collectorClick(ev: any)` | `ev: MouseEvent` |
+| `collectorTouch(ev: any)` | `ev: TouchEvent` |
+| `collectorScroll(ev: any)` | `_ev: Event` (body uses only `window.pageXOffset/scrollX`, not ev) |
+| `collectorMotion(ev: any)` | `ev: Event`; local casts to `DeviceMotionEvent` / `DeviceOrientationEvent` for their respective property accesses |
+
+#### uuid.ts
+
+| Item | Change |
+|------|--------|
+| `clockseq: number` | `clockseq: number \| null` (constructor assigns `null`) |
+| `v1()` return type | `Uint8Array` → `Uint8Array \| undefined` (early return on bad node length) |
+| `v4()` return type | Added explicit `: Uint8Array \| undefined` (early return on bad rand length) |
+
+#### x25519.ts
+
+| Item | Change |
+|------|--------|
+| `generateKeys()` return type (both Curve25519 and Ed25519) | `{ sk, pk }` → `{ sk, pk } \| undefined` |
+| `sign()` return type | `Uint8Array` → `Uint8Array \| undefined` |
+| selftest call sites | Added `!` non-null assertion (`generateKeys(sk)!.pk`, `sign(m, sk, pk)!`) — selftests use known-good 32-byte inputs |
+
+#### base.ts
+
+| Item | Change |
+|------|--------|
+| `Signature` interface — `generateKeys` / `sign` | Return types widened to `\| undefined` to match x25519 implementations |
+| `base642bin()` return type | `Uint8Array` → `Uint8Array \| undefined` (early return on invalid base64 length) |
+| `bin2base64()` — `String.fromCharCode.apply(null, bin)` | `bin` → `Array.from(bin)`: `Uint8Array` is not assignable to `number[]` in `apply`; `Array.from` produces the correct `number[]` |
+
+---
+
+### Phase 7 Changelog (Constant-Time Equality Audit & Implementation)
+
+**Goal**: Ensure all security-sensitive byte comparisons use constant-time equality and are
+visibly annotated.
+
+#### Audit findings
+
+All `===`, `every`, `reduce`, `indexOf`, `includes`, loop comparisons, and usages of
+`Util.compare` in `src/*.ts` were reviewed and classified:
+
+| Location | Classification | Reason |
+|----------|----------------|--------|
+| `x25519.ts:999` — `Ed25519.verify()` return | **SENSITIVE** | Compares computed signature R component against expected; timing oracle enables Ed25519 forgery |
+| `x25519.ts:555` — `neq25519()` | **SENSITIVE** | Compares packed Curve25519 field elements during verify/unpack path |
+| `pbkdf2.ts:94` — `selftest()` | NON-SENSITIVE | Compares PBKDF2 output against hardcoded public test vector; no attacker-controlled input |
+| `serpent.ts:395`, `x25519.ts:784/792/1030` — selftest `Util.compare` | NON-SENSITIVE | Selftest only; hardcoded vectors |
+| All `===` on counters/indices/buffer sizes | NON-SENSITIVE | Control-flow; no secret data |
+| `Util.compare` implementation | Already constant-time | XOR-accumulate, no early exit on mismatch |
+
+#### Changes made
+
+| File | Change |
+|------|--------|
+| `src/base.ts` | Added `constantTimeEqual(a, b: Uint8Array): boolean` as a standalone export with full JSDoc explaining the XOR-accumulate pattern, what attack it prevents, and why timing padding must not be added |
+| `src/base.ts` | `Util.compare` simplified to delegate to `constantTimeEqual`; eliminates independent drift between the two implementations |
+| `src/x25519.ts` | Import `constantTimeEqual`; replace `Util.compare` at the two SENSITIVE sites with `constantTimeEqual` + inline annotation |
+| `src/pbkdf2.ts` | Added `// non-sensitive: selftest only` comment at `selftest()` MAC comparison |
+| `src/index.ts` | Export `constantTimeEqual` from the public module surface |
+| `test/spec/10_constant_time.test.ts` | 13 new tests: basic correctness, all-zero arrays (sizes 1/16/32), single-byte differences at positions 0/middle/last, non-trivial round-trip, empty arrays, timing smoke test (logs durations, asserts correctness only) |
+
+#### Verification
+
+- `npx tsc --noEmit`: **0 errors**
+- Test suite: **4718/4718 passed** (4705 pre-existing + 13 new)
+
+---
+
+## Phase 8 Changelog — Mocha → Vitest Migration
+
+### Objective
+Remove the legacy Mocha/Chai test infrastructure and port all remaining
+`*_test.ts` files to Vitest.
+
+### Inventory findings
+
+| File | Decision | Reason |
+|------|----------|--------|
+| `sha1_test.ts` | **DROP** | `src/sha1.ts` was removed from the library |
+| `sha1_vectors.ts` | **DROP** | No longer needed |
+| `aes_vectors.ts` | **DROP** | AES was removed in Phase 2/3 |
+| `hmac_test.ts` HMAC-SHA1 block | **DROP** | `HMAC_SHA1` not exported (no `sha1.ts`) |
+| `base_test.ts` "explicit no atob/btoa" variants | **Simplified** | Global manipulation unreliable in Node 18+ (atob/btoa non-configurable); correctness still tested |
+| All other `*_test.ts` files | **PORTED** | See new files below |
+
+### New test files
+
+| File | Tests | Notes |
+|------|-------|-------|
+| `11_base.test.ts` | 9 | Convert (hex2bin, bin2hex, base64, base64url), Util (clear, compare, xor) |
+| `12_chacha20.test.ts` | 2 | ChaCha20 encrypt/decrypt vectors |
+| `13_hmac.test.ts` | 3 | HMAC input-unaltered, HMAC-SHA256, HMAC-SHA512 |
+| `14_padding.test.ts` | 1 | PKCS7 pad/strip round-trip (all block sizes × all lengths 0–127) |
+| `15_pbkdf2.test.ts` | 2 | PBKDF2 HMAC-SHA256 vectors, selftest |
+| `16_serpent.test.ts` | 6 | Encrypt/decrypt vectors, Monte Carlo 10 000 rounds ×2, CBC-PKCS7, selftest |
+| `17_sha256.test.ts` | 4 | Hash, update, iteration (sjcl-style), selftest |
+| `18_sha512.test.ts` | 4 | Hash, update, iteration (sjcl-style), selftest |
+| `19_sha3.test.ts` | 10 | Keccak-384, SHA3-256/512, SHAKE128-256, SHAKE256-512 |
+| `20_uuid.test.ts` | 2 | UUID V1 and V4 format checks |
+| `21_x25519.test.ts` | 9 | Curve25519 KAT, Monte Carlo, scalarMult, Ed25519 keygen/sign/verify (positive + negative), selftests |
+
+### Files removed
+
+- `test/spec/base_test.ts`, `chacha20_test.ts`, `hmac_test.ts`, `padding_test.ts`,
+  `pbkdf2_test.ts`, `serpent_test.ts`, `sha1_test.ts`, `sha256_test.ts`,
+  `sha3_test.ts`, `sha512_test.ts`, `uuid_test.ts`, `x25519_test.ts`
+- `test/spec/aes_vectors.ts`, `test/spec/sha1_vectors.ts`
+- `test/common.js` (btoa/atob polyfills, no longer needed)
+- `test/mocha.opts`
+
+### Chai assertion translation
+
+| Chai (old) | Vitest (new) |
+|------------|--------------|
+| `assert.ok(x)` | `expect(x).toBeTruthy()` |
+| `assert.equal(a, b)` | `expect(a).toBe(b)` |
+| `assert.deepEqual(a, b)` | `expect(a).toEqual(b)` |
+| `assert.notDeepEqual(a, b)` | `expect(a).not.toEqual(b)` |
+| `assert.notOk(x)` | `expect(x).toBeFalsy()` |
+| `expect(x).to.deep.equal(y)` | `expect(x).toEqual(y)` |
+| `expect(x).to.equal(y)` | `expect(x).toBe(y)` |
+
+Mocha `this.timeout(ms)` was replaced with Vitest's third `it()` argument:
+`it('name', { timeout: ms }, () => { ... })`.
+
+### Verification
+
+- `npx tsc --noEmit`: **0 errors**
+- Test suite: **4770/4770 passed** (4718 pre-existing + 52 new from ported Mocha tests)

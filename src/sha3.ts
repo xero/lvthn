@@ -39,7 +39,7 @@ export class Keccak implements Hash {
   blockCount: number;
   byteCount: number;
   buffer: Uint8Array;
-  bufferIndex: number;
+  bufferIndex!: number;
   s: Uint32Array;
   RC: Uint32Array;
 

@@ -38,7 +38,7 @@ import { Streamcipher } from './base';
 export class ChaCha20 implements Streamcipher {
   keySize: number;
   nonceSize: number;
-  input: Uint32Array;
+  input!: Uint32Array;
 
 
   /**
@@ -84,7 +84,7 @@ export class ChaCha20 implements Streamcipher {
   }
 
 
-  private U32TO8_LITTLE(x: any, i: number, u: number) {
+  private U32TO8_LITTLE(x: Uint8Array, i: number, u: number) {
     x[i]     = u & 0xff; u >>>= 8;
     x[i + 1] = u & 0xff; u >>>= 8;
     x[i + 2] = u & 0xff; u >>>= 8;
@@ -97,7 +97,7 @@ export class ChaCha20 implements Streamcipher {
   }
 
 
-  private QUARTERROUND(x: any, a: number, b: number, c: number, d: number) {
+  private QUARTERROUND(x: Uint32Array, a: number, b: number, c: number, d: number) {
     x[a] += x[b]; x[d] = this.ROTATE(x[d] ^ x[a], 16);
     x[c] += x[d]; x[b] = this.ROTATE(x[b] ^ x[c], 12);
     x[a] += x[b]; x[d] = this.ROTATE(x[d] ^ x[a],  8);

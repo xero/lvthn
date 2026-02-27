@@ -63,5 +63,23 @@ If you find any bugs, have any comments, improvements or suggestions:
 7. Profit! :white_check_mark:
 
 
+## Security notes
+
+**Constant-time comparisons**: All security-sensitive byte comparisons (signature
+verification, MAC tag checking) use `constantTimeEqual`, an XOR-accumulate function
+that visits every byte regardless of content. This prevents timing-oracle attacks such
+as byte-at-a-time HMAC forgery. `constantTimeEqual` is also exported for use by
+callers that need to compare keys, tags, or other secret values.
+
+**Bitslice Serpent**: The Serpent cipher is implemented in bitslice form — S-boxes are
+Boolean gate circuits with no table lookups and no data-dependent branches. This is the
+most timing-safe Serpent implementation approach available in JavaScript.
+
+**JIT caveat**: JavaScript engines provide no formal constant-time guarantees for
+arbitrary code. The mitigations above eliminate the most practical attack vectors;
+for applications requiring formally proven constant-time (e.g. side-channel-hardened
+hardware wallets), a WebAssembly or native implementation is necessary.
+
+
 ## License
 mipher is written under the [MIT license](http://www.opensource.org/licenses/MIT).

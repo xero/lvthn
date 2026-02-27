@@ -27,7 +27,7 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-export { Convert, Util, version } from './base';
+export { Convert, Util, constantTimeEqual, version } from './base';
 export { CBC, CTR } from './blockmode';
 export { Serpent, Serpent_CBC, Serpent_CTR, Serpent_CBC_PKCS7, Serpent_CTR_PKCS7 } from './serpent';
 export { ChaCha20 } from './chacha20';

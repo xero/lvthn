@@ -39,7 +39,7 @@ import { Convert } from './base';
 export class UUID {
   msec:     number;
   nsec:     number;
-  clockseq: number;
+  clockseq: number | null;
 
   /**
    * UUID ctor
@@ -57,7 +57,7 @@ export class UUID {
    * @param {Uint8Array} clockseq Optional 2 byte array of random data for clockseq init
    * @return {Uint8Array} UUID as 16 byte typed array or 'undefined' if error
    */
-  v1(node: Uint8Array, clockseq?: Uint8Array): Uint8Array {
+  v1(node: Uint8Array, clockseq?: Uint8Array): Uint8Array | undefined {
     let msec, nsec;
     if (typeof performance !== 'undefined' && performance.timing && typeof performance.now === 'function') {
       msec = performance.timing.navigationStart + performance.now();
@@ -132,7 +132,7 @@ export class UUID {
    * @param {Uint8Array} rand 16 byte array of TRUE random data
    * @return {Uint8Array} UUID as 16 byte typed array or 'undefined' if error
    */
-  v4(rand: Uint8Array) {
+  v4(rand: Uint8Array): Uint8Array | undefined {
     if (rand.length !== 16) return;
     let uuid = new Uint8Array(rand);
 

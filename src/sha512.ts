@@ -37,10 +37,10 @@ import { Convert, Util, Hash } from './base';
 export class SHA512 implements Hash {
   hashSize: number;
   buffer: Uint8Array;
-  bufferIndex: number;
-  count: Uint32Array;
+  bufferIndex!: number;
+  count!: Uint32Array;
   K: Uint32Array;
-  H: Uint32Array;
+  H!: Uint32Array;
 
 
   /**

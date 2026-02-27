@@ -41,8 +41,8 @@ export class HMAC implements KeyedHash {
   B: number;
   iPad: number;
   oPad: number;
-  iKeyPad: Uint8Array;
-  oKeyPad: Uint8Array;
+  iKeyPad!: Uint8Array;
+  oKeyPad!: Uint8Array;
 
 
   /**

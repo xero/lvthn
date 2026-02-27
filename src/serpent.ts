@@ -52,7 +52,7 @@ export type RoundHook = (round: number, state: number[], ec: number) => void;
 
 export class Serpent implements Blockcipher {
   blockSize: number;
-  key: Uint32Array;
+  key!: Uint32Array;
   wMax: number;
   /** Optional hook called after every cipher round during encrypt/decrypt. */
   roundHook: RoundHook | null;
@@ -78,67 +78,67 @@ export class Serpent implements Blockcipher {
       return (w << n | w >>> (32 - n)) & this.wMax;
     };
 
-    this.getW = function (a, i: number) {
+    this.getW = function (a: Uint8Array, i: number) {
       return a[i] | a[i + 1] << 8 | a[i + 2] << 16 | a[i + 3] << 24;
     };
 
-    this.setW = function (a, i: number, w: number) {
+    this.setW = function (a: Uint8Array, i: number, w: number) {
       a[i] = w & 0xff; a[i + 1] = (w >>> 8) & 0xff; a[i + 2] = (w >>> 16) & 0xff; a[i + 3] = (w >>> 24) & 0xff;
     };
 
-    this.setWInv = function (a, i: number, w: number) {
+    this.setWInv = function (a: Uint8Array, i: number, w: number) {
       a[i] = (w >>> 24) & 0xff; a[i + 1] = (w >>> 16) & 0xff; a[i + 2] = (w >>> 8) & 0xff; a[i + 3] = w & 0xff;
     };
 
-    this.keyIt = function (a: number, b: number, c: number, d: number, i: number, r) {
+    this.keyIt = function (a: number, b: number, c: number, d: number, i: number, r: number[]) {
       this.key[i] = r[b] = this.rotW(this.key[a] ^ r[b] ^ r[c] ^ r[d] ^ 0x9e3779b9 ^ i, 11);
     };
 
-    this.keyLoad = function (a: number, b: number, c: number, d: number, i: number, r) {
+    this.keyLoad = function (a: number, b: number, c: number, d: number, i: number, r: number[]) {
       r[a] = this.key[i]; r[b] = this.key[i + 1]; r[c] = this.key[i + 2]; r[d] = this.key[i + 3];
     };
 
-    this.keyStore = function (a: number, b: number, c: number, d: number, i: number, r) {
+    this.keyStore = function (a: number, b: number, c: number, d: number, i: number, r: number[]) {
       this.key[i] = r[a]; this.key[i + 1] = r[b]; this.key[i + 2] = r[c]; this.key[i + 3] = r[d];
     };
 
     this.S = [
-      function (r, x0: number, x1: number, x2: number, x3: number, x4: number) {
+      function (r: number[], x0: number, x1: number, x2: number, x3: number, x4: number) {
         r[x4]  = r[x3]; r[x3] |= r[x0]; r[x0] ^= r[x4]; r[x4] ^= r[x2]; r[x4] = ~r[x4]; r[x3] ^= r[x1];
         r[x1] &= r[x0]; r[x1] ^= r[x4]; r[x2] ^= r[x0]; r[x0] ^= r[x3]; r[x4] |= r[x0]; r[x0] ^= r[x2];
         r[x2] &= r[x1]; r[x3] ^= r[x2]; r[x1] = ~r[x1]; r[x2] ^= r[x4]; r[x1] ^= r[x2];
       },
-      function (r, x0: number, x1: number, x2: number, x3: number, x4: number) {
+      function (r: number[], x0: number, x1: number, x2: number, x3: number, x4: number) {
         r[x4]  = r[x1]; r[x1] ^= r[x0]; r[x0] ^= r[x3]; r[x3] = ~r[x3]; r[x4] &= r[x1]; r[x0] |= r[x1];
         r[x3] ^= r[x2]; r[x0] ^= r[x3]; r[x1] ^= r[x3]; r[x3] ^= r[x4]; r[x1] |= r[x4]; r[x4] ^= r[x2];
         r[x2] &= r[x0]; r[x2] ^= r[x1]; r[x1] |= r[x0]; r[x0] = ~r[x0]; r[x0] ^= r[x2]; r[x4] ^= r[x1];
       },
-      function (r, x0: number, x1: number, x2: number, x3: number, x4: number) {
+      function (r: number[], x0: number, x1: number, x2: number, x3: number, x4: number) {
         r[x3] = ~r[x3]; r[x1] ^= r[x0]; r[x4]  = r[x0]; r[x0] &= r[x2]; r[x0] ^= r[x3]; r[x3] |= r[x4];
         r[x2] ^= r[x1]; r[x3] ^= r[x1]; r[x1] &= r[x0]; r[x0] ^= r[x2]; r[x2] &= r[x3]; r[x3] |= r[x1];
         r[x0] = ~r[x0]; r[x3] ^= r[x0]; r[x4] ^= r[x0]; r[x0] ^= r[x2]; r[x1] |= r[x2];
       },
-      function (r, x0: number, x1: number, x2: number, x3: number, x4: number) {
+      function (r: number[], x0: number, x1: number, x2: number, x3: number, x4: number) {
         r[x4]  = r[x1]; r[x1] ^= r[x3]; r[x3] |= r[x0]; r[x4] &= r[x0]; r[x0] ^= r[x2]; r[x2] ^= r[x1]; r[x1] &= r[x3];
         r[x2] ^= r[x3]; r[x0] |= r[x4]; r[x4] ^= r[x3]; r[x1] ^= r[x0]; r[x0] &= r[x3]; r[x3] &= r[x4];
         r[x3] ^= r[x2]; r[x4] |= r[x1]; r[x2] &= r[x1]; r[x4] ^= r[x3]; r[x0] ^= r[x3]; r[x3] ^= r[x2];
       },
-      function (r, x0: number, x1: number, x2: number, x3: number, x4: number) {
+      function (r: number[], x0: number, x1: number, x2: number, x3: number, x4: number) {
         r[x4]  = r[x3]; r[x3] &= r[x0]; r[x0] ^= r[x4]; r[x3] ^= r[x2]; r[x2] |= r[x4]; r[x0] ^= r[x1];
         r[x4] ^= r[x3]; r[x2] |= r[x0]; r[x2] ^= r[x1]; r[x1] &= r[x0]; r[x1] ^= r[x4]; r[x4] &= r[x2];
         r[x2] ^= r[x3]; r[x4] ^= r[x0]; r[x3] |= r[x1]; r[x1] = ~r[x1]; r[x3] ^= r[x0];
       },
-      function (r, x0: number, x1: number, x2: number, x3: number, x4: number) {
+      function (r: number[], x0: number, x1: number, x2: number, x3: number, x4: number) {
         r[x4]  = r[x1]; r[x1] |= r[x0]; r[x2] ^= r[x1]; r[x3] = ~r[x3]; r[x4] ^= r[x0]; r[x0] ^= r[x2];
         r[x1] &= r[x4]; r[x4] |= r[x3]; r[x4] ^= r[x0]; r[x0] &= r[x3]; r[x1] ^= r[x3]; r[x3] ^= r[x2];
         r[x0] ^= r[x1]; r[x2] &= r[x4]; r[x1] ^= r[x2]; r[x2] &= r[x0]; r[x3] ^= r[x2];
       },
-      function (r, x0: number, x1: number, x2: number, x3: number, x4: number) {
+      function (r: number[], x0: number, x1: number, x2: number, x3: number, x4: number) {
         r[x4]  = r[x1]; r[x3] ^= r[x0]; r[x1] ^= r[x2]; r[x2] ^= r[x0]; r[x0] &= r[x3]; r[x1] |= r[x3];
         r[x4] = ~r[x4]; r[x0] ^= r[x1]; r[x1] ^= r[x2]; r[x3] ^= r[x4]; r[x4] ^= r[x0]; r[x2] &= r[x0];
         r[x4] ^= r[x1]; r[x2] ^= r[x3]; r[x3] &= r[x1]; r[x3] ^= r[x0]; r[x1] ^= r[x2];
       },
-      function (r, x0: number, x1: number, x2: number, x3: number, x4: number) {
+      function (r: number[], x0: number, x1: number, x2: number, x3: number, x4: number) {
         r[x1] = ~r[x1]; r[x4]  = r[x1]; r[x0] = ~r[x0]; r[x1] &= r[x2]; r[x1] ^= r[x3]; r[x3] |= r[x4]; r[x4] ^= r[x2];
         r[x2] ^= r[x3]; r[x3] ^= r[x0]; r[x0] |= r[x1]; r[x2] &= r[x0]; r[x0] ^= r[x4]; r[x4] ^= r[x3];
         r[x3] &= r[x0]; r[x4] ^= r[x1]; r[x2] ^= r[x4]; r[x3] ^= r[x1]; r[x4] |= r[x0]; r[x4] ^= r[x1];
@@ -146,42 +146,42 @@ export class Serpent implements Blockcipher {
     ];
 
     this.SI = [
-      function (r, x0: number, x1: number, x2: number, x3: number, x4: number) {
+      function (r: number[], x0: number, x1: number, x2: number, x3: number, x4: number) {
         r[x4]  = r[x3]; r[x1] ^= r[x0]; r[x3] |= r[x1]; r[x4] ^= r[x1]; r[x0] = ~r[x0]; r[x2] ^= r[x3];
         r[x3] ^= r[x0]; r[x0] &= r[x1]; r[x0] ^= r[x2]; r[x2] &= r[x3]; r[x3] ^= r[x4]; r[x2] ^= r[x3];
         r[x1] ^= r[x3]; r[x3] &= r[x0]; r[x1] ^= r[x0]; r[x0] ^= r[x2]; r[x4] ^= r[x3];
       },
-      function (r, x0: number, x1: number, x2: number, x3: number, x4: number) {
+      function (r: number[], x0: number, x1: number, x2: number, x3: number, x4: number) {
         r[x1] ^= r[x3]; r[x4]  = r[x0]; r[x0] ^= r[x2]; r[x2] = ~r[x2]; r[x4] |= r[x1]; r[x4] ^= r[x3];
         r[x3] &= r[x1]; r[x1] ^= r[x2]; r[x2] &= r[x4]; r[x4] ^= r[x1]; r[x1] |= r[x3]; r[x3] ^= r[x0];
         r[x2] ^= r[x0]; r[x0] |= r[x4]; r[x2] ^= r[x4]; r[x1] ^= r[x0]; r[x4] ^= r[x1];
       },
-      function (r, x0: number, x1: number, x2: number, x3: number, x4: number) {
+      function (r: number[], x0: number, x1: number, x2: number, x3: number, x4: number) {
         r[x2] ^= r[x1]; r[x4]  = r[x3]; r[x3] = ~r[x3]; r[x3] |= r[x2]; r[x2] ^= r[x4]; r[x4] ^= r[x0];
         r[x3] ^= r[x1]; r[x1] |= r[x2]; r[x2] ^= r[x0]; r[x1] ^= r[x4]; r[x4] |= r[x3]; r[x2] ^= r[x3];
         r[x4] ^= r[x2]; r[x2] &= r[x1]; r[x2] ^= r[x3]; r[x3] ^= r[x4]; r[x4] ^= r[x0];
       },
-      function (r, x0: number, x1: number, x2: number, x3: number, x4: number) {
+      function (r: number[], x0: number, x1: number, x2: number, x3: number, x4: number) {
         r[x2] ^= r[x1]; r[x4]  = r[x1]; r[x1] &= r[x2]; r[x1] ^= r[x0]; r[x0] |= r[x4]; r[x4] ^= r[x3];
         r[x0] ^= r[x3]; r[x3] |= r[x1]; r[x1] ^= r[x2]; r[x1] ^= r[x3]; r[x0] ^= r[x2]; r[x2] ^= r[x3];
         r[x3] &= r[x1]; r[x1] ^= r[x0]; r[x0] &= r[x2]; r[x4] ^= r[x3]; r[x3] ^= r[x0]; r[x0] ^= r[x1];
       },
-      function (r, x0: number, x1: number, x2: number, x3: number, x4: number) {
+      function (r: number[], x0: number, x1: number, x2: number, x3: number, x4: number) {
         r[x2] ^= r[x3]; r[x4]  = r[x0]; r[x0] &= r[x1]; r[x0] ^= r[x2]; r[x2] |= r[x3]; r[x4] = ~r[x4];
         r[x1] ^= r[x0]; r[x0] ^= r[x2]; r[x2] &= r[x4]; r[x2] ^= r[x0]; r[x0] |= r[x4]; r[x0] ^= r[x3];
         r[x3] &= r[x2]; r[x4] ^= r[x3]; r[x3] ^= r[x1]; r[x1] &= r[x0]; r[x4] ^= r[x1]; r[x0] ^= r[x3];
       },
-      function (r, x0: number, x1: number, x2: number, x3: number, x4: number) {
+      function (r: number[], x0: number, x1: number, x2: number, x3: number, x4: number) {
         r[x4]  =  r[x1]; r[x1] |= r[x2]; r[x2] ^= r[x4]; r[x1] ^= r[x3]; r[x3] &= r[x4]; r[x2] ^= r[x3]; r[x3] |= r[x0];
         r[x0]  = ~r[x0]; r[x3] ^= r[x2]; r[x2] |= r[x0]; r[x4] ^= r[x1]; r[x2] ^= r[x4]; r[x4] &= r[x0]; r[x0] ^= r[x1];
         r[x1] ^=  r[x3]; r[x0] &= r[x2]; r[x2] ^= r[x3]; r[x0] ^= r[x2]; r[x2] ^= r[x4]; r[x4] ^= r[x3];
       },
-      function (r, x0: number, x1: number, x2: number, x3: number, x4: number) {
+      function (r: number[], x0: number, x1: number, x2: number, x3: number, x4: number) {
         r[x0] ^= r[x2]; r[x4]  = r[x0]; r[x0] &= r[x3]; r[x2] ^= r[x3]; r[x0] ^= r[x2]; r[x3] ^= r[x1];
         r[x2] |= r[x4]; r[x2] ^= r[x3]; r[x3] &= r[x0]; r[x0] = ~r[x0]; r[x3] ^= r[x1]; r[x1] &= r[x2];
         r[x4] ^= r[x0]; r[x3] ^= r[x4]; r[x4] ^= r[x2]; r[x0] ^= r[x1]; r[x2] ^= r[x0];
       },
-      function (r, x0: number, x1: number, x2: number, x3: number, x4: number) {
+      function (r: number[], x0: number, x1: number, x2: number, x3: number, x4: number) {
         r[x4]  = r[x3]; r[x3] &= r[x0]; r[x0] ^= r[x2]; r[x2] |= r[x4]; r[x4] ^= r[x1]; r[x0] = ~r[x0]; r[x1] |= r[x3];
         r[x4] ^= r[x0]; r[x0] &= r[x2]; r[x0] ^= r[x1]; r[x1] &= r[x2]; r[x3] ^= r[x2]; r[x4] ^= r[x3];
         r[x2] &= r[x3]; r[x3] |= r[x0]; r[x1] ^= r[x4]; r[x3] ^= r[x4]; r[x4] &= r[x0]; r[x4] ^= r[x2];
@@ -230,7 +230,7 @@ export class Serpent implements Blockcipher {
   }
 
 
-  private K(r: any, a: number, b: number, c: number, d: number, i: number) {
+  private K(r: number[], a: number, b: number, c: number, d: number, i: number) {
     r[a] ^= this.key[4 * i];
     r[b] ^= this.key[4 * i + 1];
     r[c] ^= this.key[4 * i + 2];
@@ -238,7 +238,7 @@ export class Serpent implements Blockcipher {
   }
 
 
-  private LK(r: any, a: number, b: number, c: number, d: number, e: number, i: number) {
+  private LK(r: number[], a: number, b: number, c: number, d: number, e: number, i: number) {
     r[a]  = this.rotW(r[a], 13);
     r[c]  = this.rotW(r[c], 3);
     r[b] ^= r[a];
@@ -263,7 +263,7 @@ export class Serpent implements Blockcipher {
   }
 
 
-  private KL(r: any, a: number, b: number, c: number, d: number, e: number, i: number) {
+  private KL(r: number[], a: number, b: number, c: number, d: number, e: number, i: number) {
     r[a] ^= this.key[4 * i + 0];
     r[b] ^= this.key[4 * i + 1];
     r[c] ^= this.key[4 * i + 2];

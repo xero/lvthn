@@ -38,7 +38,7 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-import { Convert, Util, Signature } from './base';
+import { Convert, Util, Signature, constantTimeEqual } from './base';
 import { SHA512 } from './sha512';
 
 
@@ -552,7 +552,8 @@ export class Curve25519 {
     let c = new Uint8Array(32), d = new Uint8Array(32);
     this.pack25519(c, a);
     this.pack25519(d, b);
-    return !Util.compare(c, d);
+    // constant-time: prevents timing oracle during curve-point comparison in verify path
+    return !constantTimeEqual(c, d);
    }
 
 
@@ -730,7 +731,7 @@ export class Curve25519 {
    * @param {Uint8Array} seed A 32 byte cryptographic secure random array. This is basically the secret key
    * @param {Object} Returns sk (Secret key) and pk (Public key) as 32 byte typed arrays
    */
-  generateKeys(seed: Uint8Array): { sk: Uint8Array, pk: Uint8Array } {
+  generateKeys(seed: Uint8Array): { sk: Uint8Array, pk: Uint8Array } | undefined {
     let sk = seed.slice();
     let pk = new Uint8Array(32);
     if (sk.length !== 32) {
@@ -781,7 +782,7 @@ export class Curve25519 {
     for (let i = 0, len = key.length; i < len; i++) {
       sk = Convert.hex2bin(key[i].sk);
       pk = Convert.hex2bin(key[i].pk);
-      if (!Util.compare(this.generateKeys(sk).pk, pk)) return false;
+      if (!Util.compare(this.generateKeys(sk)!.pk, pk)) return false;
     }
 
     // scalar multiplication
@@ -904,7 +905,7 @@ export class Ed25519 implements Signature {
    * @param {Uint8Array} seed A 32 byte cryptographic secure random array. This is basically the secret key
    * @param {Object} Returns sk (Secret key) and pk (Public key) as 32 byte typed arrays
    */
-  generateKeys(seed: Uint8Array): { sk: Uint8Array, pk: Uint8Array } {
+  generateKeys(seed: Uint8Array): { sk: Uint8Array, pk: Uint8Array } | undefined {
     let sk = seed.slice();
     let pk = new Uint8Array(32);
     if (sk.length !== 32) {
@@ -933,7 +934,7 @@ export class Ed25519 implements Signature {
    * @param {Uint8Array} pk Public key as 32 byte array
    * @param {Uint8Array} Returns the signature as 64 byte typed array
    */
-  sign(msg: Uint8Array, sk: Uint8Array, pk: Uint8Array): Uint8Array {
+  sign(msg: Uint8Array, sk: Uint8Array, pk: Uint8Array): Uint8Array | undefined {
     let CURVE = this.curve;
     let p = [CURVE.gf(), CURVE.gf(), CURVE.gf(), CURVE.gf()];
     let h = this.sha512.hash(sk);
@@ -996,7 +997,8 @@ export class Ed25519 implements Signature {
     CURVE.add(p, q);
     this.pack(t, p);
 
-    return Util.compare(sig.subarray(0, 32), t);
+    // constant-time: prevents timing oracle on signature verification (MAC forgery)
+    return constantTimeEqual(sig.subarray(0, 32), t);
   }
 
 
@@ -1027,7 +1029,7 @@ export class Ed25519 implements Signature {
           s  = Convert.hex2bin(v[i].s);
 
       // sign test
-      if (!Util.compare(this.sign(m, sk, pk), s)) return false;
+      if (!Util.compare(this.sign(m, sk, pk)!, s)) return false;
 
       // verify test
       if (!this.verify(m, pk, s)) return false;

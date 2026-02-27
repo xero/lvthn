@@ -58,8 +58,8 @@ export interface PublicKey {
 }
 
 export interface Signature {
-  generateKeys(seed: Uint8Array): { sk: Uint8Array, pk: Uint8Array };
-  sign(msg: Uint8Array, sk: Uint8Array, pk: Uint8Array): Uint8Array;
+  generateKeys(seed: Uint8Array): { sk: Uint8Array, pk: Uint8Array } | undefined;
+  sign(msg: Uint8Array, sk: Uint8Array, pk: Uint8Array): Uint8Array | undefined;
   verify(msg: Uint8Array, pk: Uint8Array, sig: Uint8Array): boolean;
   selftest(): boolean;
 }
@@ -182,7 +182,7 @@ export namespace Convert {
    * @param {String} base64 Base64/Base64url encoded string
    * @return {Uint8Array} Byte array or undefined if error
    */
-  export function base642bin(base64: string): Uint8Array {
+  export function base642bin(base64: string): Uint8Array | undefined {
     // remove base64url encoding
     base64 = base64.replace(/-/g, '+').replace(/_/g, '/').replace(/%3d/g, '=');
     // length must be multiple of 4
@@ -318,8 +318,8 @@ export namespace Convert {
    */
   export function bin2base64(bin: Uint8Array, url: boolean = false): string {
     if (typeof btoa !== 'undefined') {
-      return url ? btoa(String.fromCharCode.apply(null, bin)).replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '%3d') :
-                   btoa(String.fromCharCode.apply(null, bin));
+      return url ? btoa(String.fromCharCode.apply(null, Array.from(bin))).replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '%3d') :
+                   btoa(String.fromCharCode.apply(null, Array.from(bin)));
     }
     else {
       // btoa not available
@@ -343,26 +343,53 @@ export namespace Convert {
 
 
 ///////////////////////////////////////////////////////////////////////////////
+// C O N S T A N T - T I M E   E Q U A L I T Y
+
+/**
+ * Constant-time byte-array equality test.
+ *
+ * Compares two Uint8Arrays without short-circuiting on the first differing
+ * byte.  Ordinary === / Array.every / early-return loops reveal WHERE two
+ * values diverge via execution time, enabling byte-at-a-time MAC/HMAC
+ * forgery (e.g. Lucky Thirteen, Vaudenay's CBC padding oracle family).
+ *
+ * The XOR-accumulate idiom (`diff |= a[i] ^ b[i]`) is the standard
+ * constant-time pattern: every byte is visited regardless of content, and
+ * the result collapses to a single final comparison.
+ *
+ * Notes:
+ *   - The length check is NOT constant-time.  Length is non-secret in all
+ *     protocols where this is used (the expected tag length is public).
+ *   - Do NOT add timing padding or dummy operations — they are ineffective
+ *     in a JIT environment and create false confidence.
+ *
+ * @param a First byte array
+ * @param b Second byte array
+ * @returns true if and only if a and b have equal length and identical content
+ */
+export const constantTimeEqual = (a: Uint8Array, b: Uint8Array): boolean => {
+  if (a.length !== b.length) return false;
+  let diff = 0;
+  for (let i = 0; i < a.length; i++) diff |= a[i] ^ b[i];
+  return diff === 0;
+};
+
+
+///////////////////////////////////////////////////////////////////////////////
 // U T I L S
 
 export namespace Util {
 
   /**
-   * Time constant comparison of two arrays
+   * Time constant comparison of two arrays.
+   * Delegates to constantTimeEqual — see its JSDoc for the security rationale.
    * @param {Uint8Array} lh First array of bytes
    * @param {Uint8Array} rh Second array of bytes
    * @return {Boolean} True if the arrays are equal (length and content), false otherwise
    */
   export function compare(lh: Uint8Array, rh: Uint8Array): boolean {
-    if (lh.length !== rh.length) {
-      // abort
-      return false;
-    }
-    let i, d = 0, len = lh.length;
-    for (i = 0; i < len; i++) {
-      d |= lh[i] ^ rh[i];
-    }
-    return d === 0;
+    // constant-time: prevents timing oracle on byte-array equality checks
+    return constantTimeEqual(lh, rh);
   }
 
 

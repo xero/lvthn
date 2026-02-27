@@ -91,6 +91,8 @@ export class PBKDF2 {
     let key = Convert.str2bin(tv.key);
     let salt = Convert.str2bin(tv.salt);
     let mac = pbkdf2_sha256.hash(key, salt, Convert.hex2bin(tv.sha256).length);
+    // non-sensitive: selftest only — tv.sha256 is a hardcoded public test vector,
+    // no attacker-controlled input can influence either side of this comparison
     return Convert.bin2hex(mac) === tv.sha256;
   }
 }

@@ -54,7 +54,7 @@ export class Random {
   reseedCnt: number;
   lastReseed: number;
   active: boolean;
-  timer: ReturnType<typeof setInterval>;
+  timer!: ReturnType<typeof setInterval>;
 
 
   /**
@@ -235,7 +235,7 @@ export class Random {
    * @param {Number} length Number of bytes to generate
    * @return {Uint8Array} Byte array of crypto secure random values or undefined, if generator is not ready
    */
-  get(length: number): Uint8Array {
+  get(length: number): Uint8Array | undefined {
     if ((this.poolEntropy[0] >= this.RESEED_LIMIT) && (this.lastReseed + this.MILLISECONDS_PER_RESEED < (new Date()).valueOf())) {
       // we need to reseed
       this.reseedCnt = ++this.reseedCnt & 0xffffffff;
@@ -275,7 +275,7 @@ export class Random {
   private startCollectors(): void {
     if (this.active) { return; }
 
-    if (typeof window !== 'undefined' && window.addEventListener) {
+    if (typeof window !== 'undefined') {
       window.addEventListener('click', this.collectorClick.bind(this), true);
       window.addEventListener('keydown', this.collectorKeyboard.bind(this), true);
       window.addEventListener('scroll', this.collectorScroll.bind(this), true);
@@ -288,7 +288,7 @@ export class Random {
       window.addEventListener('touchend', this.collectorTouch.bind(this), true);
       window.addEventListener('load', this.collectorTime.bind(this), true);
     }
-    else if (typeof document !== 'undefined' && document.addEventListener) {
+    else if (typeof document !== 'undefined') {
       document.addEventListener('click', this.collectorClick.bind(this), true);
       document.addEventListener('keydown', this.collectorKeyboard.bind(this), true);
       document.addEventListener('mousemove', this.throttle(this.collectorMouse, 50, this), true);
@@ -307,7 +307,7 @@ export class Random {
   private stopCollectors(): void {
     if (!this.active) { return; }
 
-    if (typeof window !== 'undefined' && window.addEventListener) {
+    if (typeof window !== 'undefined') {
       window.removeEventListener('click', this.collectorClick, true);
       window.removeEventListener('keydown', this.collectorKeyboard, true);
       window.removeEventListener('scroll', this.collectorScroll, true);
@@ -320,7 +320,7 @@ export class Random {
       window.removeEventListener('touchend', this.collectorTouch, true);
       window.removeEventListener('load', this.collectorTime, true);
     }
-    else if (typeof document !== 'undefined' && document.addEventListener) {
+    else if (typeof document !== 'undefined') {
       document.removeEventListener('click', this.collectorClick, true);
       document.removeEventListener('keydown', this.collectorKeyboard, true);
       document.removeEventListener('mousemove', this.collectorMouse, true);
@@ -340,9 +340,10 @@ export class Random {
    * @param {Object} scope Optional scope, defaults to 'this'
    * @returns {Function} Resulting function
    */
-  private throttle(fn: Function, threshold: number, scope?: Object) {
-    let last, deferTimer;
-    return function () {
+  private throttle(fn: Function, threshold: number, scope?: object) {
+    let last: number | undefined;
+    let deferTimer: ReturnType<typeof setTimeout> | undefined;
+    return function (this: unknown) {
       let context = scope || this;
       let now = +new Date, args = arguments;
       if (last && now < last + threshold) {
@@ -372,14 +373,15 @@ export class Random {
   }
 
 
-  private collectorKeyboard(ev: any): void {
-    this.addRandomEvent(new Uint8Array([Convert.str2bin(ev.key || ev.char)[0] || ev.keyCode, (ev.timeStamp || 0) & 0xFF]), this.robin.kbd, 1);
+  private collectorKeyboard(ev: KeyboardEvent): void {
+    const char = (ev as KeyboardEvent & { char?: string }).char;
+    this.addRandomEvent(new Uint8Array([Convert.str2bin(ev.key || char || '')[0] || ev.keyCode, (ev.timeStamp || 0) & 0xFF]), this.robin.kbd, 1);
     this.robin.kbd = ++this.robin.kbd % this.NUM_POOLS;
     this.collectorTime();
   }
 
 
-  private collectorMouse(ev: any): void {
+  private collectorMouse(ev: MouseEvent): void {
     let x = ev.x || ev.clientX || ev.offsetX || 0,
         y = ev.y || ev.clientY || ev.offsetY || 0;
     this.addRandomEvent(new Uint8Array([x >>> 8, x & 0xff, y >>> 8, y & 0xff]), this.robin.mouse, 2);
@@ -387,7 +389,7 @@ export class Random {
   }
 
 
-  private collectorClick(ev: any): void {
+  private collectorClick(ev: MouseEvent): void {
     let x = ev.x || ev.clientX || ev.offsetX || 0,
         y = ev.y || ev.clientY || ev.offsetY || 0;
     this.addRandomEvent(new Uint8Array([x >>> 8, x & 0xff, y >>> 8, y & 0xff]), this.robin.mouse, 2);
@@ -396,7 +398,7 @@ export class Random {
   }
 
 
-  private collectorTouch(ev: any): void {
+  private collectorTouch(ev: TouchEvent): void {
     let touch = ev.touches[0] || ev.changedTouches[0];
     let x = touch.pageX || touch.clientX || 0,
         y = touch.pageY || touch.clientY || 0;
@@ -406,7 +408,7 @@ export class Random {
   }
 
 
-  private collectorScroll(ev: any): void {
+  private collectorScroll(_ev: Event): void {
     let x = window.pageXOffset || window.scrollX,
         y = window.pageYOffset || window.scrollY;
     this.addRandomEvent(new Uint8Array([x >>> 8, x & 0xff, y >>> 8, y & 0xff]), this.robin.scroll, 1);
@@ -414,15 +416,18 @@ export class Random {
   }
 
 
-  private collectorMotion(ev: any): void {
-    if (typeof ev !== 'undefined' && typeof ev.accelerationIncludingGravity !== 'undefined') {
-      let x = ev.accelerationIncludingGravity.x || 0,
-          y = ev.accelerationIncludingGravity.y || 0,
-          z = ev.accelerationIncludingGravity.z || 0;
+  private collectorMotion(ev: Event): void {
+    // ev may be DeviceMotionEvent (accelerationIncludingGravity) or DeviceOrientationEvent (alpha/beta/gamma)
+    const motion = ev as DeviceMotionEvent;
+    const orient = ev as DeviceOrientationEvent;
+    if (typeof ev !== 'undefined' && typeof motion.accelerationIncludingGravity !== 'undefined') {
+      let x = motion.accelerationIncludingGravity!.x || 0,
+          y = motion.accelerationIncludingGravity!.y || 0,
+          z = motion.accelerationIncludingGravity!.z || 0;
       this.addRandomEvent(new Uint8Array([(x * 100) & 0xff, (y * 100) & 0xff, (z * 100) & 0xff]), this.robin.motion, 3);
     }
-    if (typeof ev !== 'undefined' && typeof ev.alpha === 'number' && typeof ev.beta === 'number' && typeof ev.gamma === 'number') {
-      this.addRandomEvent(Convert.str2bin(ev.alpha.toString() + ev.beta.toString() + ev.gamma.toString()), this.robin.motion, 3);
+    if (typeof ev !== 'undefined' && typeof orient.alpha === 'number' && typeof orient.beta === 'number' && typeof orient.gamma === 'number') {
+      this.addRandomEvent(Convert.str2bin(orient.alpha.toString() + orient.beta.toString() + orient.gamma.toString()), this.robin.motion, 3);
     }
     if (typeof window !== 'undefined' && typeof window.orientation !== 'undefined') {
       this.addRandomEvent(Convert.str2bin(window.orientation.toString()), this.robin.motion, 1);
