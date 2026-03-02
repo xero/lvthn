@@ -2,6 +2,7 @@
  * PBKDF2 tests
  * ============
  * Ported from pbkdf2_test.ts (Mocha/Chai) to Vitest in Phase 8.
+ * Vectors: pbkdf2_vectors.ts (RFC 6070 SHA1 values; RFC 7914 §11 SHA256 values)
  */
 
 import { describe, it, expect } from 'vitest';

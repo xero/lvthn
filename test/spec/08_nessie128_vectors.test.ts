@@ -2,11 +2,12 @@
 // Full NESSIE Serpent-128-128 vector suite (1028 vectors)
 //
 // Vector source: Serpent-128-128.verified.test-vectors.txt
-// (from biham.cs.technion.ac.il/Reports/Serpent, also provided as
-// sources/miscCrypt-vectors.txt by the project maintainer)
+// NESSIE project: https://www.cosic.esat.kuleuven.be/nessie/testvectors/
+// (also mirrored at biham.cs.technion.ac.il/Reports/Serpent;
+//  also provided as sources/miscCrypt-vectors.txt by the project maintainer)
 //
 // The same byte-reversal preprocessing used for Serpent-256 applies here:
-//   - Key:        reverse all 16 bytes (NESSIE big-endian → mipher AES-submission)
+//   - Key:        reverse all 16 bytes (NESSIE big-endian → leviathan AES-submission)
 //   - Plaintext:  reverse all bytes
 //   - Ciphertext: reverse all bytes
 //

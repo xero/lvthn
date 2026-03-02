@@ -3,7 +3,7 @@
  * ============================
  *
  * Verifies correctness of the XOR-accumulate constant-time byte comparison
- * utility added in Phase 7 of the mipher audit.
+ * utility added in Phase 7 of the leviathan audit.
  *
  * Timing smoke test at the bottom logs durations but does NOT assert on them —
  * JavaScript timing is too noisy for reliable timing assertions; the test exists

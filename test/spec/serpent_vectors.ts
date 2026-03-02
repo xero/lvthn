@@ -4,7 +4,7 @@
 //
 // \license The MIT License (MIT)
 //
-// This file is part of the mipher crypto library.
+// This file is part of the leviathan crypto library.
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
 // in the Software without restriction, including without limitation the rights
@@ -24,9 +24,20 @@
 // THE SOFTWARE.
 //
 // \brief Serpent test vectors
-// Testvectors are taken from the full submission package http://www.cl.cam.ac.uk/~rja14/Papers/serpent.tar.gz
 //
 ///////////////////////////////////////////////////////////////////////////////
+
+/**
+ * Test vectors — Serpent (ECB, CBC, Monte Carlo)
+ *
+ * Source: Serpent AES candidate submission by Ross Anderson, Eli Biham,
+ *         Lars Knudsen
+ * URL: https://www.cl.cam.ac.uk/~rja14/serpent.html
+ * Date: June 1998 (AES submission)
+ * Coverage: ECB encrypt/decrypt, CBC PKCS7, Monte Carlo (10,000 inner rounds)
+ * Audit status: VERIFIED — these are the reference vectors from the original
+ *   AES competition submission, used to generate the floppy4/ txt files.
+ */
 
 export const vector = [
   { key: "00000000000000000000000000000000",

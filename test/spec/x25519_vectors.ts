@@ -4,7 +4,7 @@
 //
 // \license The MIT License (MIT)
 //
-// This file is part of the mipher crypto library.
+// This file is part of the leviathan crypto library.
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
 // in the Software without restriction, including without limitation the rights
@@ -26,6 +26,31 @@
 // \brief curve25519 and ed25519 test vectors
 //
 ///////////////////////////////////////////////////////////////////////////////
+
+/**
+ * Test vectors — Curve25519 (X25519) and Ed25519
+ *
+ * This file contains four named exports from distinct sources:
+ *
+ * generate_vector (3 entries)
+ *   Source: IETF draft-irtf-cfrg-curves-05 (precursor to RFC 7748)
+ *   URL: https://tools.ietf.org/html/draft-irtf-cfrg-curves-05
+ *   Audit status: UNVERIFIED — claim plausible, not independently confirmed.
+ *
+ * random_vector (~1800 entries, base64-encoded)
+ *   Source: tweetnacl-js project
+ *   URL: URL unknown
+ *   Audit status: UNVERIFIED
+ *
+ * original_vector (~3000 entries)
+ *   Source: original djb NaCl implementation (test-curve25519.c output)
+ *   URL: URL unknown
+ *   Audit status: UNVERIFIED
+ *
+ * ed25519_vector
+ *   Source: not stated in file — provenance unknown
+ *   Audit status: UNVERIFIED
+ */
 
 // test vectors taken from https://tools.ietf.org/html/draft-irtf-cfrg-curves-05
 // format is sk, pk

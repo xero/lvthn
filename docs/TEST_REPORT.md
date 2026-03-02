@@ -1,7 +1,10 @@
-# Serpent256 Test Report
+# leviathan Test Report
 
-> Generated: 2026-02-27
-> Phase 4 of the Serpent256 Cryptographic Audit
+> Generated: 2026-02-28 (updated from 2026-02-27)
+> Phases 4 through SHA-256 audit of the leviathan cryptographic library
+>
+> **Current state**: 4,864/4,864 tests pass across 23 test files.
+> See TESTING.md for the full vector provenance documentation.
 
 ---
 
@@ -14,7 +17,7 @@ Configuration (`vitest.config.ts`):
 - `pool: 'threads'`, `maxThreads: 1` — sequential execution to prevent IPC timeouts
 - `sequence.sequent: true` — test files run one at a time
 
-Test files: `test/spec/01_kat.test.ts` through `test/spec/04_monte_carlo_cbc.test.ts`
+Test files: `test/spec/01_kat.test.ts` through `test/spec/21_x25519.test.ts` (23 files)
 
 ---
 
@@ -28,8 +31,20 @@ Test files: `test/spec/01_kat.test.ts` through `test/spec/04_monte_carlo_cbc.tes
 
 ## Vector Sources
 
-All test vectors come from the official AES candidate submission by Ross Anderson et al.
-Source directory: `sources/first_release_c_and_java/serpent/floppy4/`
+Serpent test vectors come from two independent sources:
+
+1. The official AES candidate submission by Ross Anderson et al.
+   Source directory: `sources/first_release_c_and_java/serpent/floppy4/`
+
+2. The NESSIE project (see NESSIE section below).
+
+Additional primitives (SHA-256, HMAC, ChaCha20, etc.) are documented in TESTING.md.
+A SHA-256 implementation audit was performed on 2026-02-28 — see SHA256_AUDIT.md.
+
+---
+
+### AES Submission Vector Files
+
 
 | File | Description | Entries |
 |------|-------------|---------|
@@ -49,7 +64,7 @@ Source directory: `sources/first_release_c_and_java/serpent/floppy4/`
 | `Serpent-256-128.verified.test-vectors.txt` | 256-bit | Official NESSIE Serpent-256 vectors (8 sets) | 1284 |
 | `Serpent-128-128.verified.test-vectors.txt` | 128-bit | Official NESSIE Serpent-128 vectors (8 sets) — sourced from `miscCrypt-vectors.txt` | 1028 |
 
-Preprocessing applied: NESSIE uses standard big-endian byte order while mipher uses AES-submission
+Preprocessing applied: NESSIE uses standard big-endian byte order while leviathan uses AES-submission
 order (byte-reversed). The transformation is a full byte reversal of key, plaintext, and ciphertext.
 This is empirically verified and documented in `test/helpers/nessie.ts`.
 
@@ -89,7 +104,7 @@ File: `test/spec/02_intermediate.test.ts`
 |------|--------|
 | ecb_iv.txt: parses non-zero test cases | ✅ PASS |
 | ecb_iv.txt: final CT matches for all test cases (3 cases) | ✅ PASS |
-| §MANDATORY subkey schedule: SK[0..32] match mipher derived subkeys | ✅ PASS |
+| §MANDATORY subkey schedule: SK[0..32] match leviathan derived subkeys | ✅ PASS |
 | §MANDATORY: decrypt reverses all round states (round-trip) | ✅ PASS |
 | roundHook fires exactly 32 times per encrypt | ✅ PASS |
 
@@ -132,16 +147,16 @@ CT       = 929dd890dcc881c9a7d8b94b0aa0bad5
 ### What is verified
 
 The `§MANDATORY subkey schedule` test compares all 33 subkeys (SK[0]..SK[32]) from
-`ecb_iv.txt` against mipher's derived subkeys after `getSubkeys(key)`.
+`ecb_iv.txt` against leviathan's derived subkeys after `getSubkeys(key)`.
 
 **Parsing note**: `serpent-aux.c`'s `render()` function prints words from index `size-1`
-down to `0`, so `SK[i]` in the file is displayed as `X3|X2|X1|X0`. mipher stores
+down to `0`, so `SK[i]` in the file is displayed as `X3|X2|X1|X0`. leviathan stores
 `[X0, X1, X2, X3]` at `this.key[4*i .. 4*i+3]`. The comparison reverses the file's
 word order before comparing.
 
 ### Key schedule comparison (SK[0..4], KEYSIZE=128)
 
-| Subkey | File (X3|X2|X1|X0) | File reversed → [X0,X1,X2,X3] | mipher | Match |
+| Subkey | File (X3|X2|X1|X0) | File reversed → [X0,X1,X2,X3] | leviathan | Match |
 |--------|---------------------|-------------------------------|--------|-------|
 | SK[0]  | `d4d39167a8979cbaa3cba7cad57f32e7` | X0=`d57f32e7` X1=`a3cba7ca` X2=`a8979cba` X3=`d4d39167` | same | ✅ |
 | SK[1]  | `b8e69d0b2e8cda3b01e9e753557fdf82` | X0=`557fdf82` X1=`01e9e753` X2=`2e8cda3b` X3=`b8e69d0b` | same | ✅ |
@@ -154,18 +169,18 @@ All 33 subkeys (SK[0]..SK[32]) pass comparison. The test makes 33 assertions, al
 ### Why R[i] round-state comparison is not done
 
 `ecb_iv.txt` R[i] values are produced by the reference C implementation using **KHat**
-(SK^[], conventional subkeys via IP permutation), while mipher uses **K** (SK[],
+(SK^[], conventional subkeys via IP permutation), while leviathan uses **K** (SK[],
 bitslice subkeys loaded via reversed-byte LE format). Both implement the same abstract
 cipher and produce identical ciphertexts, but their per-round internal states differ.
 
 A direct R[i] comparison would require applying a complex bit-level transformation between
-mipher's representation and the reference's IP-based representation. Since the key schedule
+leviathan's representation and the reference's IP-based representation. Since the key schedule
 is verified via SK[], and the final ciphertext is verified for all three key sizes, this
 provides complete correctness assurance without the invalid R[i] comparison.
 
 ### Final CT verification (all 3 ecb_iv.txt test cases)
 
-| KEYSIZE | KEY (truncated) | PT | CT (expected) | mipher CT | Match |
+| KEYSIZE | KEY (truncated) | PT | CT (expected) | leviathan CT | Match |
 |---------|-----------------|-----|---------------|-----------|-------|
 | 128 | `00112233...ccddeeff` | `01234567...76543210` | `929dd890...0aa0bad5` | same | ✅ |
 | 192 | `00112233...ddeeff00` | `01234567...76543210` | (from file) | same | ✅ |
@@ -205,7 +220,7 @@ The corrected formula makes the chain continuity test pass for all 400 × 3 = 12
 
 ## Overall Verdict
 
-**PASS: mipher's Serpent implementation is cryptographically correct.**
+**PASS: leviathan's Serpent implementation is cryptographically correct.**
 
 Evidence:
 1. All 384 variable-text KAT vectors pass (ecb_vt.txt)
@@ -295,7 +310,10 @@ authoritative vector to validate the CBC wrapper's passthrough correctness.
 | Phase 3 | 07_nessie_vectors.test.ts | 2568 |
 | Phase 3 | 08_nessie128_vectors.test.ts | 2058 |
 | Phase 4 (CTR) | 09_ctr_vectors.test.ts | 17 |
-| **Total** | | **4705/4705 PASS** |
+| Phase 8 (Mocha→Vitest) | 10–21 (13 files) | 159 |
+| SHA-256 audit | 13_hmac.test.ts (RFC 4231 block) | +3 |
+| SHA-256 audit | 17_sha256.test.ts | +6 |
+| **Total** | | **4,864/4,864 PASS** |
 
 ---
 
@@ -316,12 +334,12 @@ AES-submission reference implementation.
 
 The Ross Anderson reference implementation (floppy1, AES submission format) was chosen as
 the ECB base — this is the same reference that produced the authoritative floppy4 test
-vectors. `floppy1` uses identical byte ordering to mipher, requiring no byte-order
+vectors. `floppy1` uses identical byte ordering to leviathan, requiring no byte-order
 conversion in the harness. This was confirmed by:
 
 ```
 blockEncrypt(all-zero 256-bit key, all-zero block) = 8910494504181950f98dd998a82b6749
-mipher.encrypt(all-zero 256-bit key, all-zero block) = 8910494504181950f98dd998a82b6749
+leviathan.encrypt(all-zero 256-bit key, all-zero block) = 8910494504181950f98dd998a82b6749
 ```
 
 **Portability note**: `typedef unsigned long WORD` in floppy1 is 8 bytes on arm64 macOS.
@@ -334,7 +352,7 @@ bytes 12-15 LSB).
 - Compiler: Apple clang version 17.0.0 (clang-1700.6.3.2), Target: arm64-apple-darwin25.3.0
 - Flags: `-Wall -O2 -Wno-unused-function -Wno-unused-but-set-variable`
 
-**CTR construction** (identical to `mipher/src/blockmode.ts` CTR class):
+**CTR construction** (identical to `leviathan/src/blockmode.ts` CTR class):
 1. Counter initialised as exact copy of IV bytes
 2. Keystream_b = `blockEncrypt(key, ctr_b)`
 3. ct[i] = keystream[i] XOR pt[i]
@@ -385,9 +403,9 @@ Both cross-checks pass. CTR construction is verified against the ECB corpus.
 
 ### Note on floppy1 vs sources/serpent.c
 
-CLAUDE.md §Step 2 specified `sources/serpent.c/` as the reference. However, `sources/serpent.c/serpent.c` uses NESSIE byte ordering (verified: it passes the NESSIE Set 8 v#0 vector directly without preprocessing), while mipher uses AES-submission byte ordering. Using `sources/serpent.c/` would have required full byte-reversal of key, counter, and output in the harness.
+CLAUDE.md §Step 2 specified `sources/serpent.c/` as the reference. However, `sources/serpent.c/serpent.c` uses NESSIE byte ordering (verified: it passes the NESSIE Set 8 v#0 vector directly without preprocessing), while leviathan uses AES-submission byte ordering. Using `sources/serpent.c/` would have required full byte-reversal of key, counter, and output in the harness.
 
-The user pointed out `sources/first_release_c_and_java/serpent/floppy1/` and `floppy2/` as alternatives. `floppy1` is the Ross Anderson original AES submission reference — the same code that produced floppy4's authoritative test vectors. It uses AES-submission byte ordering (matching mipher) with zero conversion needed. `floppy1` was selected.
+The user pointed out `sources/first_release_c_and_java/serpent/floppy1/` and `floppy2/` as alternatives. `floppy1` is the Ross Anderson original AES submission reference — the same code that produced floppy4's authoritative test vectors. It uses AES-submission byte ordering (matching leviathan) with zero conversion needed. `floppy1` was selected.
 
 ---
 
@@ -409,9 +427,9 @@ Two NESSIE vector sets were integrated:
 
 ### Byte-Order Preprocessing
 
-NESSIE vectors use standard big-endian byte order. mipher uses AES-submission byte order
+NESSIE vectors use standard big-endian byte order. leviathan uses AES-submission byte order
 (bytes are reversed before being packed into 32-bit little-endian words). The correct
-preprocessing for mipher is to **reverse all bytes** of the key, plaintext, and ciphertext.
+preprocessing for leviathan is to **reverse all bytes** of the key, plaintext, and ciphertext.
 
 This was determined empirically by testing all combinations of byte/word transformations
 against multiple known-good vectors. The discovery process and the discrepancy with the

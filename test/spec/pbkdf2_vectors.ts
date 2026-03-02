@@ -4,7 +4,7 @@
 //
 // \license The MIT License (MIT)
 //
-// This file is part of the mipher crypto library.
+// This file is part of the leviathan crypto library.
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
 // in the Software without restriction, including without limitation the rights
@@ -24,9 +24,25 @@
 // THE SOFTWARE.
 //
 // \brief PBKDF2 test vectors
-// TestVectors are taken from https://www.ietf.org/rfc/rfc6070.txt
 //
 ///////////////////////////////////////////////////////////////////////////////
+
+/**
+ * Test vectors — PBKDF2-HMAC-SHA1 and PBKDF2-HMAC-SHA256
+ *
+ * SHA1 values: RFC 6070 (PKCS #5 PBKDF2 test vectors)
+ * URL: https://www.rfc-editor.org/rfc/rfc6070
+ * Date: January 2011
+ *
+ * SHA256 values: RFC 7914 §11 (scrypt RFC, PBKDF2-SHA256 appendix)
+ * URL: https://www.rfc-editor.org/rfc/rfc7914
+ * Date: August 2016
+ * Note: The original header cited RFC 6070 for all vectors, but RFC 6070
+ *       only defines PBKDF2-HMAC-SHA1. The sha256 values match RFC 7914.
+ *
+ * Verification: sha256 TC1 confirmed via Python hashlib.pbkdf2_hmac.
+ * Audit status: PARTIAL — TC1 SHA256 verified; remainder UNVERIFIED.
+ */
 
 export const vector = [
   {

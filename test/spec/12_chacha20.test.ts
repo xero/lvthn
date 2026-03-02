@@ -2,6 +2,7 @@
  * ChaCha20 tests
  * ==============
  * Ported from chacha20_test.ts (Mocha/Chai) to Vitest in Phase 8.
+ * Vectors: chacha20_vectors.ts (IETF draft-agl-tls-chacha20poly1305-04 + RFC 7539)
  */
 
 import { describe, it, expect } from 'vitest';

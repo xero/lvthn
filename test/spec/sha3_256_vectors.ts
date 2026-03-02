@@ -4,7 +4,7 @@
 //
 // \license The MIT License (MIT)
 //
-// This file is part of the mipher crypto library.
+// This file is part of the leviathan crypto library.
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
 // in the Software without restriction, including without limitation the rights
@@ -24,9 +24,18 @@
 // THE SOFTWARE.
 //
 // \brief SHA3-256 test vectors
-// TestVectors are taken from NIST
 //
 ///////////////////////////////////////////////////////////////////////////////
+
+/**
+ * Test vectors — SHA3-256
+ *
+ * Source: NIST FIPS PUB 202, SHA-3 Standard
+ * URL: https://nvlpubs.nist.gov/nistpubs/FIPS/NIST.FIPS.202.pdf
+ * Date: August 2015
+ * Verification: empty-string value confirmed via Python hashlib.sha3_256.
+ * Audit status: PARTIAL — 1 entry verified; 255 entries UNVERIFIED.
+ */
 
 export const sha3_256_vector = [
   ["", "A7FFC6F8BF1ED76651C14756A061D662F580FF4DE43B49FA82D80A4B80F8434A"],

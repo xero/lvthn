@@ -3,9 +3,9 @@
 **Prepared by:** Claude Code (Anthropic)
 **Date:** 2026-02-27
 **Scope:** Algorithm specification, known attacks, and implementation analysis for the
-mipher TypeScript Serpent library.
+leviathan TypeScript Serpent library.
 **Sources:** Anderson/Biham/Knudsen original papers, Ross Anderson's AES submission
-reference implementation (floppy1/floppy4), audit notes from the mipher Serpent256
+reference implementation (floppy1/floppy4), audit notes from the leviathan Serpent256
 cryptographic audit.
 
 ---
@@ -509,19 +509,19 @@ considered cryptographically secure for all foreseeable use cases.
 
 ---
 
-## 5. Implementation Analysis: mipher
+## 5. Implementation Analysis: leviathan
 
 ### 5.1 Library Overview
 
-mipher is a TypeScript cryptographic library providing Serpent-128/192/256 block
+leviathan is a TypeScript cryptographic library providing Serpent-128/192/256 block
 cipher encryption with CBC, CTR, and PKCS7-padded mode wrappers. The library targets
 browser and Node.js environments.
 
-**Repository:** `sources/mipher/src/serpent.ts` (primary implementation)
+**Repository:** `sources/leviathan/src/serpent.ts` (primary implementation)
 
 ### 5.2 Bitslice Mapping
 
-mipher implements the full bitslice Serpent. The S-boxes are Boolean circuits
+leviathan implements the full bitslice Serpent. The S-boxes are Boolean circuits
 stored as closures in the `S[]` (forward) and `SI[]` (inverse) arrays. Each
 closure takes four 32-bit register values and mutates them in place using only
 `&` (AND), `|` (OR), `^` (XOR), and `~` (NOT) operations — no memory table
@@ -532,7 +532,7 @@ The linear transform `LK` (encrypt) and `KL` (decrypt) are implemented as direct
 
 ### 5.3 Key Loading and Endianness
 
-mipher uses **AES-submission byte ordering**, which is the format used by Ross
+leviathan uses **AES-submission byte ordering**, which is the format used by Ross
 Anderson's original AES candidate submission (floppy1/floppy4). This differs from
 NESSIE byte ordering (big-endian per-word).
 
@@ -560,13 +560,13 @@ format. A key of `[0x00, 0x01, ..., 0x0F]` is loaded as `[0x0F, 0x0E, ..., 0x00]
 before packing — this is intentional and matches the floppy1 reference.
 
 **Consequence for NESSIE vector compatibility:** NESSIE vectors use standard big-endian
-byte order. To use NESSIE vectors with mipher, a full byte-reversal of the key,
+byte order. To use NESSIE vectors with leviathan, a full byte-reversal of the key,
 plaintext, and ciphertext is required. See `test/helpers/nessie.ts` for the
 `reverseAll()` preprocessing helper.
 
 ### 5.4 Key Schedule Implementation
 
-After loading the padded key into `this.key[0..7]` (eight 32-bit words), mipher
+After loading the padded key into `this.key[0..7]` (eight 32-bit words), leviathan
 generates the 132-word prekey array using the standard recurrence:
 
 ```typescript
@@ -582,7 +582,7 @@ S_{(3−n) mod 8} sequence verified against the reference implementation.
 
 ### 5.5 Encryption Structure
 
-The mipher encryption loop implements the 32-round structure exactly:
+The leviathan encryption loop implements the 32-round structure exactly:
 
 ```
 K₀ → S₀ → LK₁ → S₁ → LK₂ → ... → LK₃₁ → S₇ → K₃₂
@@ -719,7 +719,7 @@ KEY[1] = KEY[0] XOR (CT[9999] || CT[9998] || ...)  # concatenate last two output
 
 The key update formula concatenates `CT[9999]` (most recent) followed by `CT[9998]`
 — last output first. This ordering is counterintuitive and was a source of a bug
-in the original mipher test code (since corrected): the old test used
+in the original leviathan test code (since corrected): the old test used
 `CT[9998] || CT[9999]` which produced wrong keys after each 10,000-iteration batch,
 causing all but the first batch to fail.
 
@@ -737,7 +737,7 @@ The `ecb_iv.txt` test file provides expected internal state at every checkpoint:
 - Final ciphertext
 - All 32 round outputs during decryption
 
-mipher exposes internal state via the `roundHook` callback added during the audit.
+leviathan exposes internal state via the `roundHook` callback added during the audit.
 The `02_intermediate.test.ts` test verifies:
 - All 33 bitslice subkeys match the `SK[i]` values from `ecb_iv.txt`
 - The final ciphertext matches
@@ -766,7 +766,7 @@ verification short of formal proof.
 
 ### 6.5 Overall Verdict
 
-The mipher Serpent implementation is **cryptographically correct**. It produces
+The leviathan Serpent implementation is **cryptographically correct**. It produces
 output identical to the Ross Anderson reference implementation (floppy1) and to
 the NESSIE reference for all 2312 independently-verified vector pairs. The Monte
 Carlo suites executed approximately 24 million encrypt/decrypt operations without

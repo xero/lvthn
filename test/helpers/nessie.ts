@@ -2,25 +2,25 @@
 // NESSIE vector preprocessing helper for Serpent-256
 //
 // The NESSIE official test vectors use a standard big-endian byte convention.
-// mipher's Serpent uses the AES submission byte convention, which reverses the
+// leviathan's Serpent uses the AES submission byte convention, which reverses the
 // byte array before packing into 32-bit words. As a result, the NESSIE and
 // AES submission formats are byte-order mirrors of each other:
 //
 //   NESSIE byte order: standard big-endian (byte 0 = MSB)
-//   mipher byte order: AES submission / reversed (byte 0 feeds the low-order
+//   leviathan byte order: AES submission / reversed (byte 0 feeds the low-order
 //                      position of the most-significant word)
 //
-// The correct mipher-specific preprocessing is simply to REVERSE ALL BYTES of
-// the key and of the plaintext before calling mipher, and to REVERSE ALL BYTES
-// of mipher's output to obtain the NESSIE ciphertext.
+// The correct leviathan-specific preprocessing is simply to REVERSE ALL BYTES of
+// the key and of the plaintext before calling leviathan, and to REVERSE ALL BYTES
+// of leviathan's output to obtain the NESSIE ciphertext.
 //
 // NOTE: The original developer's note at the NESSIE vector page describes
 // "reverse word order + byte-swap each key word" plus "byte-swap each PT word"
-// as preprocessing for a DIFFERENT reference C implementation (not mipher).
+// as preprocessing for a DIFFERENT reference C implementation (not leviathan).
 // That note's key preprocessing (word-reversal + per-word byte-swap) is
 // mathematically equivalent to a full byte reversal for 32-byte keys, which
 // is correct. However, the note's PT preprocessing ("byte-swap each word")
-// is WRONG for mipher — mipher requires a full byte reversal of the plaintext,
+// is WRONG for leviathan — leviathan requires a full byte reversal of the plaintext,
 // not just a per-word byte-swap. Verified empirically against multiple NESSIE
 // vector sets (Sets 1–4 and 8).
 //
@@ -41,7 +41,7 @@ function hexToBytes(hex: string): Uint8Array {
   return out;
 }
 
-/** Reverse all bytes in a buffer. This is the core transform for all NESSIE↔mipher conversion. */
+/** Reverse all bytes in a buffer. This is the core transform for all NESSIE↔leviathan conversion. */
 function reverseAll(bytes: Uint8Array): Uint8Array {
   const out = new Uint8Array(bytes.length);
   for (let i = 0; i < bytes.length; i++) {
@@ -55,11 +55,11 @@ function reverseAll(bytes: Uint8Array): Uint8Array {
 // ---------------------------------------------------------------------------
 
 /**
- * Prepare a 256-bit NESSIE key for use with mipher's Serpent.
+ * Prepare a 256-bit NESSIE key for use with leviathan's Serpent.
  *
- * NESSIE keys are in standard big-endian notation. mipher's Serpent init()
+ * NESSIE keys are in standard big-endian notation. leviathan's Serpent init()
  * reverses input bytes before packing into 32-bit LE words (AES submission
- * convention). To convert from NESSIE to mipher format, simply reverse the
+ * convention). To convert from NESSIE to leviathan format, simply reverse the
  * entire 32-byte key array.
  *
  * This is mathematically equivalent to the original developer's note
@@ -73,14 +73,14 @@ export const prepareNessieKey = (hexKey: string): Uint8Array => {
 };
 
 /**
- * Prepare a NESSIE 128-bit plaintext for use with mipher's Serpent.
+ * Prepare a NESSIE 128-bit plaintext for use with leviathan's Serpent.
  *
- * NESSIE plaintexts are in standard big-endian notation. mipher expects
+ * NESSIE plaintexts are in standard big-endian notation. leviathan expects
  * bytes in AES submission order (reversed). Reverse the entire 16-byte array.
  *
  * Note: the original developer's note says to "byte-swap each word in place",
  * but that instruction applies to a different reference implementation. For
- * mipher, a full byte reversal is required (empirically verified).
+ * leviathan, a full byte reversal is required (empirically verified).
  *
  * @param hexPT 32 hex characters
  */
@@ -89,8 +89,8 @@ export const prepareNessiePlaintext = (hexPT: string): Uint8Array => {
 };
 
 /**
- * Convert mipher's Serpent ciphertext output to NESSIE byte order for
- * comparison, or convert a NESSIE ciphertext to mipher input for decryption.
+ * Convert leviathan's Serpent ciphertext output to NESSIE byte order for
+ * comparison, or convert a NESSIE ciphertext to leviathan input for decryption.
  *
  * Same transformation as plaintext: reverse all bytes. Since reversal is its
  * own inverse, this function handles both directions.

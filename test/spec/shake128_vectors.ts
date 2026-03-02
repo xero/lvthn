@@ -4,7 +4,7 @@
 //
 // \license The MIT License (MIT)
 //
-// This file is part of the mipher crypto library.
+// This file is part of the leviathan crypto library.
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
 // in the Software without restriction, including without limitation the rights
@@ -23,10 +23,19 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 //
-// \brief SHAKE128-256 test vectors
-// TestVectors are taken from NIST
+// \brief SHAKE128-256 test vectors (256-bit output)
 //
 ///////////////////////////////////////////////////////////////////////////////
+
+/**
+ * Test vectors — SHAKE128 (256-bit output)
+ *
+ * Source: NIST FIPS PUB 202, SHA-3 Standard
+ * URL: https://nvlpubs.nist.gov/nistpubs/FIPS/NIST.FIPS.202.pdf
+ * Date: August 2015
+ * Verification: empty-string value confirmed via Python hashlib.shake_128.
+ * Audit status: PARTIAL — 1 entry verified; 255 entries UNVERIFIED.
+ */
 
 export const shake128_vector = [
   ["", "7F9C2BA4E88F827D616045507605853ED73B8093F6EFBC88EB1A6EACFA66EF26"],

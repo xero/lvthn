@@ -4,7 +4,7 @@
 //
 // \license The MIT License (MIT)
 //
-// This file is part of the mipher crypto library.
+// This file is part of the leviathan crypto library.
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
 // in the Software without restriction, including without limitation the rights
@@ -24,11 +24,23 @@
 // THE SOFTWARE.
 //
 // \brief chacha20 test vectors
-// TestVectors are taken from http://tools.ietf.org/html/draft-agl-tls-chacha20poly1305-04#page-11
-// and from https://tools.ietf.org/html/rfc7539
 // pt is an array with the same length as ct and all values are '0', if not given
 // ibc (Initial Block Counter) is 0 if not given
 ///////////////////////////////////////////////////////////////////////////////
+
+/**
+ * Test vectors — ChaCha20 (stream cipher)
+ *
+ * Source A: IETF draft-agl-tls-chacha20poly1305-04 (expired, 2013)
+ * URL: https://tools.ietf.org/html/draft-agl-tls-chacha20poly1305-04
+ *
+ * Source B: RFC 7539, ChaCha20 and Poly1305 for IETF Protocols (May 2015)
+ * URL: https://www.rfc-editor.org/rfc/rfc7539
+ * Note: RFC 7539 was obsoleted by RFC 8439 (June 2018). The ChaCha20
+ *   block function vectors are identical between RFC 7539 and RFC 8439.
+ *   New vectors should cite RFC 8439 instead.
+ * Audit status: UNVERIFIED — values not independently confirmed.
+ */
 
 
 export interface vector_type {

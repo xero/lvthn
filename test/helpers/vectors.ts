@@ -324,7 +324,7 @@ export function parseNessie(text: string): NessieVector[] {
 // ─────────────────────────────────────────────────────────────────────────────
 // NESSIE preprocessing (from CLAUDE.md project instructions):
 //
-// The NESSIE test vectors use big-endian word order; mipher uses the original
+// The NESSIE test vectors use big-endian word order; leviathan uses the original
 // AES submission format (little-endian words, reversed key). To convert:
 //
 //   1. Split the 256-bit key into 8 DWORDs and REVERSE their order
@@ -367,13 +367,13 @@ export function nessiePreprocessPlaintext(ptHex: string): Uint8Array {
   return out;
 }
 
-// Post-process mipher ciphertext back to NESSIE format for comparison
+// Post-process leviathan ciphertext back to NESSIE format for comparison
 export function nessiePostprocessCiphertext(ct: Uint8Array): string {
   // Reverse of plaintext preprocessing: byte-swap each word, then read as BE
   let hex = '';
   for (let i = 0; i < 4; i++) {
     const b0 = ct[i * 4 + 0], b1 = ct[i * 4 + 1], b2 = ct[i * 4 + 2], b3 = ct[i * 4 + 3];
-    // bytes are stored big-endian per mipher output convention
+    // bytes are stored big-endian per leviathan output convention
     hex += b0.toString(16).padStart(2, '0');
     hex += b1.toString(16).padStart(2, '0');
     hex += b2.toString(16).padStart(2, '0');
@@ -386,7 +386,7 @@ export function nessiePostprocessCiphertext(ct: Uint8Array): string {
 // IP/FP permutation helpers for ecb_iv.txt intermediate value comparison.
 //
 // R[i] in ecb_iv.txt is in CONVENTIONAL representation.
-// mipher's internal bitslice state after round i = IP(R[i]).
+// leviathan's internal bitslice state after round i = IP(R[i]).
 //
 // IPTable[p] = (p & 3) * 32 + (p >> 2)   (from serpent-tables.h)
 // FPTable[v] = 4 * (v & 31) + (v >> 5)   (IP inverse)
@@ -439,8 +439,8 @@ export function applyFP(w: number[]): number[] {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Key padding helper: pads a hex key string to the correct length for mipher
-// (mipher accepts 16, 24, or 32 byte keys for 128/192/256-bit keys)
+// Key padding helper: pads a hex key string to the correct length for leviathan
+// (leviathan accepts 16, 24, or 32 byte keys for 128/192/256-bit keys)
 // ─────────────────────────────────────────────────────────────────────────────
 
 export function padKey(keyHex: string, keysize: number): Uint8Array {

@@ -7,7 +7,7 @@
 // ## Why round-by-round R[i] comparison is not attempted
 //
 // The R[i] values in ecb_iv.txt are produced by the reference implementation
-// using KHat (SK^[], conventional subkeys). mipher uses SK[] (bitslice
+// using KHat (SK^[], conventional subkeys). leviathan uses SK[] (bitslice
 // subkeys) with a different internal state representation (reversed-byte LE
 // loading rather than the IP permutation). Both implementations compute the
 // same cipher, but their per-round internal states differ. Direct R[i]
@@ -16,10 +16,10 @@
 // ## What IS verified (§MANDATORY)
 //
 // 1. Final CT: for every ecb_iv.txt test case, encrypt(pt) == ct.
-// 2. Key schedule: SK[i] from ecb_iv.txt matches mipher's derived subkeys.
+// 2. Key schedule: SK[i] from ecb_iv.txt matches leviathan's derived subkeys.
 //    ecb_iv.txt SK[i] is rendered by serpent-aux.c render() which prints
 //    words from index 3 down to 0 (§serpent-aux.c render()).
-//    mipher stores [X0,X1,X2,X3] at this.key[4*i..4*i+3], so the file has
+//    leviathan stores [X0,X1,X2,X3] at this.key[4*i..4*i+3], so the file has
 //    them in reversed order: SK[i] = X3|X2|X1|X0.
 // 3. Decrypt round-trip: decrypt(ct) == pt for all test cases.
 //
@@ -66,10 +66,10 @@ describe('AES ecb_iv.txt (intermediate values)', () => {
   //
   // SK[i] in ecb_iv.txt is produced by render() which prints words from
   // index 3 down to 0: file hex = X3|X2|X1|X0.
-  // mipher stores [X0,X1,X2,X3] at this.key[4*i .. 4*i+3].
-  // To compare: reverse the 4 file words → [X0,X1,X2,X3] = mipher order.
+  // leviathan stores [X0,X1,X2,X3] at this.key[4*i .. 4*i+3].
+  // To compare: reverse the 4 file words → [X0,X1,X2,X3] = leviathan order.
 
-  it('§MANDATORY subkey schedule: SK[0..32] match mipher derived subkeys', () => {
+  it('§MANDATORY subkey schedule: SK[0..32] match leviathan derived subkeys', () => {
     const tc = ivCases.find(c => c.keysize === 128);
     expect(tc).toBeDefined();
     if (!tc) return;
@@ -86,11 +86,11 @@ describe('AES ecb_iv.txt (intermediate values)', () => {
       // File SK[i] = render() output = X3|X2|X1|X0 (4 words, rendered high→low)
       const fileWords = hex2words(tc.sk[i]); // [X3, X2, X1, X0]
 
-      // mipher: this.key[4*i .. 4*i+3] = [X0, X1, X2, X3]
-      const mipherX0 = subkeys[4 * i + 0] >>> 0;
-      const mipherX1 = subkeys[4 * i + 1] >>> 0;
-      const mipherX2 = subkeys[4 * i + 2] >>> 0;
-      const mipherX3 = subkeys[4 * i + 3] >>> 0;
+      // leviathan: this.key[4*i .. 4*i+3] = [X0, X1, X2, X3]
+      const leviathanX0 = subkeys[4 * i + 0] >>> 0;
+      const leviathanX1 = subkeys[4 * i + 1] >>> 0;
+      const leviathanX2 = subkeys[4 * i + 2] >>> 0;
+      const leviathanX3 = subkeys[4 * i + 3] >>> 0;
 
       // fileWords[0]=X3, fileWords[1]=X2, fileWords[2]=X1, fileWords[3]=X0
       const fileX0 = fileWords[3] >>> 0;
@@ -98,10 +98,10 @@ describe('AES ecb_iv.txt (intermediate values)', () => {
       const fileX2 = fileWords[1] >>> 0;
       const fileX3 = fileWords[0] >>> 0;
 
-      if (mipherX0 !== fileX0 || mipherX1 !== fileX1 ||
-          mipherX2 !== fileX2 || mipherX3 !== fileX3) {
+      if (leviathanX0 !== fileX0 || leviathanX1 !== fileX1 ||
+          leviathanX2 !== fileX2 || leviathanX3 !== fileX3) {
         failures.push(
-          `SK[${i}]: mipher=[${mipherX0.toString(16).padStart(8,'0')} ${mipherX1.toString(16).padStart(8,'0')} ${mipherX2.toString(16).padStart(8,'0')} ${mipherX3.toString(16).padStart(8,'0')}] ` +
+          `SK[${i}]: leviathan=[${leviathanX0.toString(16).padStart(8,'0')} ${leviathanX1.toString(16).padStart(8,'0')} ${leviathanX2.toString(16).padStart(8,'0')} ${leviathanX3.toString(16).padStart(8,'0')}] ` +
           `file=[${fileX0.toString(16).padStart(8,'0')} ${fileX1.toString(16).padStart(8,'0')} ${fileX2.toString(16).padStart(8,'0')} ${fileX3.toString(16).padStart(8,'0')}]`
         );
       }

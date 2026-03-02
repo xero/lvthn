@@ -59,4 +59,39 @@ describe('SHA256', () => {
       expect(sha.selftest()).toBe(true);
     });
   });
+
+  /**
+   * FIPS 180-4 §6.2 test vectors.
+   * Source: NIST FIPS PUB 180-4, Secure Hash Standard.
+   */
+  describe('FIPS 180-4 vectors', () => {
+    it('empty string', () => {
+      expect(Convert.bin2hex(sha.hash())).toBe(
+        'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855',
+      );
+    });
+
+    it('"abc"', () => {
+      expect(Convert.bin2hex(sha.hash(Convert.str2bin('abc')))).toBe(
+        'ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad',
+      );
+    });
+
+    it('"abcdbcdecdefdefgefghfghighijhijkijkljklmklmnlmnomnopnopq"', () => {
+      expect(Convert.bin2hex(sha.hash(Convert.str2bin('abcdbcdecdefdefgefghfghighijhijkijkljklmklmnlmnomnopnopq')))).toBe(
+        '248d6a61d20638b8e5c026930c3e6039a33ce45964ff2167f6ecedd419db06c1',
+      );
+    });
+
+    it('1,000,000 repetitions of "a"', () => {
+      sha.init();
+      const chunk = Convert.str2bin('a'.repeat(1000));
+      for (let i = 0; i < 1000; i++) {
+        sha.update(chunk);
+      }
+      expect(Convert.bin2hex(sha.digest())).toBe(
+        'cdc76e5c9914fb9281a1c7e284d73e67f1809a48a497200e046d39ccc7112cd0',
+      );
+    });
+  });
 });

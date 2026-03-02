@@ -2,6 +2,7 @@
  * SHA-3 / Keccak / SHAKE tests
  * ==============================
  * Ported from sha3_test.ts (Mocha/Chai) to Vitest in Phase 8.
+ * Vectors: sha3_256/512 and shake128/256 vector files (NIST FIPS 202 — PARTIAL)
  */
 
 import { describe, it, expect } from 'vitest';

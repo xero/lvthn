@@ -1,9 +1,9 @@
 {
-  "name": "mipher",
+  "name": "leviathan",
   "version": "1.1.5",
   "author": "Marco Paland",
   "license": "MIT",
-  "description": "Mobile Cipher crypto library",
+  "description": "Leviathan crypto library",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
@@ -21,7 +21,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/mpaland/mipher.git"
+    "url": "git+https://github.com/xero/leviathan.git"
   },
   "keywords": [
     "Crypto",
@@ -43,7 +43,10 @@
     "Fortuna"
   ],
   "bugs": {
-    "url": "https://github.com/mpaland/mipher/issues"
+    "url": "https://github.com/xero/leviathan/issues"
   },
-  "homepage": "https://github.com/mpaland/mipher#readme"
+  "homepage": "https://github.com/xero/leviathan#readme",
+  "dependencies": {
+    "argon2id": "^1.0.1"
+  }
 }

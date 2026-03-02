@@ -4,7 +4,7 @@
 //
 // \license The MIT License (MIT)
 //
-// This file is part of the mipher crypto library.
+// This file is part of the leviathan crypto library.
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
 // in the Software without restriction, including without limitation the rights
@@ -37,7 +37,22 @@ import { HMAC } from './hmac';
 
 /**
  * PBKDF2 class
- * @deprecated PBKDF2 has low memory hardness. Use Argon2id or scrypt for new key derivation.
+ *
+ * @deprecated Use {@link Argon2id} instead. PBKDF2 is CPU-bound only and
+ * vulnerable to GPU/ASIC parallel attacks. Argon2id is memory-hard and
+ * resistant to both GPU attacks and side-channel attacks.
+ *
+ * Migration:
+ * ```typescript
+ * // Before (PBKDF2):
+ * const key = new PBKDF2(new HMAC(new SHA256()), 210_000).hash(password, salt, 32);
+ *
+ * // After (Argon2id):
+ * const { key } = await new Argon2id().deriveKey(password, salt);
+ * ```
+ *
+ * PBKDF2 is retained for compatibility with existing encrypted data only.
+ * Do not use it for new implementations.
  */
 export class PBKDF2 {
 

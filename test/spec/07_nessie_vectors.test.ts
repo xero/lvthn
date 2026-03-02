@@ -2,10 +2,11 @@
 // Full NESSIE Serpent-256-128 vector suite (1284 vectors)
 //
 // Vector source: Serpent-256-128.verified.test-vectors.txt
-// (from biham.cs.technion.ac.il/Reports/Serpent)
+// NESSIE project: https://www.cosic.esat.kuleuven.be/nessie/testvectors/
+// (also mirrored at biham.cs.technion.ac.il/Reports/Serpent)
 //
 // Preprocessing applied per test/helpers/nessie.ts:
-//   - Key:        reverse all bytes (NESSIE big-endian → mipher AES-submission)
+//   - Key:        reverse all bytes (NESSIE big-endian → leviathan AES-submission)
 //   - Plaintext:  reverse all bytes
 //   - Ciphertext: reverse all bytes
 //

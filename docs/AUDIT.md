@@ -1,8 +1,8 @@
-# Serpent256 Cryptographic Audit — mipher Library
+# Serpent256 Cryptographic Audit — leviathan Library
 
 **Auditor:** Claude Code (Anthropic)
 **Date:** 2026-02-27
-**Target:** `sources/mipher/src/serpent.ts` (TypeScript)
+**Target:** `sources/leviathan/src/serpent.ts` (TypeScript)
 **Reference:** `sources/first_release_c_and_java/serpent/floppy1/` (ground truth)
 
 ---
@@ -17,7 +17,7 @@ The structural design is sound and matches the bitslice Serpent specification. T
 
 ### S-Boxes
 
-mipher implements S-boxes as Boolean logic (bitslice style). The 8 forward (`S[]`) and 8 inverse (`SI[]`) functions use only `&`, `|`, `^`, and `~` on 32-bit words — no table lookups.
+leviathan implements S-boxes as Boolean logic (bitslice style). The 8 forward (`S[]`) and 8 inverse (`SI[]`) functions use only `&`, `|`, `^`, and `~` on 32-bit words — no table lookups.
 
 **Cannot be verified by static inspection alone.** The Boolean expansions are equivalent to the 4-bit→4-bit lookup tables in `serpent-tables.h` only if every gate is transcribed correctly. Correctness will be established by the test-vector suite in Phase 4.
 
@@ -39,7 +39,7 @@ S7: { 1,13,15, 0,14, 8, 2,11, 7, 4,12,10, 9, 3, 5, 6 }
 
 `LK` (linear transform + key mixing for encryption) implements the 10-step Serpent bitslice LT exactly:
 
-| Step | Spec                        | mipher (`LK`)                         |
+| Step | Spec                        | leviathan (`LK`)                         |
 |------|-----------------------------|---------------------------------------|
 | 1    | X0 = X0 <<< 13              | `r[a] = rotW(r[a], 13)`               |
 | 2    | X2 = X2 <<< 3               | `r[c] = rotW(r[c], 3)`                |
@@ -74,11 +74,11 @@ The `&this.wMax` masks preserve 32-bit arithmetic in JavaScript. ✓
    w[i] = (w[i-8] ^ w[i-5] ^ w[i-3] ^ w[i-1] ^ φ ^ i) <<< 11
    φ = 0x9e3779b9
    ```
-   mipher's sliding-window implementation (5-element `r[]` + `this.key[j]`) produces the same recurrence. ✓
+   leviathan's sliding-window implementation (5-element `r[]` + `this.key[j]`) produces the same recurrence. ✓
 
 3. **Subkey extraction** (bitslice S-boxes applied to prekey groups):
    - S-box for subkey `Kn` = `S_{(3-n) mod 8}` (spec §3)
-   - mipher iterates from K32 down to K0 with `j` starting at 3:
+   - leviathan iterates from K32 down to K0 with `j` starting at 3:
      K32=S3, K31=S4, K30=S5, K29=S6, K28=S7, K27=S0, K26=S1, K25=S2, K24=S3… ✓
    - The KC array encodes S-box I/O slot permutations via modulo arithmetic.
 
@@ -102,18 +102,18 @@ Uses `SI[7-n%8]` inverse S-boxes in reverse order. ✓
 
 ### Byte Ordering
 
-mipher's comment: _"uses the ORIGINAL Serpent format from the AES submission"_. This convention:
+leviathan's comment: _"uses the ORIGINAL Serpent format from the AES submission"_. This convention:
 - **Input**: plaintext bytes reversed, then loaded as 4 little-endian uint32 words
 - **Key**: bytes reversed, repacked as 8 little-endian uint32 words
 - **Output**: 4 uint32 words emitted in reverse word order, big-endian byte order each
 
-This is NOT the NESSIE convention. The NESSIE test-vector preprocessing (word reversal + byte-swap) documented in the CLAUDE.md project instructions exists precisely because of this difference. The AES submission vectors in `floppy4/` should work directly with mipher's convention without transformation.
+This is NOT the NESSIE convention. The NESSIE test-vector preprocessing (word reversal + byte-swap) documented in the CLAUDE.md project instructions exists precisely because of this difference. The AES submission vectors in `floppy4/` should work directly with leviathan's convention without transformation.
 
 ---
 
 ### ⚠️ Known Issue: Magic Constants (EC / DC / KC)
 
-mipher encodes the bitslice S-box register slot assignments as magic integer constants:
+leviathan encodes the bitslice S-box register slot assignments as magic integer constants:
 ```typescript
 const EC = new Uint32Array([44255, 61867, 45034, ...]);  // encrypt
 const DC = new Uint32Array([44255, 60896, 28835, ...]);  // decrypt
@@ -148,7 +148,7 @@ for (let i = 0; i < bs - 1; i++) {
 ```
 This leaks the number of carry propagations in the counter, which correlates with the counter value. For CTR-mode stream ciphers this is a minor concern (counter value is not secret), but it is worth noting.
 
-**JavaScript engine caveat:** JavaScript's `|`, `&`, `^`, `~` operate on 32-bit signed integers; on modern V8/SpiderMonkey, these map to CPU integer instructions. However, the JS spec does not guarantee constant-time execution — JIT optimization or branch prediction could theoretically introduce timing variations. For a TypeScript/browser library this is an inherent limitation, not a mipher-specific bug.
+**JavaScript engine caveat:** JavaScript's `|`, `&`, `^`, `~` operate on 32-bit signed integers; on modern V8/SpiderMonkey, these map to CPU integer instructions. However, the JS spec does not guarantee constant-time execution — JIT optimization or branch prediction could theoretically introduce timing variations. For a TypeScript/browser library this is an inherent limitation, not a leviathan-specific bug.
 
 ### Known Cryptanalytic Attacks
 
@@ -289,18 +289,18 @@ As documented in `2011_ACISP_MLC.pdf` and `criptografia_mencao_honrosa.pdf`:
 
 ### What Was Found
 
-1. **Algorithm correctness**: mipher's Serpent implementation is cryptographically correct.
+1. **Algorithm correctness**: leviathan's Serpent implementation is cryptographically correct.
    It produces exactly the same ciphertext as the official AES candidate submission for all
    128/192/256-bit key sizes across every test vector class (KAT, S-box entry, Monte Carlo).
 
-2. **Internal representation differs from reference**: mipher uses reversed-byte LE loading
+2. **Internal representation differs from reference**: leviathan uses reversed-byte LE loading
    (input bytes reversed, then packed as little-endian 32-bit words) while the Serpent
    reference implementation uses the IP permutation. Both produce identical I/O. The
    per-round internal states differ but this is intentional and correct.
 
 3. **Monte Carlo key update formula was wrong in test code**: The AES submission uses
    `concat = CT_9999 || CT_9998` (last output first), not `CT_9998 || CT_9999`. This bug
-   was in the test's `mcKeyUpdate` helper, not in mipher itself.
+   was in the test's `mcKeyUpdate` helper, not in leviathan itself.
 
 4. **Dependencies were outdated**: `jasmine`, `jasmine-core`, `lite-server`, and TypeScript
    packages all replaced with a modern Vitest-based test stack.
@@ -380,9 +380,9 @@ The following files were added in Phase 3:
 | `test/vectors/Serpent-256-128.verified.test-vectors.txt` | NESSIE 256-bit vector file (pre-existing) |
 | `test/vectors/Serpent-128-128.verified.test-vectors.txt` | New: NESSIE 128-bit vector file (from `sources/miscCrypt-vectors.txt`) |
 
-Key technical finding: mipher uses AES-submission byte order (reversed from NESSIE big-endian).
+Key technical finding: leviathan uses AES-submission byte order (reversed from NESSIE big-endian).
 The developer's note on the NESSIE website describes preprocessing for a different C reference
-implementation. For mipher, the correct preprocessing is a full byte reversal of key, plaintext,
+implementation. For leviathan, the correct preprocessing is a full byte reversal of key, plaintext,
 and ciphertext (not a per-word byte-swap). Documented in `test/helpers/nessie.ts`.
 
 ### Phase 4 Changelog (CTR Mode Vector Generation)
@@ -391,12 +391,12 @@ The following files were added in Phase 4 to derive and validate Serpent-CTR tes
 
 | Component | Location | Change |
 |-----------|----------|--------|
-| `ctr_harness.c` | `sources/first_release_c_and_java/serpent/floppy1/` | New: CTR mode vector generation harness using floppy1 AES-submission reference ECB. Implements identical CTR construction to mipher. Requires `bytes_to_block`/`block_to_bytes` helpers due to 64-bit `unsigned long` (WORD) on arm64 macOS. |
+| `ctr_harness.c` | `sources/first_release_c_and_java/serpent/floppy1/` | New: CTR mode vector generation harness using floppy1 AES-submission reference ECB. Implements identical CTR construction to leviathan. Requires `bytes_to_block`/`block_to_bytes` helpers due to 64-bit `unsigned long` (WORD) on arm64 macOS. |
 | `Makefile` | `sources/first_release_c_and_java/serpent/floppy1/` | Added `ctr_harness` build target |
-| `test/spec/09_ctr_vectors.test.ts` | `sources/mipher/` | New: 17 CTR tests (5 encrypt, 5 decrypt, 3 block-boundary, 2 IV-independence, 2 ECB cross-corpus sanity) |
+| `test/spec/09_ctr_vectors.test.ts` | `sources/leviathan/` | New: 17 CTR tests (5 encrypt, 5 decrypt, 3 block-boundary, 2 IV-independence, 2 ECB cross-corpus sanity) |
 
 **Key decision — floppy1 over `sources/serpent/`**: `sources/serpent/serpent.c` uses NESSIE byte
-ordering; mipher uses AES-submission byte ordering. Using floppy1 (same reference as floppy4
+ordering; leviathan uses AES-submission byte ordering. Using floppy1 (same reference as floppy4
 vectors) avoids any byte-order conversion and provides a direct cross-check against the verified
 ECB corpus.
 

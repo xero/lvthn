@@ -2,6 +2,7 @@
  * Serpent tests
  * =============
  * Ported from serpent_test.ts (Mocha/Chai) to Vitest in Phase 8.
+ * Vectors: serpent_vectors.ts (AES submission, Ross Anderson et al.)
  *
  * The Monte Carlo tests (10 000 rounds each) are intentionally slow.
  * A per-test timeout of 60 s is set to avoid flaky failures on slower CI

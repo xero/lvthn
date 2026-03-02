@@ -2,6 +2,7 @@
  * SHA-512 tests
  * =============
  * Ported from sha512_test.ts (Mocha/Chai) to Vitest in Phase 8.
+ * Vectors: sha512_vectors.ts (sjcl project, ~513 entries — UNVERIFIED)
  */
 
 import { describe, it, expect } from 'vitest';

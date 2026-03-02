@@ -2,6 +2,8 @@
  * Curve25519 / Ed25519 tests
  * ===========================
  * Ported from x25519_test.ts (Mocha/Chai) to Vitest in Phase 8.
+ * Vectors: x25519_vectors.ts (4 sources: IETF draft, tweetnacl-js, djb NaCl,
+ *          unknown Ed25519 source — all UNVERIFIED)
  *
  * Changes from original:
  * - assert.ok(x) → expect(x).toBeTruthy()

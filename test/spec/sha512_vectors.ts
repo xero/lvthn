@@ -4,7 +4,7 @@
 //
 // \license The MIT License (MIT)
 //
-// This file is part of the mipher crypto library.
+// This file is part of the leviathan crypto library.
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
 // in the Software without restriction, including without limitation the rights
@@ -24,9 +24,20 @@
 // THE SOFTWARE.
 //
 // \brief SHA512 test vectors
-// Test vectors are taken from sjcl project
 //
 ///////////////////////////////////////////////////////////////////////////////
+
+/**
+ * Test vectors — SHA-512
+ *
+ * Source: Stanford Javascript Crypto Library (sjcl) project test vectors
+ * URL: URL unknown — attributed to sjcl (https://crypto.stanford.edu/sjcl/)
+ * Date: ~2015
+ * Note: Same pseudo-random ASCII string format as sha256_vectors.ts (same
+ *       Paland collection pattern). Values are correct SHA-512 (empty string
+ *       and "J" confirmed via Python hashlib); ultimate upstream unverified.
+ * Audit status: PARTIAL — 2 entries spot-checked; remainder UNVERIFIED.
+ */
 
 export const vector = [
   ["", "cf83e1357eefb8bdf1542850d66d8007d620e4050b5715dc83f4a921d36ce9ce47d0d13c5d85f2b0ff8318d2877eec2f63b931bd47417a81a538327af927da3e"],

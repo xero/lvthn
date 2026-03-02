@@ -3,7 +3,7 @@
  * ==========================================
  *
  * What these vectors are:
- *   Authoritative Serpent-CTR test vectors for the mipher TypeScript library.
+ *   Authoritative Serpent-CTR test vectors for the leviathan TypeScript library.
  *   No official Serpent-CTR vectors exist in any public corpus — CTR mode was
  *   not included in the original AES candidate submission — so these vectors
  *   were derived from an independent C harness built on the verified reference
@@ -21,18 +21,18 @@
  *
  * Why floppy1:
  *   Ross Anderson's floppy1 (AES submission format) uses the same byte ordering
- *   as mipher — bytes are reversed before packing as 32-bit LE words.  Using
- *   floppy1 means harness inputs and outputs can be compared to mipher directly
+ *   as leviathan — bytes are reversed before packing as 32-bit LE words.  Using
+ *   floppy1 means harness inputs and outputs can be compared to leviathan directly
  *   without any byte-order conversion.  floppy1 also produced floppy4's
  *   authoritative ECB/CBC vectors, so its ECB correctness was independently
  *   verified before the CTR harness was built on top of it.
  *
  *   Alternative (sources/serpent/serpent.c) was not used: it uses NESSIE byte
- *   ordering (big-endian per-word), incompatible with mipher without conversion.
+ *   ordering (big-endian per-word), incompatible with leviathan without conversion.
  *
  * Provenance chain:
  *   floppy1 reference ECB  -->  ctr_harness.c  -->  hardcoded vectors below
- *                                                -->  mipher test suite (here)
+ *                                                -->  leviathan test suite (here)
  *
  * Reference sources branch:
  *   The full floppy1 reference sources (including ctr_harness.c and this
