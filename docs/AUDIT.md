@@ -19,7 +19,7 @@ The structural design is sound and matches the bitslice Serpent specification. T
 
 leviathan implements S-boxes as Boolean logic (bitslice style). The 8 forward (`S[]`) and 8 inverse (`SI[]`) functions use only `&`, `|`, `^`, and `~` on 32-bit words — no table lookups.
 
-**Cannot be verified by static inspection alone.** The Boolean expansions are equivalent to the 4-bit→4-bit lookup tables in `serpent-tables.h` only if every gate is transcribed correctly. Correctness will be established by the test-vector suite in Phase 4.
+**Cannot be verified by static inspection alone.** The Boolean expansions are equivalent to the 4-bit→4-bit lookup tables in `serpent-tables.h` only if every gate is transcribed correctly. Correctness will be established by the test-vector suite.
 
 Reference S-box values (ground truth from `serpent-tables.h`):
 ```
@@ -56,7 +56,7 @@ All 10 steps match the spec. ✓
 
 The `&this.wMax` masks preserve 32-bit arithmetic in JavaScript. ✓
 
-**Inverse LT (`KL`)** uses the correct inverse rotations: ROTL(27)=undo-ROTL(5), ROTL(10)=undo-ROTL(22), ROTL(31)=undo-ROTL(1), ROTL(25)=undo-ROTL(7), ROTL(19)=undo-ROTL(13), ROTL(29)=undo-ROTL(3). Correctness confirmed by vector testing (Phase 4).
+**Inverse LT (`KL`)** uses the correct inverse rotations: ROTL(27)=undo-ROTL(5), ROTL(10)=undo-ROTL(22), ROTL(31)=undo-ROTL(1), ROTL(25)=undo-ROTL(7), ROTL(19)=undo-ROTL(13), ROTL(29)=undo-ROTL(3). Correctness confirmed by vector testing.
 
 ---
 
@@ -102,12 +102,12 @@ Uses `SI[7-n%8]` inverse S-boxes in reverse order. ✓
 
 ### Byte Ordering
 
-leviathan's comment: _"uses the ORIGINAL Serpent format from the AES submission"_. This convention:
+leviathan _uses the ORIGINAL Serpent format from the AES submission._ The convention is as follows:
 - **Input**: plaintext bytes reversed, then loaded as 4 little-endian uint32 words
 - **Key**: bytes reversed, repacked as 8 little-endian uint32 words
 - **Output**: 4 uint32 words emitted in reverse word order, big-endian byte order each
 
-This is NOT the NESSIE convention. The NESSIE test-vector preprocessing (word reversal + byte-swap) documented in the CLAUDE.md project instructions exists precisely because of this difference. The AES submission vectors in `floppy4/` should work directly with leviathan's convention without transformation.
+This is _NOT_ the NESSIE convention. The NESSIE test-vector preprocessing (word reversal + byte-swap) exists precisely because of this difference. The AES submission vectors in `floppy4/` should work directly with leviathan's convention without transformation.
 
 ---
 
@@ -122,7 +122,7 @@ const KC = new Uint32Array([7788, 63716, 84032, ...]);   // key schedule
 
 For each round `n`, the constant `m = EC[n]` determines which of the 5 working registers `r[0..4]` are used as S-box inputs/outputs via `m%5, m%7, m%11, m%13, m%17`. These values must produce all five distinct indices {0,1,2,3,4} in the correct permutation for each S-box call.
 
-**This cannot be verified by static inspection.** If any constant is wrong, the register shuffle will corrupt data silently without obvious structure. This is the highest-risk unverifiable component. The intermediate-value tests (`ecb_iv.txt`) are specifically designed to catch such errors round by round.
+**This cannot be verified by static inspection.** If any constant is wrong, the register shuffle will corrupt data silently without obvious structure. This is the highest-risk unverifiable component. The intermediate-value tests (`ecb_iv.txt`) are specifically designed to catch such errors round by round during testing.
 
 ---
 
