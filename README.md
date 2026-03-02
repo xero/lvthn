@@ -1,4 +1,4 @@
-![Leviathan logo](docs/logo.svg)
+<img src="https://github.com/xero/lvthn/raw/main/docs/logo.svg" alt="Leviathan logo" width="400">
 
 # leviathan — Serpent-256 cryptography for the web
 
