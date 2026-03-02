@@ -1,8 +1,28 @@
 ///////////////////////////////////////////////////////////////////////////////
+//                  ▄▄▄▄▄▄▄▄▄▄
+//           ▄████████████████████▄▄          this file is part of the
+//        ▄██████████████████████ ▀████▄      leviathan crypto library
+//      ▄█████████▀▀▀     ▀███████▄▄███████▌
+//     ▐████████▀   ▄▄▄▄     ▀████████▀██▀█▌  repository
+//     ████████      ███▀▀     ████▀  █▀ █▀   https://github.com/xero/leviathan
+//     ███████▌    ▀██▀         ███
+//      ███████   ▀███           ▀██ ▀█▄      author: xero (https://x-e.ro)
+//       ▀██████   ▄▄██            ▀▀  ██▄    license: mit
+//         ▀█████▄   ▄██▄             ▄▀▄▀
+//            ▀████▄   ▄██▄                   +---------------+
+//              ▐████   ▐███                  |   test spec   |
+//       ▄▄██████████    ▐███         ▄▄      +---------------+
+//    ▄██▀▀▀▀▀▀▀▀▀▀     ▄████      ▄██▀
+//  ▄▀  ▄▄█████████▄▄  ▀▀▀▀▀     ▄███         this file is provided completely
+//   ▄██████▀▀▀▀▀▀██████▄ ▀▄▄▄▄████▀          free, "as is", and without
+//  ████▀    ▄▄▄▄▄▄▄ ▀████▄ ▀█████▀  ▄▄▄▄     warranty of any kind. the author
+//  █████▄▄█████▀▀▀▀▀▀▄ ▀███▄      ▄████      assumes absolutely no liability
+//   ▀██████▀             ▀████▄▄▄████▀       for its {ab,mis,}use.
+//                           ▀█████▀▀
 // Full NESSIE Serpent-256-128 vector suite (1284 vectors)
 //
 // Vector source: Serpent-256-128.verified.test-vectors.txt
-// NESSIE project: https://www.cosic.esat.kuleuven.be/nessie/testvectors/
+// @see https://www.cosic.esat.kuleuven.be/nessie/testvectors/
 // (also mirrored at biham.cs.technion.ac.il/Reports/Serpent)
 //
 // Preprocessing applied per test/helpers/nessie.ts:

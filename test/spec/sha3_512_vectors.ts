@@ -1,41 +1,32 @@
 ///////////////////////////////////////////////////////////////////////////////
-// \author (c) Marco Paland (marco@paland.com)
-//             2015, PALANDesign Hannover, Germany
+//                  ▄▄▄▄▄▄▄▄▄▄
+//           ▄████████████████████▄▄          This file is part of the
+//        ▄██████████████████████ ▀████▄      leviathan crypto library
+//      ▄█████████▀▀▀     ▀███████▄▄███████▌
+//     ▐████████▀   ▄▄▄▄     ▀████████▀██▀█▌  Repository
+//     ████████      ███▀▀     ████▀  █▀ █▀   https://github.com/xero/leviathan
+//     ███████▌    ▀██▀         ███
+//      ███████   ▀███           ▀██ ▀█▄      Author: xero (https://x-e.ro)
+//       ▀██████   ▄▄██            ▀▀  ██▄    License: MIT
+//         ▀█████▄   ▄██▄             ▄▀▄▀
+//            ▀████▄   ▄██▄                   +---------------+
+//              ▐████   ▐███                  |   TEST SPEC   |
+//       ▄▄██████████    ▐███         ▄▄      +---------------+
+//    ▄██▀▀▀▀▀▀▀▀▀▀     ▄████      ▄██▀
+//  ▄▀  ▄▄█████████▄▄  ▀▀▀▀▀     ▄███         This file is provided completely
+//   ▄██████▀▀▀▀▀▀██████▄ ▀▄▄▄▄████▀          free, "as is", and without
+//  ████▀    ▄▄▄▄▄▄▄ ▀████▄ ▀█████▀  ▄▄▄▄     warranty of any kind. The author
+//  █████▄▄█████▀▀▀▀▀▀▄ ▀███▄      ▄████      assumes absolutely no liability
+//   ▀██████▀             ▀████▄▄▄████▀       for its {ab,mis,}use.
+//                           ▀█████▀▀
+// Test vectors — SHA3-512
 //
-// \license The MIT License (MIT)
-//
-// This file is part of the leviathan crypto library.
-// Permission is hereby granted, free of charge, to any person obtaining a copy
-// of this software and associated documentation files (the "Software"), to deal
-// in the Software without restriction, including without limitation the rights
-// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-// copies of the Software, and to permit persons to whom the Software is
-// furnished to do so, subject to the following conditions:
-//
-// The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
-//
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
-//
-// \brief SHA3-512 test vectors
-//
+// Source: NIST FIPS PUB 202, SHA-3 Standard
+// @see https://nvlpubs.nist.gov/nistpubs/FIPS/NIST.FIPS.202.pdf
+// Date: August 2015
+// Verification: empty-string value confirmed via Python hashlib.sha3_512.
+// Audit status: PARTIAL — 1 entry verified; 255 entries UNVERIFIED.
 ///////////////////////////////////////////////////////////////////////////////
-
-/**
- * Test vectors — SHA3-512
- *
- * Source: NIST FIPS PUB 202, SHA-3 Standard
- * URL: https://nvlpubs.nist.gov/nistpubs/FIPS/NIST.FIPS.202.pdf
- * Date: August 2015
- * Verification: empty-string value confirmed via Python hashlib.sha3_512.
- * Audit status: PARTIAL — 1 entry verified; 255 entries UNVERIFIED.
- */
 
 export const sha3_512_vector = [
   ["", "A69F73CCA23A9AC5C8B567DC185A756E97C982164FE25859E0D1DCC1475C80A615B2123AF1F5F94C11E3E9402C3AC558F500199D95B6D3E301758586281DCD26"],

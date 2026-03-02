@@ -1,56 +1,45 @@
 ///////////////////////////////////////////////////////////////////////////////
-// \author (c) Marco Paland (marco@paland.com)
-//             2015, PALANDesign Hannover, Germany
+//                  ▄▄▄▄▄▄▄▄▄▄
+//           ▄████████████████████▄▄          This file is part of the
+//        ▄██████████████████████ ▀████▄      leviathan crypto library
+//      ▄█████████▀▀▀     ▀███████▄▄███████▌
+//     ▐████████▀   ▄▄▄▄     ▀████████▀██▀█▌  Repository
+//     ████████      ███▀▀     ████▀  █▀ █▀   https://github.com/xero/leviathan
+//     ███████▌    ▀██▀         ███
+//      ███████   ▀███           ▀██ ▀█▄      Author: xero (https://x-e.ro)
+//       ▀██████   ▄▄██            ▀▀  ██▄    License: MIT
+//         ▀█████▄   ▄██▄             ▄▀▄▀
+//            ▀████▄   ▄██▄                   +---------------+
+//              ▐████   ▐███                  |   TEST SPEC   |
+//       ▄▄██████████    ▐███         ▄▄      +---------------+
+//    ▄██▀▀▀▀▀▀▀▀▀▀     ▄████      ▄██▀
+//  ▄▀  ▄▄█████████▄▄  ▀▀▀▀▀     ▄███         This file is provided completely
+//   ▄██████▀▀▀▀▀▀██████▄ ▀▄▄▄▄████▀          free, "as is", and without
+//  ████▀    ▄▄▄▄▄▄▄ ▀████▄ ▀█████▀  ▄▄▄▄     warranty of any kind. The author
+//  █████▄▄█████▀▀▀▀▀▀▄ ▀███▄      ▄████      assumes absolutely no liability
+//   ▀██████▀             ▀████▄▄▄████▀       for its {ab,mis,}use.
+//                           ▀█████▀▀
+// Test vectors — SHA-256
 //
-// \license The MIT License (MIT)
+// Source A (entries 1–3): NIST FIPS PUB 180-4, Secure Hash Standard
+// @see    https://nvlpubs.nist.gov/nistpubs/FIPS/NIST.FIPS.180-4.pdf
+// Date:   August 2015
+// Sections: Appendix B.1 (SHA-256 examples)
+// Added:  2026-02-28 SHA-256 audit session
+// Verification: confirmed via `echo -n "<input>" | openssl sha256` and
+//               Python hashlib.sha256 on all three values.
+// Audit status: VERIFIED
 //
-// This file is part of the leviathan crypto library.
-// Permission is hereby granted, free of charge, to any person obtaining a copy
-// of this software and associated documentation files (the "Software"), to deal
-// in the Software without restriction, including without limitation the rights
-// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-// copies of the Software, and to permit persons to whom the Software is
-// furnished to do so, subject to the following conditions:
-//
-// The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
-//
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
-//
-// \brief SHA256 test vectors
-//
+// Source B (entries 4–516): test vector collection, 2015
+// Note:   The original file header claimed "TestVectors are taken from NIST"
+//         but this is unverified. The 513 entries (entry 4 = empty string,
+//         entries 5–516 = pseudo-random ASCII strings of increasing length)
+//         came with the original file and have not been individually
+//         verified against NIST or any other authoritative publication.
+//         They serve as a regression suite only as they appear valid.
+// Audit status: PARTIAL — 4 entries spot-checked via Python hashlib;
+//         remaining 512 UNVERIFIED individually.
 ///////////////////////////////////////////////////////////////////////////////
-
-/**
- * Test vectors — SHA-256
- *
- * Source A (entries 1–3): NIST FIPS PUB 180-4, Secure Hash Standard
- * URL:    https://nvlpubs.nist.gov/nistpubs/FIPS/NIST.FIPS.180-4.pdf
- * Date:   August 2015
- * Sections: Appendix B.1 (SHA-256 examples)
- * Added:  2026-02-28 SHA-256 audit session
- * Verification: confirmed via `echo -n "<input>" | openssl sha256` and
- *               Python hashlib.sha256 on all three values.
- * Audit status: VERIFIED
- *
- * Source B (entries 4–516): Marco Paland test vector collection, 2015
- * URL:    URL unknown — attributed to PALANDesign Hannover, Germany
- * Date:   2015
- * Note:   The original file header claimed "TestVectors are taken from NIST"
- *         but this is unverified. The 513 entries (entry 4 = empty string,
- *         entries 5–516 = pseudo-random ASCII strings of increasing length)
- *         came with Paland's original file and have not been individually
- *         verified against NIST or any other authoritative publication.
- *         They serve as a regression suite only.
- * Audit status: PARTIAL — entry 4 ("") spot-checked via Python hashlib;
- *               entries 5–516 UNVERIFIED individually.
- */
 export const vector = [
   ['abc','ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad'],
   ['abcdbcdecdefdefgefghfghighijhijkijkljklmklmnlmnomnopnopq','248d6a61d20638b8e5c026930c3e6039a33ce45964ff2167f6ecedd419db06c1'],

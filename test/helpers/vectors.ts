@@ -1,6 +1,25 @@
 ///////////////////////////////////////////////////////////////////////////////
-// Shared test helpers for Serpent audit test suite
-// Phase 4 of the Serpent256 Cryptographic Audit
+//                  ▄▄▄▄▄▄▄▄▄▄
+//           ▄████████████████████▄▄          This file is part of the
+//        ▄██████████████████████ ▀████▄      leviathan crypto library
+//      ▄█████████▀▀▀     ▀███████▄▄███████▌
+//     ▐████████▀   ▄▄▄▄     ▀████████▀██▀█▌  Repository
+//     ████████      ███▀▀     ████▀  █▀ █▀   https://github.com/xero/leviathan
+//     ███████▌    ▀██▀         ███
+//      ███████   ▀███           ▀██ ▀█▄      Author: xero (https://x-e.ro)
+//       ▀██████   ▄▄██            ▀▀  ██▄    License: MIT
+//         ▀█████▄   ▄██▄             ▄▀▄▀
+//            ▀████▄   ▄██▄                   +-----------------+
+//              ▐████   ▐███                  |   block modes   |
+//       ▄▄██████████    ▐███         ▄▄      +-----------------+
+//    ▄██▀▀▀▀▀▀▀▀▀▀     ▄████      ▄██▀
+//  ▄▀  ▄▄█████████▄▄  ▀▀▀▀▀     ▄███         This file is provided completely
+//   ▄██████▀▀▀▀▀▀██████▄ ▀▄▄▄▄████▀          free, "as is", and without
+//  ████▀    ▄▄▄▄▄▄▄ ▀████▄ ▀█████▀  ▄▄▄▄     warranty of any kind. The author
+//  █████▄▄█████▀▀▀▀▀▀▄ ▀███▄      ▄████      assumes absolutely no liability
+//   ▀██████▀             ▀████▄▄▄████▀       for its {ab,mis,}use.
+//                           ▀█████▀▀
+// Shared test helpers for the cryptographic test suite
 ///////////////////////////////////////////////////////////////////////////////
 
 import { readFileSync } from 'fs';

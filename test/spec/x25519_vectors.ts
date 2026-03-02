@@ -1,56 +1,47 @@
 ///////////////////////////////////////////////////////////////////////////////
-// \author (c) Marco Paland (marco@paland.com)
-//             2015, PALANDesign Hannover, Germany
+//                  ▄▄▄▄▄▄▄▄▄▄
+//           ▄████████████████████▄▄          this file is part of the
+//        ▄██████████████████████ ▀████▄      leviathan crypto library
+//      ▄█████████▀▀▀     ▀███████▄▄███████▌
+//     ▐████████▀   ▄▄▄▄     ▀████████▀██▀█▌  repository
+//     ████████      ███▀▀     ████▀  █▀ █▀   https://github.com/xero/leviathan
+//     ███████▌    ▀██▀         ███
+//      ███████   ▀███           ▀██ ▀█▄      author: xero (https://x-e.ro)
+//       ▀██████   ▄▄██            ▀▀  ██▄    license: mit
+//         ▀█████▄   ▄██▄             ▄▀▄▀
+//            ▀████▄   ▄██▄                   +---------------+
+//              ▐████   ▐███                  |   test spec   |
+//       ▄▄██████████    ▐███         ▄▄      +---------------+
+//    ▄██▀▀▀▀▀▀▀▀▀▀     ▄████      ▄██▀
+//  ▄▀  ▄▄█████████▄▄  ▀▀▀▀▀     ▄███         this file is provided completely
+//   ▄██████▀▀▀▀▀▀██████▄ ▀▄▄▄▄████▀          free, "as is", and without
+//  ████▀    ▄▄▄▄▄▄▄ ▀████▄ ▀█████▀  ▄▄▄▄     warranty of any kind. the author
+//  █████▄▄█████▀▀▀▀▀▀▄ ▀███▄      ▄████      assumes absolutely no liability
+//   ▀██████▀             ▀████▄▄▄████▀       for its {ab,mis,}use.
+//                           ▀█████▀▀
+// Test vectors — Curve25519 (X25519) and Ed25519
 //
-// \license The MIT License (MIT)
+// This file contains four named exports from distinct sources:
 //
-// This file is part of the leviathan crypto library.
-// Permission is hereby granted, free of charge, to any person obtaining a copy
-// of this software and associated documentation files (the "Software"), to deal
-// in the Software without restriction, including without limitation the rights
-// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-// copies of the Software, and to permit persons to whom the Software is
-// furnished to do so, subject to the following conditions:
+// generate_vector (3 entries)
+//   Source: IETF draft-irtf-cfrg-curves-05 (precursor to RFC 7748)
+//   @see https://tools.ietf.org/html/draft-irtf-cfrg-curves-05
+//   Audit status: UNVERIFIED — claim plausible, not independently confirmed.
 //
-// The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// random_vector (~1800 entries, base64-encoded)
+//   Source: tweetnacl-js project
+//   URL: URL unknown
+//   Audit status: UNVERIFIED
 //
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// original_vector (~3000 entries)
+//   Source: original djb NaCl implementation (test-curve25519.c output)
+//   URL: URL unknown
+//   Audit status: UNVERIFIED
 //
-// \brief curve25519 and ed25519 test vectors
-//
+// ed25519_vector
+//   Source: not stated in file — provenance unknown
+//   Audit status: UNVERIFIED
 ///////////////////////////////////////////////////////////////////////////////
-
-/**
- * Test vectors — Curve25519 (X25519) and Ed25519
- *
- * This file contains four named exports from distinct sources:
- *
- * generate_vector (3 entries)
- *   Source: IETF draft-irtf-cfrg-curves-05 (precursor to RFC 7748)
- *   URL: https://tools.ietf.org/html/draft-irtf-cfrg-curves-05
- *   Audit status: UNVERIFIED — claim plausible, not independently confirmed.
- *
- * random_vector (~1800 entries, base64-encoded)
- *   Source: tweetnacl-js project
- *   URL: URL unknown
- *   Audit status: UNVERIFIED
- *
- * original_vector (~3000 entries)
- *   Source: original djb NaCl implementation (test-curve25519.c output)
- *   URL: URL unknown
- *   Audit status: UNVERIFIED
- *
- * ed25519_vector
- *   Source: not stated in file — provenance unknown
- *   Audit status: UNVERIFIED
- */
 
 // test vectors taken from https://tools.ietf.org/html/draft-irtf-cfrg-curves-05
 // format is sk, pk
@@ -62,7 +53,7 @@ export const generate_vector = [
   ["5dab087e624a8a4b79e17f8b83800ee66f3bb1292618b6fd1c2f8b27ff88e0eb",
    "de9edb7d7b7dc1b4d35b61c2ece435373f8343c85b78674dadfc7e146f882b4f"]
 ];
- 
+
 
 // random_vector is taken from the tweetnacl-js project
 // format is pk1, sk1, pk2, sk2, sk1 * pk2

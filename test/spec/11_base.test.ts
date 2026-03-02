@@ -1,14 +1,32 @@
-/**
- * Base utility tests (Convert, Util)
- * ====================================
- * Ported from base_test.ts (Mocha/Chai) to Vitest in Phase 8.
- *
- * Note: the original "explicit no atob/btoa" tests tried to null globals to
- * exercise the internal fallback path. In Node 18+ globalThis.atob/btoa are
- * non-configurable, so that technique no longer works. The tests are kept but
- * without the unreliable global manipulation — the conversion correctness is
- * what matters.
- */
+///////////////////////////////////////////////////////////////////////////////
+//                  ▄▄▄▄▄▄▄▄▄▄
+//           ▄████████████████████▄▄          this file is part of the
+//        ▄██████████████████████ ▀████▄      leviathan crypto library
+//      ▄█████████▀▀▀     ▀███████▄▄███████▌
+//     ▐████████▀   ▄▄▄▄     ▀████████▀██▀█▌  repository
+//     ████████      ███▀▀     ████▀  █▀ █▀   https://github.com/xero/leviathan
+//     ███████▌    ▀██▀         ███
+//      ███████   ▀███           ▀██ ▀█▄      author: xero (https://x-e.ro)
+//       ▀██████   ▄▄██            ▀▀  ██▄    license: mit
+//         ▀█████▄   ▄██▄             ▄▀▄▀
+//            ▀████▄   ▄██▄                   +---------------+
+//              ▐████   ▐███                  |   test spec   |
+//       ▄▄██████████    ▐███         ▄▄      +---------------+
+//    ▄██▀▀▀▀▀▀▀▀▀▀     ▄████      ▄██▀
+//  ▄▀  ▄▄█████████▄▄  ▀▀▀▀▀     ▄███         this file is provided completely
+//   ▄██████▀▀▀▀▀▀██████▄ ▀▄▄▄▄████▀          free, "as is", and without
+//  ████▀    ▄▄▄▄▄▄▄ ▀████▄ ▀█████▀  ▄▄▄▄     warranty of any kind. the author
+//  █████▄▄█████▀▀▀▀▀▀▄ ▀███▄      ▄████      assumes absolutely no liability
+//   ▀██████▀             ▀████▄▄▄████▀       for its {ab,mis,}use.
+//                           ▀█████▀▀
+// Base utility tests (Convert, Util)
+//
+// Note: the original "explicit no atob/btoa" tests tried to null globals to
+// exercise the internal fallback path. In Node 18+ globalThis.atob/btoa are
+// non-configurable, so that technique no longer works. The tests are kept but
+// without the unreliable global manipulation — the conversion correctness is
+// what matters.
+///////////////////////////////////////////////////////////////////////////////
 
 import { describe, it, expect } from 'vitest';
 import { Convert, Util } from '../../src/base';

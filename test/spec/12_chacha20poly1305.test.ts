@@ -1,15 +1,33 @@
-/**
- * Tests for ChaCha20-Poly1305 and XChaCha20-Poly1305 AEAD
- * =========================================================
- *
- * Phase 12 of the leviathan audit: AEAD construction.
- *
- * RFC 8439 test vectors (from chacha20poly1305_vectors.ts) are the
- * correctness oracle for the underlying primitives.
- *
- * Internal helpers are tested via underscore-prefixed exports from
- * blockmode.ts (not re-exported from index.ts — test-only).
- */
+///////////////////////////////////////////////////////////////////////////////
+//                  ▄▄▄▄▄▄▄▄▄▄
+//           ▄████████████████████▄▄          this file is part of the
+//        ▄██████████████████████ ▀████▄      leviathan crypto library
+//      ▄█████████▀▀▀     ▀███████▄▄███████▌
+//     ▐████████▀   ▄▄▄▄     ▀████████▀██▀█▌  repository
+//     ████████      ███▀▀     ████▀  █▀ █▀   https://github.com/xero/leviathan
+//     ███████▌    ▀██▀         ███
+//      ███████   ▀███           ▀██ ▀█▄      author: xero (https://x-e.ro)
+//       ▀██████   ▄▄██            ▀▀  ██▄    license: mit
+//         ▀█████▄   ▄██▄             ▄▀▄▀
+//            ▀████▄   ▄██▄                   +---------------+
+//              ▐████   ▐███                  |   test spec   |
+//       ▄▄██████████    ▐███         ▄▄      +---------------+
+//    ▄██▀▀▀▀▀▀▀▀▀▀     ▄████      ▄██▀
+//  ▄▀  ▄▄█████████▄▄  ▀▀▀▀▀     ▄███         this file is provided completely
+//   ▄██████▀▀▀▀▀▀██████▄ ▀▄▄▄▄████▀          free, "as is", and without
+//  ████▀    ▄▄▄▄▄▄▄ ▀████▄ ▀█████▀  ▄▄▄▄     warranty of any kind. the author
+//  █████▄▄█████▀▀▀▀▀▀▄ ▀███▄      ▄████      assumes absolutely no liability
+//   ▀██████▀             ▀████▄▄▄████▀       for its {ab,mis,}use.
+//                           ▀█████▀▀
+// Tests for ChaCha20-Poly1305 and XChaCha20-Poly1305 AEAD
+//
+// RFC 8439 test vectors (from chacha20poly1305_vectors.ts) are the
+// correctness oracle for the underlying primitives.
+// @see https://www.rfc-editor.org/rfc/rfc7539
+//
+// Internal helpers are tested via underscore-prefixed exports from
+// blockmode.ts (not re-exported from index.ts — test-only).
+///////////////////////////////////////////////////////////////////////////////
 
 import { describe, it, expect } from 'vitest';
 import { ChaCha20Poly1305, XChaCha20Poly1305 } from '../../src/index';

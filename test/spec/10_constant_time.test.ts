@@ -1,14 +1,32 @@
-/**
- * Tests for constantTimeEqual
- * ============================
- *
- * Verifies correctness of the XOR-accumulate constant-time byte comparison
- * utility added in Phase 7 of the leviathan audit.
- *
- * Timing smoke test at the bottom logs durations but does NOT assert on them —
- * JavaScript timing is too noisy for reliable timing assertions; the test exists
- * to make the timing behaviour visible in CI output.
- */
+///////////////////////////////////////////////////////////////////////////////
+//                  ▄▄▄▄▄▄▄▄▄▄
+//           ▄████████████████████▄▄          this file is part of the
+//        ▄██████████████████████ ▀████▄      leviathan crypto library
+//      ▄█████████▀▀▀     ▀███████▄▄███████▌
+//     ▐████████▀   ▄▄▄▄     ▀████████▀██▀█▌  repository
+//     ████████      ███▀▀     ████▀  █▀ █▀   https://github.com/xero/leviathan
+//     ███████▌    ▀██▀         ███
+//      ███████   ▀███           ▀██ ▀█▄      author: xero (https://x-e.ro)
+//       ▀██████   ▄▄██            ▀▀  ██▄    license: mit
+//         ▀█████▄   ▄██▄             ▄▀▄▀
+//            ▀████▄   ▄██▄                   +---------------+
+//              ▐████   ▐███                  |   test spec   |
+//       ▄▄██████████    ▐███         ▄▄      +---------------+
+//    ▄██▀▀▀▀▀▀▀▀▀▀     ▄████      ▄██▀
+//  ▄▀  ▄▄█████████▄▄  ▀▀▀▀▀     ▄███         this file is provided completely
+//   ▄██████▀▀▀▀▀▀██████▄ ▀▄▄▄▄████▀          free, "as is", and without
+//  ████▀    ▄▄▄▄▄▄▄ ▀████▄ ▀█████▀  ▄▄▄▄     warranty of any kind. the author
+//  █████▄▄█████▀▀▀▀▀▀▄ ▀███▄      ▄████      assumes absolutely no liability
+//   ▀██████▀             ▀████▄▄▄████▀       for its {ab,mis,}use.
+//                           ▀█████▀▀
+// Tests for constantTimeEqual
+// Verifies correctness of the XOR-accumulate constant-time byte comparison
+// utility added in Phase 7 of the leviathan audit.
+//
+// Timing smoke test at the bottom logs durations but does NOT assert on them.
+// JavaScript timing is too noisy for reliable timing assertions; the test exists
+// to make the timing behaviour visible in CI output.
+///////////////////////////////////////////////////////////////////////////////
 
 import { describe, it, expect } from 'vitest';
 import { constantTimeEqual } from '../../src/base';

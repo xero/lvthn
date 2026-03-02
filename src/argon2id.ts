@@ -1,25 +1,45 @@
-/**
- * Argon2id — memory-hard password hashing and key derivation.
- *
- * Thin TypeScript wrapper around the `argon2id` npm package (v1.0.1), a
- * WASM-based RFC 9106-compliant implementation by the OpenPGP.js team.
- *
- * The WASM binaries are embedded as base64 constants so this module works
- * in any environment that supports WebAssembly: Node.js, Bun (including
- * compiled standalone binaries), and browsers. No filesystem access is
- * required at runtime.
- *
- * Argon2id is the recommended replacement for the deprecated {@link PBKDF2}.
- * Unlike PBKDF2, which is purely CPU-bound, Argon2id forces each guess to
- * allocate and fill a large RAM buffer, making GPU/ASIC parallel attacks
- * orders of magnitude more expensive.
- *
- * @see https://www.rfc-editor.org/rfc/rfc9106  RFC 9106 — Argon2 (2021)
- * @see https://github.com/openpgpjs/argon2id  Package source (argon2id@1.0.1)
- */
+///////////////////////////////////////////////////////////////////////////////
+//                  ▄▄▄▄▄▄▄▄▄▄
+//           ▄████████████████████▄▄          This file is part of the
+//        ▄██████████████████████ ▀████▄      leviathan crypto library
+//      ▄█████████▀▀▀     ▀███████▄▄███████▌
+//     ▐████████▀   ▄▄▄▄     ▀████████▀██▀█▌  Repository
+//     ████████      ███▀▀     ████▀  █▀ █▀   https://github.com/xero/leviathan
+//     ███████▌    ▀██▀         ███
+//      ███████   ▀███           ▀██ ▀█▄      Author: xero (https://x-e.ro)
+//       ▀██████   ▄▄██            ▀▀  ██▄    License: MIT
+//         ▀█████▄   ▄██▄             ▄▀▄▀
+//            ▀████▄   ▄██▄                   +----------------+
+//              ▐████   ▐███                  |    ARGON2ID    |
+//       ▄▄██████████    ▐███         ▄▄      +----------------+
+//    ▄██▀▀▀▀▀▀▀▀▀▀     ▄████      ▄██▀
+//  ▄▀  ▄▄█████████▄▄  ▀▀▀▀▀     ▄███         This file is provided completely
+//   ▄██████▀▀▀▀▀▀██████▄ ▀▄▄▄▄████▀          free, "as is", and without
+//  ████▀    ▄▄▄▄▄▄▄ ▀████▄ ▀█████▀  ▄▄▄▄     warranty of any kind. The author
+//  █████▄▄█████▀▀▀▀▀▀▄ ▀███▄      ▄████      assumes absolutely no liability
+//   ▀██████▀             ▀████▄▄▄████▀       for its {ab,mis,}use.
+//                           ▀█████▀▀
+// Argon2id — memory-hard password hashing and key derivation.
+//
+// Argon2id is the recommended replacement for the deprecated {@link PBKDF2}.
+// Unlike PBKDF2, which is purely CPU-bound, Argon2id forces each guess to
+// allocate and fill a large RAM buffer, making GPU/ASIC parallel attacks
+// orders of magnitude more expensive.
+//
+// Thin TypeScript wrapper around the `argon2id` npm package (v1.0.1), a
+// WASM-based RFC 9106-compliant implementation by the OpenPGP.js team.
+//
+// The WASM binaries are embedded as base64 constants so this module works
+// in any environment that supports WebAssembly: Node.js, Bun (including
+// compiled standalone binaries), and browsers. No filesystem access is
+// required at runtime.
+//
+// @see https://www.rfc-editor.org/rfc/rfc9106  RFC 9106 — Argon2 (2021)
+// @see https://github.com/openpgpjs/argon2id  Package source (argon2id@1.0.1)
+///////////////////////////////////////////////////////////////////////////////
 
-import setupWasm, { type computeHash } from 'argon2id/lib/setup.js';
-import { constantTimeEqual } from './base';
+import setupWasm, { type computeHash } from "argon2id/lib/setup.js";
+import { constantTimeEqual } from "./base";
 
 // ---------------------------------------------------------------------------
 // Embedded WASM binaries — argon2id@1.0.1 dist/simd.wasm and dist/no-simd.wasm
@@ -180,7 +200,7 @@ const NO_SIMD_WASM_B64 =
 
 // Decode base64 to Uint8Array. Works in Node.js, Bun, and browsers (atob is global in all).
 function b64toBytes(b64: string): Uint8Array {
-  const binary = atob(b64.replace(/\s/g, ''));
+  const binary = atob(b64.replace(/\s/g, ""));
   const bytes = new Uint8Array(binary.length);
   for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
   return bytes;
@@ -196,8 +216,10 @@ let _hasher: computeHash | undefined;
 async function getHasher(): Promise<computeHash> {
   if (_hasher) return _hasher;
   _hasher = await setupWasm(
-    (importObject) => WebAssembly.instantiate(b64toBytes(SIMD_WASM_B64), importObject),
-    (importObject) => WebAssembly.instantiate(b64toBytes(NO_SIMD_WASM_B64), importObject),
+    (importObject) =>
+      WebAssembly.instantiate(b64toBytes(SIMD_WASM_B64), importObject),
+    (importObject) =>
+      WebAssembly.instantiate(b64toBytes(NO_SIMD_WASM_B64), importObject),
   );
   return _hasher;
 }
@@ -257,11 +279,11 @@ export interface Argon2idResult {
  * @see https://cheatsheetseries.owasp.org/cheatsheets/Password_Storage_Cheat_Sheet.html
  */
 export const ARGON2ID_INTERACTIVE: Argon2idParams = {
-  memoryCost:  19456,  // 19 MiB — OWASP Password Storage Cheat Sheet 2023 minimum
-  timeCost:    2,      // 2 passes over memory
-  parallelism: 1,      // 1 thread
-  saltLength:  32,     // 256-bit random salt
-  hashLength:  32,     // 256-bit output
+  memoryCost: 19456, // 19 MiB — OWASP Password Storage Cheat Sheet 2023 minimum
+  timeCost: 2, // 2 passes over memory
+  parallelism: 1, // 1 thread
+  saltLength: 32, // 256-bit random salt
+  hashLength: 32, // 256-bit output
 };
 
 /**
@@ -274,11 +296,11 @@ export const ARGON2ID_INTERACTIVE: Argon2idParams = {
  * @see https://cheatsheetseries.owasp.org/cheatsheets/Password_Storage_Cheat_Sheet.html
  */
 export const ARGON2ID_SENSITIVE: Argon2idParams = {
-  memoryCost:  65536,  // 64 MiB — OWASP Password Storage Cheat Sheet 2023 high-security
-  timeCost:    3,      // 3 passes over memory
-  parallelism: 4,      // 4 threads
-  saltLength:  32,     // 256-bit random salt
-  hashLength:  32,     // 256-bit output
+  memoryCost: 65536, // 64 MiB — OWASP Password Storage Cheat Sheet 2023 high-security
+  timeCost: 3, // 3 passes over memory
+  parallelism: 4, // 4 threads
+  saltLength: 32, // 256-bit random salt
+  hashLength: 32, // 256-bit output
 };
 
 /**
@@ -293,7 +315,7 @@ export const ARGON2ID_SENSITIVE: Argon2idParams = {
  */
 export const ARGON2ID_DERIVE: Argon2idParams = {
   ...ARGON2ID_INTERACTIVE,
-  hashLength: 32,  // always 256-bit for key derivation
+  hashLength: 32, // always 256-bit for key derivation
 };
 
 // ---------------------------------------------------------------------------
@@ -301,11 +323,24 @@ export const ARGON2ID_DERIVE: Argon2idParams = {
 // ---------------------------------------------------------------------------
 
 function validateParams(p: Argon2idParams): void {
-  if (p.memoryCost < 8)   throw new Error(`Argon2id: memoryCost must be >= 8 KiB (got ${p.memoryCost})`);
-  if (p.timeCost < 1)     throw new Error(`Argon2id: timeCost must be >= 1 (got ${p.timeCost})`);
-  if (p.parallelism < 1)  throw new Error(`Argon2id: parallelism must be >= 1 (got ${p.parallelism})`);
-  if (p.hashLength < 4)   throw new Error(`Argon2id: hashLength must be >= 4 bytes (got ${p.hashLength})`);
-  if (p.saltLength < 8)   throw new Error(`Argon2id: saltLength must be >= 8 bytes (got ${p.saltLength})`);
+  if (p.memoryCost < 8)
+    throw new Error(
+      `Argon2id: memoryCost must be >= 8 KiB (got ${p.memoryCost})`,
+    );
+  if (p.timeCost < 1)
+    throw new Error(`Argon2id: timeCost must be >= 1 (got ${p.timeCost})`);
+  if (p.parallelism < 1)
+    throw new Error(
+      `Argon2id: parallelism must be >= 1 (got ${p.parallelism})`,
+    );
+  if (p.hashLength < 4)
+    throw new Error(
+      `Argon2id: hashLength must be >= 4 bytes (got ${p.hashLength})`,
+    );
+  if (p.saltLength < 8)
+    throw new Error(
+      `Argon2id: saltLength must be >= 8 bytes (got ${p.saltLength})`,
+    );
 }
 
 // ---------------------------------------------------------------------------
@@ -345,7 +380,6 @@ function validateParams(p: Argon2idParams): void {
  * ```
  */
 export class Argon2id {
-
   /**
    * Hash a password or derive a key from a passphrase.
    *
@@ -370,24 +404,26 @@ export class Argon2id {
     validateParams(params);
 
     const passwordBytes =
-      typeof password === 'string'
+      typeof password === "string"
         ? new TextEncoder().encode(password)
         : password;
 
-    const saltBytes = salt ?? (() => {
-      const s = new Uint8Array(params.saltLength);
-      crypto.getRandomValues(s);
-      return s;
-    })();
+    const saltBytes =
+      salt ??
+      (() => {
+        const s = new Uint8Array(params.saltLength);
+        crypto.getRandomValues(s);
+        return s;
+      })();
 
     const hasher = await getHasher();
     const hash = hasher({
-      password:    passwordBytes,
-      salt:        saltBytes,
-      passes:      params.timeCost,
-      memorySize:  params.memoryCost,
+      password: passwordBytes,
+      salt: saltBytes,
+      passes: params.timeCost,
+      memorySize: params.memoryCost,
       parallelism: params.parallelism,
-      tagLength:   params.hashLength,
+      tagLength: params.hashLength,
     });
 
     return { hash, salt: saltBytes, params };
@@ -441,9 +477,11 @@ export class Argon2id {
     salt?: Uint8Array,
     keyLength: 16 | 24 | 32 = 32,
   ): Promise<{ key: Uint8Array; salt: Uint8Array }> {
-    const derivedParams: Argon2idParams = { ...ARGON2ID_DERIVE, hashLength: keyLength };
+    const derivedParams: Argon2idParams = {
+      ...ARGON2ID_DERIVE,
+      hashLength: keyLength,
+    };
     const result = await this.hash(passphrase, salt, derivedParams);
     return { key: result.hash, salt: result.salt };
   }
-
 }

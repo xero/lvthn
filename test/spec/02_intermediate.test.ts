@@ -1,5 +1,25 @@
 ///////////////////////////////////////////////////////////////////////////////
-// §MANDATORY: Intermediate Value Tests — ecb_iv.txt
+//                  ▄▄▄▄▄▄▄▄▄▄
+//           ▄████████████████████▄▄          this file is part of the
+//        ▄██████████████████████ ▀████▄      leviathan crypto library
+//      ▄█████████▀▀▀     ▀███████▄▄███████▌
+//     ▐████████▀   ▄▄▄▄     ▀████████▀██▀█▌  repository
+//     ████████      ███▀▀     ████▀  █▀ █▀   https://github.com/xero/leviathan
+//     ███████▌    ▀██▀         ███
+//      ███████   ▀███           ▀██ ▀█▄      author: xero (https://x-e.ro)
+//       ▀██████   ▄▄██            ▀▀  ██▄    license: mit
+//         ▀█████▄   ▄██▄             ▄▀▄▀
+//            ▀████▄   ▄██▄                   +---------------+
+//              ▐████   ▐███                  |   test spec   |
+//       ▄▄██████████    ▐███         ▄▄      +---------------+
+//    ▄██▀▀▀▀▀▀▀▀▀▀     ▄████      ▄██▀
+//  ▄▀  ▄▄█████████▄▄  ▀▀▀▀▀     ▄███         this file is provided completely
+//   ▄██████▀▀▀▀▀▀██████▄ ▀▄▄▄▄████▀          free, "as is", and without
+//  ████▀    ▄▄▄▄▄▄▄ ▀████▄ ▀█████▀  ▄▄▄▄     warranty of any kind. the author
+//  █████▄▄█████▀▀▀▀▀▀▄ ▀███▄      ▄████      assumes absolutely no liability
+//   ▀██████▀             ▀████▄▄▄████▀       for its {ab,mis,}use.
+//                           ▀█████▀▀
+//  Serpent256 Intermediate Value Tests — ecb_iv.txt
 //
 // These tests verify the key schedule and final cipher output using the
 // intermediate-value test vectors from ecb_iv.txt.
@@ -23,7 +43,7 @@
 //    them in reversed order: SK[i] = X3|X2|X1|X0.
 // 3. Decrypt round-trip: decrypt(ct) == pt for all test cases.
 //
-// §serpent-aux.c render(), §CLAUDE.md Phase 4
+// §serpent-aux.c render()
 ///////////////////////////////////////////////////////////////////////////////
 
 import { describe, it, expect, beforeAll } from 'vitest';

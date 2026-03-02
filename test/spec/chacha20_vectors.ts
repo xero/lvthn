@@ -1,47 +1,35 @@
 ///////////////////////////////////////////////////////////////////////////////
-// \author (c) Marco Paland (marco@paland.com)
-//             2015-2016, PALANDesign Hannover, Germany
+//                  ▄▄▄▄▄▄▄▄▄▄
+//           ▄████████████████████▄▄          this file is part of the
+//        ▄██████████████████████ ▀████▄      leviathan crypto library
+//      ▄█████████▀▀▀     ▀███████▄▄███████▌
+//     ▐████████▀   ▄▄▄▄     ▀████████▀██▀█▌  repository
+//     ████████      ███▀▀     ████▀  █▀ █▀   https://github.com/xero/leviathan
+//     ███████▌    ▀██▀         ███
+//      ███████   ▀███           ▀██ ▀█▄      author: xero (https://x-e.ro)
+//       ▀██████   ▄▄██            ▀▀  ██▄    license: mit
+//         ▀█████▄   ▄██▄             ▄▀▄▀
+//            ▀████▄   ▄██▄                   +---------------+
+//              ▐████   ▐███                  |   test spec   |
+//       ▄▄██████████    ▐███         ▄▄      +---------------+
+//    ▄██▀▀▀▀▀▀▀▀▀▀     ▄████      ▄██▀
+//  ▄▀  ▄▄█████████▄▄  ▀▀▀▀▀     ▄███         this file is provided completely
+//   ▄██████▀▀▀▀▀▀██████▄ ▀▄▄▄▄████▀          free, "as is", and without
+//  ████▀    ▄▄▄▄▄▄▄ ▀████▄ ▀█████▀  ▄▄▄▄     warranty of any kind. the author
+//  █████▄▄█████▀▀▀▀▀▀▄ ▀███▄      ▄████      assumes absolutely no liability
+//   ▀██████▀             ▀████▄▄▄████▀       for its {ab,mis,}use.
+//                           ▀█████▀▀
+// Test vectors — ChaCha20 (stream cipher)
+// Source A: IETF draft-agl-tls-chacha20poly1305-04 (expired, 2013)
+// @see https://tools.ietf.org/html/draft-agl-tls-chacha20poly1305-04
 //
-// \license The MIT License (MIT)
-//
-// This file is part of the leviathan crypto library.
-// Permission is hereby granted, free of charge, to any person obtaining a copy
-// of this software and associated documentation files (the "Software"), to deal
-// in the Software without restriction, including without limitation the rights
-// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-// copies of the Software, and to permit persons to whom the Software is
-// furnished to do so, subject to the following conditions:
-//
-// The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
-//
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
-//
-// \brief chacha20 test vectors
-// pt is an array with the same length as ct and all values are '0', if not given
-// ibc (Initial Block Counter) is 0 if not given
+// Source B: RFC 7539, ChaCha20 and Poly1305 for IETF Protocols (May 2015)
+// @see https://www.rfc-editor.org/rfc/rfc7539
+// Note: RFC 7539 was obsoleted by RFC 8439 (June 2018). The ChaCha20
+//   block function vectors are identical between RFC 7539 and RFC 8439.
+//   New vectors should cite RFC 8439 instead.
+// Audit status: UNVERIFIED — values not independently confirmed.
 ///////////////////////////////////////////////////////////////////////////////
-
-/**
- * Test vectors — ChaCha20 (stream cipher)
- *
- * Source A: IETF draft-agl-tls-chacha20poly1305-04 (expired, 2013)
- * URL: https://tools.ietf.org/html/draft-agl-tls-chacha20poly1305-04
- *
- * Source B: RFC 7539, ChaCha20 and Poly1305 for IETF Protocols (May 2015)
- * URL: https://www.rfc-editor.org/rfc/rfc7539
- * Note: RFC 7539 was obsoleted by RFC 8439 (June 2018). The ChaCha20
- *   block function vectors are identical between RFC 7539 and RFC 8439.
- *   New vectors should cite RFC 8439 instead.
- * Audit status: UNVERIFIED — values not independently confirmed.
- */
-
 
 export interface vector_type {
   key: string;

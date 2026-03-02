@@ -1,44 +1,35 @@
 ///////////////////////////////////////////////////////////////////////////////
-// \author (c) Marco Paland (marco@paland.com)
-//             2015, PALANDesign Hannover, Germany
+//                  ▄▄▄▄▄▄▄▄▄▄
+//           ▄████████████████████▄▄          This file is part of the
+//        ▄██████████████████████ ▀████▄      leviathan crypto library
+//      ▄█████████▀▀▀     ▀███████▄▄███████▌
+//     ▐████████▀   ▄▄▄▄     ▀████████▀██▀█▌  Repository
+//     ████████      ███▀▀     ████▀  █▀ █▀   https://github.com/xero/leviathan
+//     ███████▌    ▀██▀         ███
+//      ███████   ▀███           ▀██ ▀█▄      Author: xero (https://x-e.ro)
+//       ▀██████   ▄▄██            ▀▀  ██▄    License: MIT
+//         ▀█████▄   ▄██▄             ▄▀▄▀
+//            ▀████▄   ▄██▄                   +-----------------+
+//              ▐████   ▐███                  |   block modes   |
+//       ▄▄██████████    ▐███         ▄▄      +-----------------+
+//    ▄██▀▀▀▀▀▀▀▀▀▀     ▄████      ▄██▀
+//  ▄▀  ▄▄█████████▄▄  ▀▀▀▀▀     ▄███         This file is provided completely
+//   ▄██████▀▀▀▀▀▀██████▄ ▀▄▄▄▄████▀          free, "as is", and without
+//  ████▀    ▄▄▄▄▄▄▄ ▀████▄ ▀█████▀  ▄▄▄▄     warranty of any kind. The author
+//  █████▄▄█████▀▀▀▀▀▀▄ ▀███▄      ▄████      assumes absolutely no liability
+//   ▀██████▀             ▀████▄▄▄████▀       for its {ab,mis,}use.
+//                           ▀█████▀▀
+// Test vectors — HMAC-SHA1, HMAC-SHA256, HMAC-SHA512
 //
-// \license The MIT License (MIT)
-//
-// This file is part of the leviathan crypto library.
-// Permission is hereby granted, free of charge, to any person obtaining a copy
-// of this software and associated documentation files (the "Software"), to deal
-// in the Software without restriction, including without limitation the rights
-// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-// copies of the Software, and to permit persons to whom the Software is
-// furnished to do so, subject to the following conditions:
-//
-// The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
-//
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
-//
-// \brief HMAC test vectors
-//
+// Source: RFC 4868, Using HMAC-SHA-256/384/512 with IPsec
+// @see https://www.rfc-editor.org/rfc/rfc4868
+// Date: May 2007
+// Note: RFC 4868 references RFC 4231 for its HMAC-SHA256/512 test vectors.
+//       mac1 (SHA-1) fields are present but unused — HMAC_SHA1 was removed
+//       from the library when sha1.ts was dropped.
+// Verification: TC1 SHA256/SHA512 confirmed via Python hmac module.
+// Audit status: PARTIAL — TC1 verified; remaining 5 TCs UNVERIFIED.
 ///////////////////////////////////////////////////////////////////////////////
-
-/**
- * Test vectors — HMAC-SHA1, HMAC-SHA256, HMAC-SHA512
- *
- * Source: RFC 4868, Using HMAC-SHA-256/384/512 with IPsec
- * URL: https://www.rfc-editor.org/rfc/rfc4868
- * Date: May 2007
- * Note: RFC 4868 references RFC 4231 for its HMAC-SHA256/512 test vectors.
- *       mac1 (SHA-1) fields are present but unused — HMAC_SHA1 was removed
- *       from the library when sha1.ts was dropped.
- * Verification: TC1 SHA256/SHA512 confirmed via Python hmac module.
- * Audit status: PARTIAL — TC1 verified; remaining 5 TCs UNVERIFIED.
- */
 
 export const vector = [
   {

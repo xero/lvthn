@@ -1,48 +1,39 @@
 ///////////////////////////////////////////////////////////////////////////////
-// \author (c) Marco Paland (marco@paland.com)
-//             2015, PALANDesign Hannover, Germany
+//                  ▄▄▄▄▄▄▄▄▄▄
+//           ▄████████████████████▄▄          This file is part of the
+//        ▄██████████████████████ ▀████▄      leviathan crypto library
+//      ▄█████████▀▀▀     ▀███████▄▄███████▌
+//     ▐████████▀   ▄▄▄▄     ▀████████▀██▀█▌  Repository
+//     ████████      ███▀▀     ████▀  █▀ █▀   https://github.com/xero/leviathan
+//     ███████▌    ▀██▀         ███
+//      ███████   ▀███           ▀██ ▀█▄      Author: xero (https://x-e.ro)
+//       ▀██████   ▄▄██            ▀▀  ██▄    License: MIT
+//         ▀█████▄   ▄██▄             ▄▀▄▀
+//            ▀████▄   ▄██▄                   +---------------+
+//              ▐████   ▐███                  |   TEST SPEC   |
+//       ▄▄██████████    ▐███         ▄▄      +---------------+
+//    ▄██▀▀▀▀▀▀▀▀▀▀     ▄████      ▄██▀
+//  ▄▀  ▄▄█████████▄▄  ▀▀▀▀▀     ▄███         This file is provided completely
+//   ▄██████▀▀▀▀▀▀██████▄ ▀▄▄▄▄████▀          free, "as is", and without
+//  ████▀    ▄▄▄▄▄▄▄ ▀████▄ ▀█████▀  ▄▄▄▄     warranty of any kind. The author
+//  █████▄▄█████▀▀▀▀▀▀▄ ▀███▄      ▄████      assumes absolutely no liability
+//   ▀██████▀             ▀████▄▄▄████▀       for its {ab,mis,}use.
+//                           ▀█████▀▀
+// Test vectors — PBKDF2-HMAC-SHA1 and PBKDF2-HMAC-SHA256
 //
-// \license The MIT License (MIT)
+// SHA1 values: RFC 6070 (PKCS #5 PBKDF2 test vectors)
+// @see https://www.rfc-editor.org/rfc/rfc6070
+// Date: January 2011
 //
-// This file is part of the leviathan crypto library.
-// Permission is hereby granted, free of charge, to any person obtaining a copy
-// of this software and associated documentation files (the "Software"), to deal
-// in the Software without restriction, including without limitation the rights
-// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-// copies of the Software, and to permit persons to whom the Software is
-// furnished to do so, subject to the following conditions:
+// SHA256 values: RFC 7914 §11 (scrypt RFC, PBKDF2-SHA256 appendix)
+// @see https://www.rfc-editor.org/rfc/rfc7914
+// Date: August 2016
+// Note: The original header cited RFC 6070 for all vectors, but RFC 6070
+//       only defines PBKDF2-HMAC-SHA1. The sha256 values match RFC 7914.
 //
-// The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
-//
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
-//
-// \brief PBKDF2 test vectors
-//
+// Verification: sha256 TC1 confirmed via Python hashlib.pbkdf2_hmac.
+// Audit status: PARTIAL — TC1 SHA256 verified; remainder UNVERIFIED.
 ///////////////////////////////////////////////////////////////////////////////
-
-/**
- * Test vectors — PBKDF2-HMAC-SHA1 and PBKDF2-HMAC-SHA256
- *
- * SHA1 values: RFC 6070 (PKCS #5 PBKDF2 test vectors)
- * URL: https://www.rfc-editor.org/rfc/rfc6070
- * Date: January 2011
- *
- * SHA256 values: RFC 7914 §11 (scrypt RFC, PBKDF2-SHA256 appendix)
- * URL: https://www.rfc-editor.org/rfc/rfc7914
- * Date: August 2016
- * Note: The original header cited RFC 6070 for all vectors, but RFC 6070
- *       only defines PBKDF2-HMAC-SHA1. The sha256 values match RFC 7914.
- *
- * Verification: sha256 TC1 confirmed via Python hashlib.pbkdf2_hmac.
- * Audit status: PARTIAL — TC1 SHA256 verified; remainder UNVERIFIED.
- */
 
 export const vector = [
   {

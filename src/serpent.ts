@@ -1,35 +1,34 @@
 ///////////////////////////////////////////////////////////////////////////////
-// \author (c) Marco Paland (marco@paland.com)
-//             2015-2016, PALANDesign Hannover, Germany
+//                  ▄▄▄▄▄▄▄▄▄▄
+//           ▄████████████████████▄▄          This file is part of the
+//        ▄██████████████████████ ▀████▄      leviathan crypto library
+//      ▄█████████▀▀▀     ▀███████▄▄███████▌
+//     ▐████████▀   ▄▄▄▄     ▀████████▀██▀█▌  Repository
+//     ████████      ███▀▀     ████▀  █▀ █▀   https://github.com/xero/leviathan
+//     ███████▌    ▀██▀         ███
+//      ███████   ▀███           ▀██ ▀█▄      Author: xero (https://x-e.ro)
+//       ▀██████   ▄▄██            ▀▀  ██▄    License: MIT
+//         ▀█████▄   ▄██▄             ▄▀▄▀
+//            ▀████▄   ▄██▄                   +-------------------+
+//              ▐████   ▐███                  |    SERPENT 256    |
+//       ▄▄██████████    ▐███         ▄▄      +-------------------+
+//    ▄██▀▀▀▀▀▀▀▀▀▀     ▄████      ▄██▀
+//  ▄▀  ▄▄█████████▄▄  ▀▀▀▀▀     ▄███         This file is provided completely
+//   ▄██████▀▀▀▀▀▀██████▄ ▀▄▄▄▄████▀          free, "as is", and without
+//  ████▀    ▄▄▄▄▄▄▄ ▀████▄ ▀█████▀  ▄▄▄▄     warranty of any kind. The author
+//  █████▄▄█████▀▀▀▀▀▀▄ ▀███▄      ▄████      assumes absolutely no liability
+//   ▀██████▀             ▀████▄▄▄████▀       for its {ab,mis,}use.
+//                           ▀█████▀▀
 //
-// \license The MIT License (MIT)
-//
-// This file is part of the leviathan crypto library.
-// Permission is hereby granted, free of charge, to any person obtaining a copy
-// of this software and associated documentation files (the "Software"), to deal
-// in the Software without restriction, including without limitation the rights
-// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-// copies of the Software, and to permit persons to whom the Software is
-// furnished to do so, subject to the following conditions:
-//
-// The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
-//
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
-//
-// \brief Serpent blockcipher implementation
+// Serpent256 is a symmetric block cipher algorithm with a 128-bit block size
+// that supports 128, 192, or 256-bit key sizes. The cipher employs a 32-round
+// substitution–permutation network operating on a block of four 32-bit words.
+// Each round applies one of eight 4-bit to 4-bit S-boxes 32 times in parallel.
+// Its bit slicing technique maximizes parallelism and allows utilization of
+// the extensive cryptanalysis work performed on DES. This implementation
+// adheres to the format of the original AES submission and has been fully
+// tested against all vectors provided by the authors.
 // Specification can befound here: http://www.cl.cam.ac.uk/~rja14/serpent.html
-// There are discussions about the correct output format, because there are NESSIE
-// testvectors around. This implementation uses the ORIGINAL Serpent format from the
-// AES submission and is fully tested against the AES submission package vectors.
-//
-// Serpent has a block size of 128 bits and supports a key size of 128, 192 or 256 bits
 //
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -37,10 +36,6 @@ import { Convert, Util, Blockcipher, Streamcipher } from './base';
 import { CBC, CTR } from './blockmode';
 import { PKCS7 } from './padding';
 
-
-/**
- * Serpent class
- */
 /**
  * Optional debug callback invoked after each encryption round.
  * round: round index 0–31
@@ -50,6 +45,9 @@ import { PKCS7 } from './padding';
  */
 export type RoundHook = (round: number, state: number[], ec: number) => void;
 
+/**
+ * Serpent class
+ */
 export class Serpent implements Blockcipher {
   blockSize: number;
   key!: Uint32Array;
@@ -70,7 +68,7 @@ export class Serpent implements Blockcipher {
    * Serpent ctor
    */
   constructor() {
-    this.blockSize = 16;    // Serpent has a fixed block size of 16 bytes
+    this.blockSize = 16; // Serpent has a fixed block size of 16 bytes (4x4)
     this.wMax = 0xffffffff;
     this.roundHook = null;
 

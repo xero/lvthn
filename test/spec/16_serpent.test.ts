@@ -1,13 +1,30 @@
-/**
- * Serpent tests
- * =============
- * Ported from serpent_test.ts (Mocha/Chai) to Vitest in Phase 8.
- * Vectors: serpent_vectors.ts (AES submission, Ross Anderson et al.)
- *
- * The Monte Carlo tests (10 000 rounds each) are intentionally slow.
- * A per-test timeout of 60 s is set to avoid flaky failures on slower CI
- * machines; the overall suite timeout in vitest.config.ts covers the rest.
- */
+///////////////////////////////////////////////////////////////////////////////
+//                  ▄▄▄▄▄▄▄▄▄▄
+//           ▄████████████████████▄▄          This file is part of the
+//        ▄██████████████████████ ▀████▄      leviathan crypto library
+//      ▄█████████▀▀▀     ▀███████▄▄███████▌
+//     ▐████████▀   ▄▄▄▄     ▀████████▀██▀█▌  Repository
+//     ████████      ███▀▀     ████▀  █▀ █▀   https://github.com/xero/leviathan
+//     ███████▌    ▀██▀         ███
+//      ███████   ▀███           ▀██ ▀█▄      Author: xero (https://x-e.ro)
+//       ▀██████   ▄▄██            ▀▀  ██▄    License: MIT
+//         ▀█████▄   ▄██▄             ▄▀▄▀
+//            ▀████▄   ▄██▄                   +---------------+
+//              ▐████   ▐███                  |   TEST SPEC   |
+//       ▄▄██████████    ▐███         ▄▄      +---------------+
+//    ▄██▀▀▀▀▀▀▀▀▀▀     ▄████      ▄██▀
+//  ▄▀  ▄▄█████████▄▄  ▀▀▀▀▀     ▄███         This file is provided completely
+//   ▄██████▀▀▀▀▀▀██████▄ ▀▄▄▄▄████▀          free, "as is", and without
+//  ████▀    ▄▄▄▄▄▄▄ ▀████▄ ▀█████▀  ▄▄▄▄     warranty of any kind. The author
+//  █████▄▄█████▀▀▀▀▀▀▄ ▀███▄      ▄████      assumes absolutely no liability
+//   ▀██████▀             ▀████▄▄▄████▀       for its {ab,mis,}use.
+//                           ▀█████▀▀
+// Serpent256 Monte Carlo Tests
+// Vectors:  AES submission, Ross Anderson et al.
+// The Monte Carlo tests (10 000 rounds each) are intentionally slow.
+// A per-test timeout of 60 s is set to avoid flaky failures on slower CI
+// machines; the overall suite timeout in vitest.config.ts covers the rest.
+///////////////////////////////////////////////////////////////////////////////
 
 import { describe, it, expect } from 'vitest';
 import { Serpent, Serpent_CBC_PKCS7 } from '../../src/serpent';

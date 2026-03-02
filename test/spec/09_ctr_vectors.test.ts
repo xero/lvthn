@@ -1,51 +1,70 @@
-/**
- * CTR Mode Test Vectors — Provenance Header
- * ==========================================
- *
- * What these vectors are:
- *   Authoritative Serpent-CTR test vectors for the leviathan TypeScript library.
- *   No official Serpent-CTR vectors exist in any public corpus — CTR mode was
- *   not included in the original AES candidate submission — so these vectors
- *   were derived from an independent C harness built on the verified reference
- *   implementation.
- *
- * How they were generated:
- *   Harness: sources/first_release_c_and_java/serpent/floppy1/ctr_harness.c
- *   Date   : 2026-02-27
- *   Platform: darwin-arm64 (Apple Silicon), macOS Darwin 25.3.0
- *   Compiler: Apple clang 17.0.0 (clang-1700.6.3.2), target arm64-apple-darwin25.3.0
- *
- *   To regenerate: build and run ctr_harness per the README in floppy1/.
- *     cd sources/first_release_c_and_java/serpent/floppy1
- *     make ctr_harness && ./ctr_harness
- *
- * Why floppy1:
- *   Ross Anderson's floppy1 (AES submission format) uses the same byte ordering
- *   as leviathan — bytes are reversed before packing as 32-bit LE words.  Using
- *   floppy1 means harness inputs and outputs can be compared to leviathan directly
- *   without any byte-order conversion.  floppy1 also produced floppy4's
- *   authoritative ECB/CBC vectors, so its ECB correctness was independently
- *   verified before the CTR harness was built on top of it.
- *
- *   Alternative (sources/serpent/serpent.c) was not used: it uses NESSIE byte
- *   ordering (big-endian per-word), incompatible with leviathan without conversion.
- *
- * Provenance chain:
- *   floppy1 reference ECB  -->  ctr_harness.c  -->  hardcoded vectors below
- *                                                -->  leviathan test suite (here)
- *
- * Reference sources branch:
- *   The full floppy1 reference sources (including ctr_harness.c and this
- *   provenance documentation) live in the reference-sources branch.
- *
- * ECB cross-corpus sanity:
- *   The "Cross-corpus ECB sanity" tests at the bottom of this file tie these
- *   CTR vectors back to the independently-verified floppy4 AES submission ECB
- *   corpus.  For all-zero plaintext, CT block 0 = ECB_encrypt(key, IV), which
- *   is confirmed against floppy4 KAT values:
- *     Case A (128-bit zero key): block 0 = E9BA668276B81896D093A9E67AB12036
- *     Case B (256-bit zero key): block 0 = 8910494504181950F98DD998A82B6749
- */
+///////////////////////////////////////////////////////////////////////////////
+//                  ▄▄▄▄▄▄▄▄▄▄
+//           ▄████████████████████▄▄          this file is part of the
+//        ▄██████████████████████ ▀████▄      leviathan crypto library
+//      ▄█████████▀▀▀     ▀███████▄▄███████▌
+//     ▐████████▀   ▄▄▄▄     ▀████████▀██▀█▌  repository
+//     ████████      ███▀▀     ████▀  █▀ █▀   https://github.com/xero/leviathan
+//     ███████▌    ▀██▀         ███
+//      ███████   ▀███           ▀██ ▀█▄      author: xero (https://x-e.ro)
+//       ▀██████   ▄▄██            ▀▀  ██▄    license: mit
+//         ▀█████▄   ▄██▄             ▄▀▄▀
+//            ▀████▄   ▄██▄                   +---------------+
+//              ▐████   ▐███                  |   test spec   |
+//       ▄▄██████████    ▐███         ▄▄      +---------------+
+//    ▄██▀▀▀▀▀▀▀▀▀▀     ▄████      ▄██▀
+//  ▄▀  ▄▄█████████▄▄  ▀▀▀▀▀     ▄███         this file is provided completely
+//   ▄██████▀▀▀▀▀▀██████▄ ▀▄▄▄▄████▀          free, "as is", and without
+//  ████▀    ▄▄▄▄▄▄▄ ▀████▄ ▀█████▀  ▄▄▄▄     warranty of any kind. the author
+//  █████▄▄█████▀▀▀▀▀▀▄ ▀███▄      ▄████      assumes absolutely no liability
+//   ▀██████▀             ▀████▄▄▄████▀       for its {ab,mis,}use.
+//                           ▀█████▀▀
+// CTR Mode Test Vectors — Provenance
+//
+// What these vectors are:
+//   Authoritative Serpent-CTR test vectors for the leviathan TypeScript library.
+//   No official Serpent-CTR vectors exist in any public corpus — CTR mode was
+//   not included in the original AES candidate submission — so these vectors
+//   were derived from an independent C harness built on the verified reference
+//   implementation.
+//
+// How they were generated:
+//   Harness: sources/first_release_c_and_java/serpent/floppy1/ctr_harness.c
+//   Date   : 2026-02-27
+//   Platform: darwin-arm64 (Apple Silicon), macOS Darwin 25.3.0
+//   Compiler: Apple clang 17.0.0 (clang-1700.6.3.2), target arm64-apple-darwin25.3.0
+//
+//   To regenerate: build and run ctr_harness per the README in floppy1/.
+//     cd sources/first_release_c_and_java/serpent/floppy1
+//     make ctr_harness && ./ctr_harness
+//
+// Why floppy1:
+//   Ross Anderson's floppy1 (AES submission format) uses the same byte ordering
+//   as leviathan — bytes are reversed before packing as 32-bit LE words.  Using
+//   floppy1 means harness inputs and outputs can be compared to leviathan directly
+//   without any byte-order conversion.  floppy1 also produced floppy4's
+//   authoritative ECB/CBC vectors, so its ECB correctness was independently
+//   verified before the CTR harness was built on top of it.
+//
+//   Alternative (sources/serpent/serpent.c) was not used: it uses NESSIE byte
+//   ordering (big-endian per-word), incompatible with leviathan without conversion.
+//
+// Provenance chain:
+//   floppy1 reference ECB  -->  ctr_harness.c  -->  hardcoded vectors below
+//                                                -->  leviathan test suite (here)
+//
+// Reference sources branch:
+//   The full floppy1 reference sources (including ctr_harness.c and this
+//   provenance documentation) live in the reference-sources branch.
+//
+// ECB cross-corpus sanity:
+//   The "Cross-corpus ECB sanity" tests at the bottom of this file tie these
+//   CTR vectors back to the independently-verified floppy4 AES submission ECB
+//   corpus.  For all-zero plaintext, CT block 0 = ECB_encrypt(key, IV), which
+//   is confirmed against floppy4 KAT values:
+//     Case A (128-bit zero key): block 0 = E9BA668276B81896D093A9E67AB12036
+//     Case B (256-bit zero key): block 0 = 8910494504181950F98DD998A82B6749
+///////////////////////////////////////////////////////////////////////////////
 
 import { describe, it, expect } from 'vitest';
 import { Serpent_CTR } from '../../src/serpent';

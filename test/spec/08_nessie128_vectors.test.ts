@@ -1,10 +1,29 @@
 ///////////////////////////////////////////////////////////////////////////////
+//                  ▄▄▄▄▄▄▄▄▄▄
+//           ▄████████████████████▄▄          this file is part of the
+//        ▄██████████████████████ ▀████▄      leviathan crypto library
+//      ▄█████████▀▀▀     ▀███████▄▄███████▌
+//     ▐████████▀   ▄▄▄▄     ▀████████▀██▀█▌  repository
+//     ████████      ███▀▀     ████▀  █▀ █▀   https://github.com/xero/leviathan
+//     ███████▌    ▀██▀         ███
+//      ███████   ▀███           ▀██ ▀█▄      author: xero (https://x-e.ro)
+//       ▀██████   ▄▄██            ▀▀  ██▄    license: mit
+//         ▀█████▄   ▄██▄             ▄▀▄▀
+//            ▀████▄   ▄██▄                   +---------------+
+//              ▐████   ▐███                  |   test spec   |
+//       ▄▄██████████    ▐███         ▄▄      +---------------+
+//    ▄██▀▀▀▀▀▀▀▀▀▀     ▄████      ▄██▀
+//  ▄▀  ▄▄█████████▄▄  ▀▀▀▀▀     ▄███         this file is provided completely
+//   ▄██████▀▀▀▀▀▀██████▄ ▀▄▄▄▄████▀          free, "as is", and without
+//  ████▀    ▄▄▄▄▄▄▄ ▀████▄ ▀█████▀  ▄▄▄▄     warranty of any kind. the author
+//  █████▄▄█████▀▀▀▀▀▀▄ ▀███▄      ▄████      assumes absolutely no liability
+//   ▀██████▀             ▀████▄▄▄████▀       for its {ab,mis,}use.
+//                           ▀█████▀▀
 // Full NESSIE Serpent-128-128 vector suite (1028 vectors)
 //
 // Vector source: Serpent-128-128.verified.test-vectors.txt
-// NESSIE project: https://www.cosic.esat.kuleuven.be/nessie/testvectors/
-// (also mirrored at biham.cs.technion.ac.il/Reports/Serpent;
-//  also provided as sources/miscCrypt-vectors.txt by the project maintainer)
+// @see https://www.cosic.esat.kuleuven.be/nessie/testvectors/
+// mirror @see biham.cs.technion.ac.il/Reports/Serpent
 //
 // The same byte-reversal preprocessing used for Serpent-256 applies here:
 //   - Key:        reverse all 16 bytes (NESSIE big-endian → leviathan AES-submission)

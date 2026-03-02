@@ -1,15 +1,32 @@
-/**
- * Tests for Argon2id — memory-hard password hashing and key derivation
- * ======================================================================
- *
- * Phase 11 of the leviathan audit: Argon2id wrapper implementation.
- *
- * These tests are slower than other leviathan tests due to the memory-hard
- * computation — each hash allocates 19+ MiB and performs multiple passes.
- * The 10-minute test timeout in vitest.config.ts covers the full suite.
- *
- * Underlying package: argon2id@1.0.1 (OpenPGP.js team, RFC 9106 compliant)
- */
+///////////////////////////////////////////////////////////////////////////////
+//                  ▄▄▄▄▄▄▄▄▄▄
+//           ▄████████████████████▄▄          this file is part of the
+//        ▄██████████████████████ ▀████▄      leviathan crypto library
+//      ▄█████████▀▀▀     ▀███████▄▄███████▌
+//     ▐████████▀   ▄▄▄▄     ▀████████▀██▀█▌  repository
+//     ████████      ███▀▀     ████▀  █▀ █▀   https://github.com/xero/leviathan
+//     ███████▌    ▀██▀         ███
+//      ███████   ▀███           ▀██ ▀█▄      author: xero (https://x-e.ro)
+//       ▀██████   ▄▄██            ▀▀  ██▄    license: mit
+//         ▀█████▄   ▄██▄             ▄▀▄▀
+//            ▀████▄   ▄██▄                   +---------------+
+//              ▐████   ▐███                  |   test spec   |
+//       ▄▄██████████    ▐███         ▄▄      +---------------+
+//    ▄██▀▀▀▀▀▀▀▀▀▀     ▄████      ▄██▀
+//  ▄▀  ▄▄█████████▄▄  ▀▀▀▀▀     ▄███         this file is provided completely
+//   ▄██████▀▀▀▀▀▀██████▄ ▀▄▄▄▄████▀          free, "as is", and without
+//  ████▀    ▄▄▄▄▄▄▄ ▀████▄ ▀█████▀  ▄▄▄▄     warranty of any kind. the author
+//  █████▄▄█████▀▀▀▀▀▀▄ ▀███▄      ▄████      assumes absolutely no liability
+//   ▀██████▀             ▀████▄▄▄████▀       for its {ab,mis,}use.
+//                           ▀█████▀▀
+// Tests for Argon2id — memory-hard password hashing and key derivation
+//
+// These tests are slower than other leviathan tests due to the memory-hard
+// computation — each hash allocates 19+ MiB and performs multiple passes.
+// The 10-minute test timeout in vitest.config.ts covers the full suite.
+//
+// Underlying package: argon2id@1.0.1 (OpenPGP.js team, RFC 9106 compliant)
+///////////////////////////////////////////////////////////////////////////////
 
 import { describe, it, expect } from 'vitest';
 import {
