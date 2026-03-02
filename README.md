@@ -1,33 +1,4 @@
-```
-  ██     ▐█████ ██     ▐█▌  ▄█▌   ███▌ ▀███████▀▄██▌  ▐█▌  ███▌    ██▌   ▓▓
- ▐█▌     ▐█▌    ▓█     ▐█▌  ▓██  ▐█▌██    ▐█▌   ███   ██▌ ▐█▌██    ▓██   ██
- ██▌     ░███   ▐█▌    ██   ▀▀   ██ ▐█▌   ██   ▐██▌   █▓  ▓█ ▐█▌  ▐███▌  █▓
- ██      ██     ▐█▌    █▓  ▐██  ▐█▌  █▓   ██   ▐██▄▄ ▐█▌ ▐█▌  ██  ▐█▌██ ▐█▌
-▐█▌     ▐█▌      ██   ▐█▌  ██   ██   ██  ▐█▌   ██▀▀████▌ ██   ██  ██ ▐█▌▐█▌
-▐▒▌     ▐▒▌      ▐▒▌  ██   ▒█   ██▀▀▀██▌ ▐▒▌   ▒█    █▓░ ▒█▀▀▀██▌ ▒█  ██▐█
-█▓ ▄▄▓█ █▓ ▄▄▓█   ▓▓ ▐▓▌  ▐▓▌  ▐█▌   ▐▒▌ █▓   ▐▓▌   ▐▓█ ▐▓▌   ▐▒▌▐▓▌  ▐███
-▓██▀▀   ▓██▀▀      ▓█▓█   ▐█▌  ▐█▌   ▐▓▌ ▓█   ▐█▌   ▐█▓ ▐█▌   ▐▓▌▐█▌   ██▓
-                    ▓█         ▄▄▄▄▄▄▄▄▄▄            ▀▀        ▐█▌▌▌
-                        ▄████████████████████▄▄
-                     ▄██████████████████████ ▀████▄
-                   ▄█████████▀▀▀     ▀███████▄▄███████▌
-                  ▐████████▀   ▄▄▄▄     ▀████████▀██▀█▌
-                  ████████      ███▀▀     ████▀  █▀ █▀
-                  ███████▌    ▀██▀         ██
-                   ███████   ▀███           ▀██ ▀█▄
-                    ▀██████   ▄▄██            ▀▀  ██▄
-                      ▀█████▄   ▄██▄             ▄▀▄▀
-                         ▀████▄   ▄██▄
-                           ▐████   ▐███
-                    ▄▄██████████    ▐███         ▄▄
-                 ▄██▀▀▀▀▀▀▀▀▀▀     ▄████      ▄██▀
-               ▄▀  ▄▄█████████▄▄  ▀▀▀▀▀     ▄███
-                ▄██████▀▀▀▀▀▀██████▄ ▀▄▄▄▄████▀
-               ████▀    ▄▄▄▄▄▄▄ ▀████▄ ▀█████▀  ▄▄▄▄
-               █████▄▄█████▀▀▀▀▀▀▄ ▀███▄      ▄████
-               ▀██████▀             ▀████▄▄▄████▀
-                                       ▀█████▀
-```
+![Leviathan logo](docs/logo.svg)
 
 # leviathan — Serpent-256 cryptography for the web
 
@@ -39,8 +10,6 @@ margin by construction: 32 rounds versus AES's 10/12/14.
 For applications where throughput is not the primary constraint — file
 encryption, key derivation, secure storage — Serpent-256 is the stronger
 choice. leviathan makes it practical for web and server-side TypeScript.
-
----
 
 ## Why Serpent-256
 
@@ -79,8 +48,6 @@ introduce observable timing variation.
 **Key size.** 256-bit keys only in the default API — no 128 or 192-bit
 variants, no key-size downgrade risk.
 
----
-
 ## Correctness and verification
 
 Every primitive is verified against authoritative external vectors before
@@ -108,8 +75,6 @@ few iterations.
 Vector provenance, verification methodology, and audit history for every
 corpus are documented in [`docs/TESTING.md`](docs/TESTING.md).
 
----
-
 ## Security audit
 
 The implementation was audited against the published cryptanalytic
@@ -124,10 +89,8 @@ ECB/CBC Monte Carlo. The SHA-256 implementation was independently
 confirmed correct against FIPS 180-4 and RFC 4231 — implementation
 and test vectors both verified from primary sources.
 
-Full audit trail in [`docs/AUDIT.md`](docs/AUDIT.md) and
-[`docs/SHA256_AUDIT.md`](docs/SHA256_AUDIT.md).
-
----
+Full audit trail in [docs/AUDIT.md](docs/AUDIT.md) and
+[docs/SHA256_AUDIT.md](docs/SHA256_AUDIT.md).
 
 ## Design decisions
 
@@ -144,8 +107,6 @@ Full audit trail in [`docs/AUDIT.md`](docs/AUDIT.md) and
 - **Minimal dependencies** — zero runtime dependencies. Argon2id uses a
   single WASM package; everything else is pure TypeScript.
 
----
-
 ## Supported algorithms
 
 **Symmetric encryption**
@@ -155,8 +116,8 @@ Full audit trail in [`docs/AUDIT.md`](docs/AUDIT.md) and
 - XChaCha20-Poly1305 — AEAD (192-bit nonce; recommended for random nonces)
 
 **Block modes**
-- CTR, CBC (ECB removed)
-- PKCS7 padding (PKCS5 and zero padding removed)
+- CTR, CBC (ECB absent, only used in Monte Carlo validations)
+- PKCS7 padding (PKCS5 and zero padding, absent by design)
 
 **Hashing**
 - SHA-256, SHA-512
@@ -177,13 +138,6 @@ Full audit trail in [`docs/AUDIT.md`](docs/AUDIT.md) and
 - Format converters: hex, base64, base64url, UTF-8, binary
 - UUID *(deprecated — use `crypto.randomUUID()`)*
 
----
-
-## License
-
-MIT
-
-
 
 ## Quick start
 
@@ -203,10 +157,9 @@ const recovered  = cipher.decrypt(key, ciphertext, iv);
 console.log(Convert.bin2str(recovered)); // "Hello, leviathan!"
 ```
 
-
 ## Documentation
 
-Full API documentation is in [`docs/`](./docs/index.md):
+Full API documentation is in [docs/](./docs/index.md):
 
 | Module | Description |
 |--------|-------------|
@@ -231,8 +184,13 @@ Full API documentation is in [`docs/`](./docs/index.md):
 leviathan uses Vitest. To run all tests:
 
 ```bash
-npm test
+# with bun
+bun run test
+# with npm
+npm run test
 ```
+
+See [docs/TESTING.md](docs/TESTING.md) for more details.
 
 
 ## Contributing
@@ -245,7 +203,7 @@ npm test
 6. Create a new pull request
 
 
-## Security notes
+## Security Notices
 
 **Constant-time comparisons**: All security-sensitive byte comparisons (signature
 verification, MAC tag checking) use `constantTimeEqual`, an XOR-accumulate function
@@ -257,9 +215,8 @@ callers that need to compare keys, tags, or other secret values.
 Boolean gate circuits with no table lookups and no data-dependent branches. This is the
 most timing-safe Serpent implementation approach available in JavaScript.
 
-**Removed primitives**: SHA-1, AES/Rijndael, ECB block mode, PKCS5, and zero padding
-are absent from this library. These were removed during the cryptographic audit (see
-[AUDIT.md](./AUDIT.md)).
+**Absent primitives**: SHA-1, AES-Rijndael, ECB block mode, PKCS5, and zero padding
+are absent from this library by design. (See: [Cryptographic Audit](./AUDIT.md))
 
 **JIT caveat**: JavaScript engines provide no formal constant-time guarantees for
 arbitrary code. The mitigations above eliminate the most practical attack vectors;
@@ -269,3 +226,35 @@ hardware wallets), a WebAssembly or native implementation is necessary see [levi
 
 ## License
 leviathan is written under the [MIT license](http://www.opensource.org/licenses/MIT).
+
+```
+  ██     ▐█████ ██     ▐█▌  ▄█▌   ███▌ ▀███████▀▄██▌  ▐█▌  ███▌    ██▌   ▓▓
+ ▐█▌     ▐█▌    ▓█     ▐█▌  ▓██  ▐█▌██    ▐█▌   ███   ██▌ ▐█▌██    ▓██   ██
+ ██▌     ░███   ▐█▌    ██   ▀▀   ██ ▐█▌   ██   ▐██▌   █▓  ▓█ ▐█▌  ▐███▌  █▓
+ ██      ██     ▐█▌    █▓  ▐██  ▐█▌  █▓   ██   ▐██▄▄ ▐█▌ ▐█▌  ██  ▐█▌██ ▐█▌
+▐█▌     ▐█▌      ██   ▐█▌  ██   ██   ██  ▐█▌   ██▀▀████▌ ██   ██  ██ ▐█▌▐█▌
+▐▒▌     ▐▒▌      ▐▒▌  ██   ▒█   ██▀▀▀██▌ ▐▒▌   ▒█    █▓░ ▒█▀▀▀██▌ ▒█  ██▐█
+█▓ ▄▄▓█ █▓ ▄▄▓█   ▓▓ ▐▓▌  ▐▓▌  ▐█▌   ▐▒▌ █▓   ▐▓▌   ▐▓█ ▐▓▌   ▐▒▌▐▓▌  ▐███
+▓██▀▀   ▓██▀▀      ▓█▓█   ▐█▌  ▐█▌   ▐▓▌ ▓█   ▐█▌   ▐█▓ ▐█▌   ▐▓▌▐█▌   ██▓
+                    ▓█         ▄▄▄▄▄▄▄▄▄▄            ▀▀        ▐█▌▌▌
+                        ▄████████████████████▄▄
+                     ▄██████████████████████ ▀████▄
+                   ▄█████████▀▀▀     ▀███████▄▄███████▌
+                  ▐████████▀   ▄▄▄▄     ▀████████▀██▀█▌
+                  ████████      ███▀▀     ████▀  █▀ █▀
+                  ███████▌    ▀██▀         ██
+                   ███████   ▀███           ▀██ ▀█▄
+                    ▀██████   ▄▄██            ▀▀  ██▄
+                      ▀█████▄   ▄██▄             ▄▀▄▀
+                         ▀████▄   ▄██▄
+                           ▐████   ▐███
+                    ▄▄██████████    ▐███         ▄▄
+                 ▄██▀▀▀▀▀▀▀▀▀▀     ▄████      ▄██▀
+               ▄▀  ▄▄█████████▄▄  ▀▀▀▀▀     ▄███
+                ▄██████▀▀▀▀▀▀██████▄ ▀▄▄▄▄████▀
+               ████▀    ▄▄▄▄▄▄▄ ▀████▄ ▀█████▀  ▄▄▄▄
+               █████▄▄█████▀▀▀▀▀▀▄ ▀███▄      ▄███▀
+               ▀██████▀             ▀████▄▄▄████▀
+                                       ▀█████▀
+                Serpent256 Cryptography for the Web
+```
