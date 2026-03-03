@@ -29,7 +29,7 @@ import { describe, it, expect } from 'vitest';
 import { HMAC, HMAC_SHA256, HMAC_SHA512 } from '../../src/hmac';
 import { SHA256 } from '../../src/sha256';
 import { Convert } from '../../src/base';
-import { vector } from './hmac_vectors';
+import { vector } from '../vectors/hmac_vectors';
 
 describe('HMAC', () => {
 

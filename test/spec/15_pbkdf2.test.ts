@@ -28,7 +28,7 @@ import { PBKDF2 } from '../../src/pbkdf2';
 import { Convert } from '../../src/base';
 import { HMAC } from '../../src/hmac';
 import { SHA256 } from '../../src/sha256';
-import { vector } from './pbkdf2_vectors';
+import { vector } from '../vectors/pbkdf2_vectors';
 
 describe('PBKDF2', () => {
   describe('HMAC-SHA256', () => {

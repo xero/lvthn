@@ -44,7 +44,7 @@ import {
   hchacha20Vectors,
   chacha20Poly1305Vectors,
   xchacha20Poly1305Vectors,
-} from './chacha20poly1305_vectors';
+} from '../vectors/chacha20poly1305_vectors';
 
 // ---------------------------------------------------------------------------
 // Helpers

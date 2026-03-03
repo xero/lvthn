@@ -27,7 +27,7 @@
 import { describe, it, expect } from 'vitest';
 import { Curve25519, Ed25519 } from '../../src/x25519';
 import { Convert } from '../../src/base';
-import { generate_vector, random_vector, original_vector, ed25519_vector } from './x25519_vectors';
+import { generate_vector, random_vector, original_vector, ed25519_vector } from '../vectors/x25519_vectors';
 
 describe('curve25519', () => {
   const x25519  = new Curve25519();

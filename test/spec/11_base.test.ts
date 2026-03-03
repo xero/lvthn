@@ -30,22 +30,7 @@
 
 import { describe, it, expect } from 'vitest';
 import { Convert, Util } from '../../src/base';
-
-// ---------------------------------------------------------------------------
-// Base64 test vectors (plaintext → base64)
-// ---------------------------------------------------------------------------
-const base64Vector: [string, string][] = [
-  ['', ''],
-  ['f', 'Zg=='],
-  ['fo', 'Zm8='],
-  ['foo', 'Zm9v'],
-  ['foob', 'Zm9vYg=='],
-  ['fooba', 'Zm9vYmE='],
-  ['foobar', 'Zm9vYmFy'],
-  ['1234567890', 'MTIzNDU2Nzg5MA=='],
-  ['sQrs8KCz8r9o9kggoaUdQkY', 'c1FyczhLQ3o4cjlvOWtnZ29hVWRRa1k='],
-  ['1234567890abcdefghijklmnopqrstuvwxyz', 'MTIzNDU2Nzg5MGFiY2RlZmdoaWprbG1ub3BxcnN0dXZ3eHl6'],
-];
+import { base64Vector } from '../vectors/base64_vectors';
 
 // ---------------------------------------------------------------------------
 // Convert

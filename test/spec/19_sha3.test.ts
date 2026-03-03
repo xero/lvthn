@@ -27,12 +27,12 @@
 import { describe, it, expect } from 'vitest';
 import { Keccak_384, SHA3_256, SHA3_512, SHAKE128, SHAKE256 } from '../../src/sha3';
 import { Convert } from '../../src/base';
-import { sha3_256_vector } from './sha3_256_vectors';
-import { sha3_512_vector } from './sha3_512_vectors';
-import { shake128_vector } from './shake128_vectors';
-import { shake256_vector } from './shake256_vectors';
-import { shake128_vector_long } from './shake128_vectors_long';
-import { shake256_vector_long } from './shake256_vectors_long';
+import { sha3_256_vector } from '../vectors/sha3_256_vectors';
+import { sha3_512_vector } from '../vectors/sha3_512_vectors';
+import { shake128_vector } from '../vectors/shake128_vectors';
+import { shake256_vector } from '../vectors/shake256_vectors';
+import { shake128_vector_long } from '../vectors/shake128_vectors_long';
+import { shake256_vector_long } from '../vectors/shake256_vectors_long';
 
 // suppress unused-import warnings — the long vectors are imported for future use
 void shake128_vector_long;

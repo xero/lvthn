@@ -29,7 +29,7 @@
 import { describe, it, expect } from 'vitest';
 import { Serpent, Serpent_CBC_PKCS7 } from '../../src/serpent';
 import { Convert } from '../../src/base';
-import { vector, vectorMonteCarloEncrypt, vectorMonteCarloDecrypt, vectorCBC_PKCS7 } from './serpent_vectors';
+import { vector, vectorMonteCarloEncrypt, vectorMonteCarloDecrypt, vectorCBC_PKCS7 } from '../vectors/serpent_vectors';
 
 describe('Serpent', () => {
   const serpent = new Serpent();

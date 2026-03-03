@@ -34,7 +34,7 @@
 import { describe, it, expect } from 'vitest';
 import { SHA256 } from '../../src/sha256';
 import { Convert } from '../../src/base';
-import { vector } from './sha256_vectors';
+import { vector } from '../vectors/sha256_vectors';
 
 describe('SHA256', () => {
   const sha = new SHA256();

@@ -25,7 +25,7 @@
 import { describe, it, expect } from 'vitest';
 import { SHA512 } from '../../src/sha512';
 import { Convert } from '../../src/base';
-import { vector } from './sha512_vectors';
+import { vector } from '../vectors/sha512_vectors';
 
 describe('SHA512', () => {
   const sha = new SHA512();
