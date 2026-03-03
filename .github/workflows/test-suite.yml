@@ -5,6 +5,7 @@ name: test suite
 # - Enable "Require status checks to pass before merging"
 # - Add these required checks:
 #   - `build / build`
+#   - `verify-vectors / verify`
 #   - `unit-fast / test`
 #   - `unit-heavy / test`
 #   - `unit-crypto / test`
@@ -27,11 +28,14 @@ permissions:
   contents: read
 
 jobs:
+  verify-vectors:
+    uses: ./.github/workflows/verify-vectors.yml
+
   build:
     uses: ./.github/workflows/build.yml
 
   unit-fast:
-    needs: [build]
+    needs: [build, verify-vectors]
     uses: ./.github/workflows/unit-fast.yml
 
   unit-heavy:
