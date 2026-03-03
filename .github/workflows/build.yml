@@ -1,26 +1,19 @@
 name: build
-
 on:
   workflow_call:
-
 permissions:
   contents: read
-
 jobs:
   build:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
-      - uses: actions/checkout@v4
-
-      - name: setup node
-        uses: actions/setup-node@v4
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+      - name: setup bun
+        uses: oven-sh/setup-bun@735343b667d3e6f658f44d0eca948eb6282f2b76 # v2
         with:
-          node-version: '20'
-          cache: 'npm'
-
+          bun-version: 'latest'
       - name: install dependencies
-        run: npm ci
-
+        run: bun i
       - name: typecheck
-        run: npx tsc --noEmit
+        run: bun tsc --noEmit

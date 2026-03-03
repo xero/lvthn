@@ -1,30 +1,23 @@
 name: unit-heavy
-
 on:
   workflow_call:
-
 permissions:
   contents: read
-
 jobs:
   test:
     runs-on: ubuntu-latest
     timeout-minutes: 90
     steps:
-      - uses: actions/checkout@v4
-
-      - name: setup node
-        uses: actions/setup-node@v4
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+      - name: setup bun
+        uses: oven-sh/setup-bun@735343b667d3e6f658f44d0eca948eb6282f2b76 # v2
         with:
-          node-version: '20'
-          cache: 'npm'
-
+          bun-version: 'latest'
       - name: install dependencies
-        run: npm ci
-
+        run: bun i
       - name: run heavy unit tests
         run: >
-          npx vitest run --reporter=verbose --no-coverage
+          bun vitest run --reporter=verbose --no-coverage
           test/spec/03_monte_carlo_ecb.test.ts
           test/spec/04_monte_carlo_cbc.test.ts
           test/spec/05_serpent_modes.test.ts

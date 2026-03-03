@@ -1,16 +1,4 @@
 name: test suite
-
-# After pushing these workflows, go to:
-# Settings → Branches → Branch protection rules for `main`:
-# - Enable "Require status checks to pass before merging"
-# - Add these required checks:
-#   - `build / build`
-#   - `verify-vectors / verify`
-#   - `unit-fast / test`
-#   - `unit-heavy / test`
-#   - `unit-crypto / test`
-# - Enable "Require branches to be up to date before merging"
-
 on:
   push:
     branches: [main]
