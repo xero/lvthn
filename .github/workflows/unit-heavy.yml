@@ -1,0 +1,33 @@
+name: unit-heavy
+
+on:
+  workflow_call:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: setup node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: install dependencies
+        run: npm ci
+
+      - name: run heavy unit tests
+        run: >
+          npx vitest run --reporter=verbose --no-coverage
+          test/spec/03_monte_carlo_ecb.test.ts
+          test/spec/04_monte_carlo_cbc.test.ts
+          test/spec/05_serpent_modes.test.ts
+          test/spec/06_nessie_helpers.test.ts
+          test/spec/07_nessie_vectors.test.ts
+          test/spec/08_nessie128_vectors.test.ts

@@ -1,0 +1,39 @@
+name: unit-fast
+
+on:
+  workflow_call:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: setup node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: install dependencies
+        run: npm ci
+
+      - name: run fast unit tests
+        run: >
+          npx vitest run --reporter=verbose --no-coverage
+          test/spec/01_kat.test.ts
+          test/spec/02_intermediate.test.ts
+          test/spec/11_base.test.ts
+          test/spec/12_chacha20.test.ts
+          test/spec/13_hmac.test.ts
+          test/spec/14_padding.test.ts
+          test/spec/15_pbkdf2.test.ts
+          test/spec/16_serpent.test.ts
+          test/spec/17_sha256.test.ts
+          test/spec/18_sha512.test.ts
+          test/spec/19_sha3.test.ts
+          test/spec/20_uuid.test.ts

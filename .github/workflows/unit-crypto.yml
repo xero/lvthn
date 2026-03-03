@@ -1,0 +1,32 @@
+name: unit-crypto
+
+on:
+  workflow_call:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: setup node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: install dependencies
+        run: npm ci
+
+      - name: run crypto unit tests
+        run: >
+          npx vitest run --reporter=verbose --no-coverage
+          test/spec/09_ctr_vectors.test.ts
+          test/spec/10_constant_time.test.ts
+          test/spec/11_argon2id.test.ts
+          test/spec/12_chacha20poly1305.test.ts
+          test/spec/21_x25519.test.ts
