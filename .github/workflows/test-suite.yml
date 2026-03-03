@@ -1,0 +1,43 @@
+name: test suite
+
+# After pushing these workflows, go to:
+# Settings → Branches → Branch protection rules for `main`:
+# - Enable "Require status checks to pass before merging"
+# - Add these required checks:
+#   - `build / build`
+#   - `unit-fast / test`
+#   - `unit-heavy / test`
+#   - `unit-crypto / test`
+# - Enable "Require branches to be up to date before merging"
+
+on:
+  push:
+    branches: [main]
+    paths-ignore:
+      - 'docs/**'
+      - '**/*.md'
+      - 'LICENSE'
+      - '.gitignore'
+      - '.npmignore'
+  pull_request:
+    branches: ['**']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    uses: ./.github/workflows/build.yml
+
+  unit-fast:
+    needs: [build]
+    uses: ./.github/workflows/unit-fast.yml
+
+  unit-heavy:
+    needs: [unit-fast]
+    uses: ./.github/workflows/unit-heavy.yml
+
+  unit-crypto:
+    needs: [unit-fast]
+    uses: ./.github/workflows/unit-crypto.yml
