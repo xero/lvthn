@@ -338,7 +338,7 @@ vectors already provide complete coverage.
 - Key sizes covered: 128, 192, and 256 bits
 - Modes covered: ECB and CBC (vector-verified); CTR and PKCS7 variants (round-trip verified)
 - Key schedule verified: all 33 subkeys match reference for KEYSIZE=128
-- See `TEST_REPORT.md` for full details
+- See `test_suite.md` for full details
 
 ### Current State
 

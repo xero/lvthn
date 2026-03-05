@@ -1,4 +1,4 @@
-# leviathan — Testing Documentation
+# leviathan — Vector Corpus
 
 > Last updated: 2026-02-28
 > Test suite: 4,864 tests across 23 test files
@@ -70,7 +70,7 @@ When an authoritative vector and an implementation disagree, the implementation
 is wrong — not the vector. This principle sounds obvious but is surprisingly
 easy to violate in practice.
 
-The SHA-256 audit (documented in detail in `SHA256_AUDIT.md`) provides a
+The SHA-256 audit (documented in detail in `SHA256_audit.md`) provides a
 concrete cautionary example. An agent tasked with diagnosing a failing SHA-256
 test observed that OpenSSL and Python produced output consistent with the
 implementation, correctly identified that the implementation agreed with
@@ -92,9 +92,9 @@ primary source document. Never modify the expected value.**
 ### Test runner
 
 - **Framework**: Vitest 3.2.4
-- **Runtime**: Node.js v25.2.1 (darwin-arm64)
+- **Runtime**: Node.js v25.2.1
 - **Config**: `vitest.config.ts`
-- **Command**: `npx vitest run` (from `sources/leviathan/`)
+- **Command**: `npx vitest run`
 - **Alias**: `npm test`
 
 ### Configuration
@@ -152,8 +152,8 @@ test/
     vectors.ts                       — AES submission format parsers
   vectors/                           — Text vector files
     ecb_vt.txt, ecb_vk.txt, ...      — AES submission floppy4 vectors
-    Serpent-256-128.verified.test-vectors.txt
-    Serpent-128-128.verified.test-vectors.txt
+    Serpent-256-128.verified.test-vectors.txt - NESSIE Big Endian vectors
+    Serpent-128-128.verified.test-vectors.txt - NESSIE Big Endian vectors
 ```
 
 ### Running individual files
@@ -261,7 +261,7 @@ new_key = XOR(old_key, first keyBytes of concat)
 
 The order of concatenation is `CT_9999 ‖ CT_9998` — most recent output first. The
 alternate ordering (`CT_9998 ‖ CT_9999`) produces wrong results. This was discovered
-empirically during Phase 4 of the audit. See `TEST_REPORT.md` for the verification trace.
+empirically during Phase 4 of the audit. See `test_suite.md` for the verification trace.
 
 ---
 
@@ -340,10 +340,10 @@ Three vectors from FIPS 180-4 §B.1 are present in `17_sha256.test.ts`:
 
 All three verified against `echo -n "..." | openssl sha256` and Python `hashlib.sha256`.
 
-**SHA-256 audit warning**: During the audit documented in `SHA256_AUDIT.md`, an incorrect
+**SHA-256 audit warning**: During the audit documented in `SHA256_serpent_audit.md`, an incorrect
 "abc" value (`...2ec73b00361bbef0...`) appeared in a task file. The correct FIPS value
 is `...2223b00361a396...`. The implementation was always correct; the error was in the
-task file. See `SHA256_AUDIT.md` for the full forensic record.
+task file. See `SHA256_serpent_audit.md` for the full forensic record.
 
 #### Paland collection
 
@@ -385,7 +385,7 @@ TC3, TC4, TC5, and TC7 are not present:
 - TC7: combined truncated-output large-key test — same rationale as TC4
 
 **TC2 correction**: The TC2 expected value was initially entered incorrectly (`...a66852`)
-and corrected to `5bdcc146...ec3843` after Python verification. See `SHA256_AUDIT.md`.
+and corrected to `5bdcc146...ec3843` after Python verification. See `SHA256_serpent_audit.md`.
 
 #### RFC 4868 vectors
 
@@ -571,7 +571,7 @@ vector value in the test file is a typo and does not match the primary source do
 correct the vector value and document the correction. This is a vector correction, not
 a vector-to-implementation accommodation.
 
-See `SHA256_AUDIT.md` for a concrete case where this principle was violated and
+See `SHA256_serpent_audit.md` for a concrete case where this principle was violated and
 subsequently corrected.
 
 ### The provenance block format
@@ -642,7 +642,7 @@ fundamental property than the next.
 
 ### The SHA-256 audit (2026-02-28)
 
-*Full record: `SHA256_AUDIT.md`*
+*Full record: `SHA256_serpent_audit.md`*
 
 A test was added with FIPS 180-4 vectors for SHA-256. The implementation produced output
 that didn't match the FIPS vector for `"abc"`. An agent tasked with diagnosing the bug
@@ -696,26 +696,4 @@ by cross-checking CTR output against ECB encryption of explicit counter values.
 **Key lesson**: "CTR mode" does not fully specify behavior. Counter endianness (big vs
 little), counter width (32-bit, 64-bit, 128-bit), and counter position must all be
 explicitly documented and verified.
-
----
-
-## Relationship to leviathan-wasm
-
-The `leviathan-wasm` repository ports leviathan's Serpent implementation to WebAssembly.
-Its test suite uses the same vector corpus:
-- Direct references to AES submission floppy4 vectors
-- Copies of the NESSIE vector files
-- Same CTR vectors from `09_ctr_vectors.test.ts`
-
-leviathan is the correctness reference: any output difference between leviathan and
-leviathan-wasm for the same input is a bug in leviathan-wasm.
-
-The SHA-256 and HMAC implementations in leviathan-wasm (planned for v0.2b) will be
-independently implemented from FIPS 180-4 and verified against:
-1. The FIPS 180-4 vectors documented in this file
-2. The RFC 4231 HMAC vectors documented in this file
-3. Cross-check against leviathan's `sha256.ts` output (verified correct as of the
-   2026-02-28 audit)
-
----
 

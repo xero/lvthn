@@ -424,7 +424,7 @@ parameter errors are thrown synchronously within the returned Promise.
 - [serpent.md](./serpent.md) — Serpent-256 cipher for key derivation usage
 - [hmac.md](./hmac.md) — HMAC-SHA256 for authenticated encryption
 - [base.md](./base.md) — `constantTimeEqual` used in `verify()`
-- [AUDIT.md](../AUDIT.md) — full cryptographic audit report
+- [serpent_audit.md](./serpent_audit.md) — full cryptographic audit report
 - RFC 9106: https://www.rfc-editor.org/rfc/rfc9106
 - OWASP Password Storage Cheat Sheet: https://cheatsheetseries.owasp.org/cheatsheets/Password_Storage_Cheat_Sheet.html
 - Package source: https://github.com/openpgpjs/argon2id

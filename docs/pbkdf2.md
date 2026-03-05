@@ -2,11 +2,10 @@
 
 PBKDF2 — Password-Based Key Derivation Function 2 (RFC 2898).
 
+>[!WARNING]
 > **Deprecated.** PBKDF2 has low memory hardness and is vulnerable to GPU/ASIC
 > brute-force attacks. For new code, use **Argon2id** or **scrypt**. PBKDF2 is retained
 > for compatibility with existing systems only.
-
----
 
 ## Overview
 
