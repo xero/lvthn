@@ -224,4 +224,4 @@ const ct = chacha.encrypt(key, plaintext, nonce);
 
 - [serpent.ts](./serpent.md) — Serpent-256 used as the Fortuna block cipher generator
 - [sha256.ts](./sha256.md) — SHA-256 used for pool hashing and key derivation in Fortuna
-- [index.ts](./index.md) — library overview
+- [Wiki Home](./README.md) — library overview

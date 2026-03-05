@@ -363,7 +363,7 @@ The following changes were made after Phase 4 validation:
 | `src/random.ts` | Changed Fortuna PRNG block cipher from AES to Serpent |
 | `src/uuid.ts` | Added `@deprecated` JSDoc (prefer `crypto.randomUUID()`) |
 | `src/pbkdf2.ts` | Added `@deprecated` JSDoc (prefer Argon2id or scrypt) |
-| `src/index.ts` | Removed exports for AES, ECB, SHA1, HMAC_SHA1 |
+| `src/Wiki Home` | Removed exports for AES, ECB, SHA1, HMAC_SHA1 |
 | `test/spec/05_serpent_modes.test.ts` | New: 16 tests for Serpent_CBC/CTR/PKCS7 wrappers |
 | `test/spec/aes_test.ts` | **Deleted** |
 
@@ -536,7 +536,7 @@ All `===`, `every`, `reduce`, `indexOf`, `includes`, loop comparisons, and usage
 | `src/base.ts` | `Util.compare` simplified to delegate to `constantTimeEqual`; eliminates independent drift between the two implementations |
 | `src/x25519.ts` | Import `constantTimeEqual`; replace `Util.compare` at the two SENSITIVE sites with `constantTimeEqual` + inline annotation |
 | `src/pbkdf2.ts` | Added `// non-sensitive: selftest only` comment at `selftest()` MAC comparison |
-| `src/index.ts` | Export `constantTimeEqual` from the public module surface |
+| `src/Wiki Home` | Export `constantTimeEqual` from the public module surface |
 | `test/spec/10_constant_time.test.ts` | 13 new tests: basic correctness, all-zero arrays (sizes 1/16/32), single-byte differences at positions 0/middle/last, non-trivial round-trip, empty arrays, timing smoke test (logs durations, asserts correctness only) |
 
 #### Verification

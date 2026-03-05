@@ -174,4 +174,4 @@ console.log(id);  // "110e8400-e29b-41d4-a716-446655440000"
 ## See Also
 
 - [random.ts](./random.md) — CSPRNG for generating random bytes for V4 UUIDs
-- [index.ts](./index.md) — library overview and deprecation context
+- [Wiki Home](./README.md) — library overview and deprecation context

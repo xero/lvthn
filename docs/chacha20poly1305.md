@@ -26,7 +26,7 @@ compared to 2^48 for the 96-bit nonce variant). `ChaCha20Poly1305` requires care
 nonce management — use it only when you manage nonces as counters or derive them
 deterministically.
 
-Both classes are exported from `blockmode.ts` and re-exported from `index.ts`:
+Both classes are exported from `blockmode.ts` and re-exported from `Wiki Home`:
 ```typescript
 import { ChaCha20Poly1305, XChaCha20Poly1305 } from 'leviathan';
 ```
@@ -306,4 +306,4 @@ passphrases, Curve25519 for key exchange).
 - [argon2id.ts](./argon2id.md) — passphrase → key derivation
 - [x25519.ts](./x25519.md) — Curve25519 ECDH for key exchange
 - [random.ts](./random.md) — CSPRNG for key and nonce generation
-- [index.ts](./index.md) — library overview
+- [Wiki Home](./README.md) — library overview

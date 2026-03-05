@@ -221,4 +221,4 @@ const recovered           = aead.decrypt(key, nonce, ciphertext, tag);
 - [chacha20poly1305.ts](./chacha20poly1305.md) — full AEAD documentation
 - [serpent.ts](./serpent.md) — `Serpent_CBC`, `Serpent_CTR`, `Serpent_CBC_PKCS7`, `Serpent_CTR_PKCS7` convenience wrappers
 - [padding.ts](./padding.md) — PKCS7 padding for CBC with arbitrary-length input
-- [index.ts](./index.md) — library overview
+- [Wiki Home](./README.md) — library overview

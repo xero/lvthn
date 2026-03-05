@@ -264,4 +264,4 @@ const tag  = mac.hash(key, msg);  // HMAC-SHA3-256
 - [sha512.ts](./sha512.md) — SHA-512 hash used by `HMAC_SHA512`
 - [base.ts](./base.md) — `constantTimeEqual` and `Util.compare` for safe tag comparison
 - [random.ts](./random.md) — CSPRNG for generating HMAC keys
-- [index.ts](./index.md) — library overview
+- [Wiki Home](./README.md) — library overview

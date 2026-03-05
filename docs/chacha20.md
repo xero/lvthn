@@ -172,4 +172,4 @@ const pt100      = chacha.decrypt(key, blockSlice, nonce, 100);
 - [random.ts](./random.md) — CSPRNG for generating keys and nonces
 - [hmac.ts](./hmac.md) — HMAC for Encrypt-then-MAC if AEAD is unavailable
 - [serpent.ts](./serpent.md) — Serpent block cipher with CTR mode as an alternative stream cipher
-- [index.ts](./index.md) — library overview
+- [Wiki Home](./README.md) — library overview

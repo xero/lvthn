@@ -298,4 +298,4 @@ if (!constantTimeEqual(tag, received)) {
 
 - [hmac.ts](./hmac.md) — uses `Util.compare` / `constantTimeEqual` internally
 - [x25519.ts](./x25519.md) — uses `constantTimeEqual` for timing-safe signature verification
-- [index.ts](./index.md) — library overview
+- [Wiki Home](./README.md) — library overview

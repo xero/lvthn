@@ -154,4 +154,4 @@ const pt = cipher.decrypt(key, ct, iv);  // padding is stripped automatically
 
 - [serpent.ts](./serpent.md) — `Serpent_CBC_PKCS7` and `Serpent_CTR_PKCS7` wrappers
 - [blockmode.ts](./blockmode.md) — CBC mode (requires block-aligned input without PKCS7)
-- [index.ts](./index.md) — library overview
+- [Wiki Home](./README.md) — library overview

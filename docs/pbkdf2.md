@@ -141,4 +141,4 @@ const ciphertext = cipher.encrypt(key, Convert.str2bin('Secret data'), iv);
 
 - [hmac.ts](./hmac.md) — `HMAC` and `HMAC_SHA256` used as the PBKDF2 PRF
 - [random.ts](./random.md) — CSPRNG for generating salts
-- [index.ts](./index.md) — library overview and deprecation context
+- [Wiki Home](./README.md) — library overview and deprecation context

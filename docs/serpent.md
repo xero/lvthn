@@ -292,4 +292,4 @@ const dec = s.decrypt(key, ct);
 - [blockmode.ts](./blockmode.md) — CBC and CTR mode implementations used by the wrapper classes
 - [padding.ts](./padding.md) — PKCS7 padding used by the `_PKCS7` variants
 - [random.ts](./random.md) — CSPRNG for generating keys and IVs
-- [index.ts](./index.md) — library overview and quick start
+- [Wiki Home](./README.md) — library overview and quick start

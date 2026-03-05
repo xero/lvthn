@@ -277,4 +277,4 @@ const hash = sha3.digest();
 - [sha256.ts](./sha256.md) — SHA-256 (Merkle-Damgård construction)
 - [sha512.ts](./sha512.md) — SHA-512 (Merkle-Damgård construction)
 - [hmac.ts](./hmac.md) — HMAC (usable with any `Hash`, including SHA3 variants)
-- [index.ts](./index.md) — library overview
+- [Wiki Home](./README.md) — library overview
