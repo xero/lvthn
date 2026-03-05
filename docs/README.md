@@ -37,7 +37,7 @@
 | File | Description |
 | ---- | ----------- |
 | [Vector Corpus](./vector_corpus.md) | Testing Documentation and Vector corpus (~12,500) |
-| [Testing Suite](./test_suite.md.md) | Current Testing Suite Status |
+| [Testing Suite](./test_suite.md) | Current Testing Suite Status |
 | [Serpent Audit](./serpent_audit.md) |  Serpent-256 Algorithm Audit |
 | [SHA256 Audit](./sha256_audit.md) | SHA256 Algorithm Audit |
 | [Serpent Reference](./serpent_reference.md) | Serpent-256 Reference Guide |
