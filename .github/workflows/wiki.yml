@@ -39,14 +39,14 @@ jobs:
           cd ..
       - name: sync docs to wiki
         run: |
-          # clear wiki
-          find wiki -mindepth 1 -maxdepth 1 -not -name '.git' -not -name 'svg' -exec rm -rf {} \;
           # copy docs to wiki
           cp -r repo/docs/* wiki/
           cd wiki
           # update layout
           echo "## &copy; $(date +"%Y") : [the Leviathan Project](https://github.com/xero/lvthn)" > _Footer.md
-          # echo -e "## **LVTHN Wiki**\n\n<img src=\"https://github.com/xero/lvthn/raw/main/docs/logo.svg\" alt=\"Leviathan logo\" width=\"150\">\n\n## API Reference\n\n### Symmetric Ciphers\n- [serpent.ts](./serpent) \n\n### Block Modes\n- [blockmode.ts](./blockmode)\n\n### Stream Ciphers\n- [chacha20.ts](./chacha20)\n\n### AEAD\n- [chacha20poly1305.ts](./chacha20poly1305)\n\n### Hash Functions\n- [sha256.ts](./sha256)\n- [sha512.ts](./sha512)\n- [sha3.ts](./sha3)\n\n### Padding \n- [padding.ts](./padding) (PKCS#7)\n\n### MAC\n- [hmac.ts](./hmac)\n\n### Key Derivation \n- [argon2id.ts](./argon2id) \n- [pbkdf2.ts](./pbkdf2)\n\n### Asymmetric / Key Exchange\n- [x25519.ts](./x25519) (Curve25519,Ed25519)\n\n### Utilities\n- [base.ts](./base) (conversions, xor, compare, clear)\n- [random.ts](./random) (Fortuna CSPRNG)\n\n## Security\n\n### Testing\n- [Test Suite](./test_suite)\n- [Vector Corpus](./vector_corpus)\n\n### Audit logs\n- [Serpent Audit](./serpent_audit)\n- [SHA256 Audit](./sha256_audit)\n\n## Reference\n\n### Supplemental\n- [Serpent Reference](./serpent_reference)\n- [SHA256 Reference](./sha256_reference)\n- [Branding Guide](./branding)\n\n" > _Sidebar.md
+          echo -e "## **LVTHN Wiki**\n\n<img src=\"https://github.com/xero/lvthn/raw/main/docs/logo.svg\" alt=\"Leviathan logo\" width=\"150\">\n\n## API Reference\n\n### Symmetric Ciphers\n- [serpent.ts](./serpent) \n\n### Block Modes\n- [blockmode.ts](./blockmode)\n\n### Stream Ciphers\n- [chacha20.ts](./chacha20)\n\n### AEAD\n- [chacha20poly1305.ts](./chacha20poly1305)\n\n### Hash Functions\n- [sha256.ts](./sha256)\n- [sha512.ts](./sha512)\n- [sha3.ts](./sha3)\n\n### Padding \n- [padding.ts](./padding) (PKCS#7)\n\n### MAC\n- [hmac.ts](./hmac)\n\n### Key Derivation \n- [argon2id.ts](./argon2id) \n- [pbkdf2.ts](./pbkdf2)\n\n### Asymmetric / Key Exchange\n- [x25519.ts](./x25519) (Curve25519,Ed25519)\n\n### Utilities\n- [base.ts](./base) (conversions, xor, compare, clear)\n- [random.ts](./random) (Fortuna CSPRNG)\n\n## Security\n\n### Testing\n- [Test Suite](./test_suite)\n- [Vector Corpus](./vector_corpus)\n\n### Audit logs\n- [Serpent Audit](./serpent_audit)\n- [SHA256 Audit](./sha256_audit)\n\n## Reference\n\n### Supplemental\n- [Serpent Reference](./serpent_reference)\n- [SHA256 Reference](./sha256_reference)\n- [Branding Guide](./branding)\n\n" > _Sidebar.md
+          # this is dumb github
+          cp _Sidebar.md _Sidebar
           # rename index file
           mv README.md Home.md
           # change README to Home in all docs
