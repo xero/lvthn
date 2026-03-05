@@ -1,7 +1,7 @@
 # random.ts
 
 Fortuna CSPRNG — cryptographically secure pseudo-random number generator with
-multi-source entropy collection.
+multi-source entropy collection. [source](https://www.schneier.com/wp-content/uploads/2015/12/fortuna.pdf)
 
 ---
 
@@ -91,8 +91,8 @@ starts periodic collectors.
 ```typescript
 import { Random } from 'leviathan';
 
-const rng = new Random();          // standard 32-pool Fortuna
-const key = rng.get(32)!;         // 256-bit random key
+const rng = new Random();     // standard 32-pool Fortuna
+const key = rng.get(32)!;     // 256-bit random key
 ```
 
 ---
