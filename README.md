@@ -159,25 +159,31 @@ console.log(Convert.bin2str(recovered)); // "Hello, leviathan!"
 
 ## Documentation
 
-Full API documentation is in [docs/](./docs/index.md):
+**Full API documentation:** in [./docs/](./docs/README.md) or [the wiki](https://github.com/xero/lvthn/wiki)
 
 | Module | Description |
 |--------|-------------|
-| [serpent.ts](./docs/serpent.md) | Serpent-256 block cipher |
-| [chacha20.ts](./docs/chacha20.md) | ChaCha20 stream cipher |
-| [chacha20poly1305.ts](./docs/chacha20poly1305.md) | ChaCha20-Poly1305 and XChaCha20-Poly1305 AEAD |
-| [blockmode.ts](./docs/blockmode.md) | CBC, CTR mode wrappers |
-| [sha256.ts](./docs/sha256.md) | SHA-256 |
-| [sha512.ts](./docs/sha512.md) | SHA-512 |
-| [sha3.ts](./docs/sha3.md) | SHA-3, Keccak, SHAKE |
-| [hmac.ts](./docs/hmac.md) | HMAC |
-| [pbkdf2.ts](./docs/pbkdf2.md) | PBKDF2 *(deprecated)* |
-| [x25519.ts](./docs/x25519.md) | Curve25519 ECDH and Ed25519 signatures |
-| [base.ts](./docs/base.md) | Format converters and utilities |
-| [random.ts](./docs/random.md) | Fortuna CSPRNG |
-| [padding.ts](./docs/padding.md) | PKCS7 padding |
-| [uuid.ts](./docs/uuid.md) | UUID *(deprecated)* |
+| [serpent.ts](https://github.com/xero/lvthn/wiki/serpent) | Serpent-256 block cipher |
+| [chacha20.ts](https://github.com/xero/lvthn/wiki/chacha20) | ChaCha20 stream cipher |
+| [chacha20poly1305.ts](https://github.com/xero/lvthn/wiki/chacha20poly1305) | ChaCha20-Poly1305 and XChaCha20-Poly1305 AEAD |
+| [blockmode.ts](https://github.com/xero/lvthn/wiki/blockmode) | CBC, CTR mode wrappers |
+| [sha256.ts](https://github.com/xero/lvthn/wiki/sha256) | SHA-256 |
+| [sha512.ts](https://github.com/xero/lvthn/wiki/sha512) | SHA-512 |
+| [sha3.ts](https://github.com/xero/lvthn/wiki/sha3) | SHA-3, Keccak, SHAKE |
+| [hmac.ts](https://github.com/xero/lvthn/wiki/hmac) | HMAC |
+| [pbkdf2.ts](https://github.com/xero/lvthn/wiki/pbkdf2) | PBKDF2 *(deprecated)* |
+| [x25519.ts](https://github.com/xero/lvthn/wiki/x25519) | Curve25519 ECDH and Ed25519 signatures |
+| [base.ts](https://github.com/xero/lvthn/wiki/base) | Format converters and utilities |
+| [random.ts](https://github.com/xero/lvthn/wiki/random) | Fortuna CSPRNG |
+| [padding.ts](https://github.com/xero/lvthn/wiki/padding) | PKCS7 padding |
+| [uuid.ts](https://github.com/xero/lvthn/wiki/uuid) | UUID *(deprecated)* |
 
+**SLDC documentation:**
+
+| Document | Description |
+| -------- | ----------- |
+| [Vector Corpus](https://github.com/xero/lvthn/wiki/vector_corpus) | Testing Documentation and Vector corpus (~12,500) |
+| [Testing Suite](https://github.com/xero/lvthn/wiki/test_suite) | Current Testing Suite Status |
 
 ## Test suite
 
