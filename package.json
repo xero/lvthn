@@ -1,38 +1,43 @@
 {
   "name": "leviathan",
-  "version": "0.1.6",
+  "version": "0.1.7",
   "author": "xero (x@xero.style)",
   "license": "MIT",
-  "description": "Leviathan crypto library",
+  "description": "TypeScript+WASM cryptographic library built around Serpent-256. AES finalist w/ more 1st-place security votes than Rijndael from the NIST evaluation committee.",
+	"type": "module",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
-    "build": "tsc -p ./src",
+    "build": "tsc",
     "test": "vitest run",
     "test:watch": "vitest"
   },
   "files": [
     "dist"
   ],
+  "dependencies": {
+    "argon2id": "^1.0.1"
+  },
   "devDependencies": {
-    "@types/node": "^20.0.0",
+    "@types/node": "^22.0.0",
     "typescript": "5.4.5",
     "vitest": "^3.2.4"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/xero/lvthn.git"
+  "repository": "github:xero/lvthn",
+	"homepage": "https://github.com/xero/lvthn/wiki",
+  "bugs": {
+    "url": "https://github.com/xero/lvthn/issues"
   },
   "keywords": [
-    "Crypto",
-    "cryptography",
-    "encryption",
-    "cypher",
-    "cipher",
+    "Cryptography",
+    "Encryption",
+		"Serpent",
+		"Serpent256",
+    "Cypher",
+    "Cipher",
+		"Crypto",
     "Typescript",
     "AES",
-    "Serpent",
-    "Serpent256",
     "Chacha20",
     "Curve25519",
     "Ed25519",
@@ -45,13 +50,8 @@
     "HMAC",
     "PBKDF2",
     "UUID",
-    "Fortuna"
-  ],
-  "bugs": {
-    "url": "https://github.com/xero/lvthn/issues"
-  },
-  "homepage": "https://github.com/xero/lvthn#readme",
-  "dependencies": {
-    "argon2id": "^1.0.1"
-  }
+    "Fortuna",
+		"CSPRNG",
+		"Entropy"
+  ]
 }
