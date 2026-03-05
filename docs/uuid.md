@@ -2,11 +2,10 @@
 
 UUID generation — V1 (time-based) and V4 (random-based) per RFC 4122.
 
+>[!WARNING]
 > **Deprecated.** UUID generation is out of scope for a cryptographic library. For new
 > code, use the platform's native `crypto.randomUUID()` (available in all modern browsers
 > and Node.js 14.17+). This module is retained for backwards compatibility only.
-
----
 
 ## Overview
 
