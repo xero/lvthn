@@ -1,3 +1,4 @@
+///////////////////////////////////////////////////////////////////////////////
 //                  ▄▄▄▄▄▄▄▄▄▄
 //           ▄████████████████████▄▄          This file is part of the
 //        ▄██████████████████████ ▀████▄      leviathan crypto library
@@ -8,9 +9,9 @@
 //      ███████   ▀███           ▀██ ▀█▄      Author: xero (https://x-e.ro)
 //       ▀██████   ▄▄██            ▀▀  ██▄    License: MIT
 //         ▀█████▄   ▄██▄             ▄▀▄▀
-//            ▀████▄   ▄██▄                   +---------------------------+
-//              ▐████   ▐███                  |    Library Entry Point    |
-//       ▄▄██████████    ▐███         ▄▄      +---------------------------+
+//            ▀████▄   ▄██▄                   +---------------+
+//              ▐████   ▐███                  |    PADDING    |
+//       ▄▄██████████    ▐███         ▄▄      +---------------+
 //    ▄██▀▀▀▀▀▀▀▀▀▀     ▄████      ▄██▀
 //  ▄▀  ▄▄█████████▄▄  ▀▀▀▀▀     ▄███         This file is provided completely
 //   ▄██████▀▀▀▀▀▀██████▄ ▀▄▄▄▄████▀          free, "as is", and without
@@ -18,17 +19,30 @@
 //  █████▄▄█████▀▀▀▀▀▀▄ ▀███▄      ▄████      assumes absolutely no liability
 //   ▀██████▀             ▀████▄▄▄████▀       for its {ab,mis,}use.
 //                           ▀█████▀▀
-
-export { Convert, Util, constantTimeEqual, version } from './base';
-export { CBC, CTR, ChaCha20Poly1305, XChaCha20Poly1305 } from './blockmode';
-export { Serpent, Serpent_CBC, Serpent_CTR, Serpent_CBC_PKCS7, Serpent_CTR_PKCS7 } from './serpent';
-export { ChaCha20 } from './chacha20';
-export { Curve25519, Ed25519 } from './x25519';
-export { PBKDF2 } from './pbkdf2';
-export { Argon2id, ARGON2ID_INTERACTIVE, ARGON2ID_SENSITIVE, ARGON2ID_DERIVE, type Argon2idParams, type Argon2idResult, } from './argon2id';
-export { HMAC, HMAC_SHA256, HMAC_SHA512 } from './hmac';
-export { SHA256 } from './sha256';
-export { SHA512 } from './sha512';
-export { Keccak, Keccak_256, Keccak_384, Keccak_512, SHA3_256, SHA3_384, SHA3_512, SHAKE128, SHAKE256 } from './sha3';
-export { UUID } from './uuid';
-export { Random } from './random';
+// PKCS7 Padding and stripping
+///////////////////////////////////////////////////////////////////////////////
+export class PKCS7 {
+    /**
+     * PKCS#7 padding function. Pads bytes to given text until text is multiple of blocksize is met
+     * @param {Uint8Array} bin Byte array where the bytes are padded
+     * @param {Number} blocksize The blocksize in bytes of the text to which the text should be padded
+     * @return {Uint8Array} Padded byte array
+     */
+    pad(bin, blocksize) {
+        let len = bin.length % blocksize ? blocksize - (bin.length % blocksize) : blocksize;
+        let out = new Uint8Array(bin.length + len);
+        out.set(bin, 0);
+        for (let i = bin.length, l = bin.length + len; i < l; ++i) {
+            out[i] = len;
+        }
+        return out;
+    }
+    /**
+     * PKCS#7 stripping function. Strips bytes of the given text
+     * @param {Uint8Array} bin Byte array where the bytes are stripped
+     * @return {Uint8Array} Stripped byte array
+     */
+    strip(bin) {
+        return bin.subarray(0, bin.length - bin[bin.length - 1]);
+    }
+}

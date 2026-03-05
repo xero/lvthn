@@ -18,14 +18,13 @@
 //  █████▄▄█████▀▀▀▀▀▀▄ ▀███▄      ▄████      assumes absolutely no liability
 //   ▀██████▀             ▀████▄▄▄████▀       for its {ab,mis,}use.
 //                           ▀█████▀▀
-
 export { Convert, Util, constantTimeEqual, version } from './base';
 export { CBC, CTR, ChaCha20Poly1305, XChaCha20Poly1305 } from './blockmode';
 export { Serpent, Serpent_CBC, Serpent_CTR, Serpent_CBC_PKCS7, Serpent_CTR_PKCS7 } from './serpent';
 export { ChaCha20 } from './chacha20';
 export { Curve25519, Ed25519 } from './x25519';
 export { PBKDF2 } from './pbkdf2';
-export { Argon2id, ARGON2ID_INTERACTIVE, ARGON2ID_SENSITIVE, ARGON2ID_DERIVE, type Argon2idParams, type Argon2idResult, } from './argon2id';
+export { Argon2id, ARGON2ID_INTERACTIVE, ARGON2ID_SENSITIVE, ARGON2ID_DERIVE, } from './argon2id';
 export { HMAC, HMAC_SHA256, HMAC_SHA512 } from './hmac';
 export { SHA256 } from './sha256';
 export { SHA512 } from './sha512';
