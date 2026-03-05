@@ -713,9 +713,8 @@ by cross-checking CTR output against ECB encryption of explicit counter values.
 little), counter width (32-bit, 64-bit, 128-bit), and counter position must all be
 explicitly documented and verified.
 
----
-
->[!INFO]
+>[!IMPORTANT]
 > Last updated: 2026-02-28
 > Test suite: 4,864 tests across 23 test files
 > Vector corpus: ~12,500 vectors from 12 distinct sources
+
