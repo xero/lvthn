@@ -36,7 +36,7 @@ since the AES competition. The current state of the art:
   to attack by this method than AES-256.
 
 The attack papers are included in the repository. See
-[`docs/AUDIT.md`](docs/AUDIT.md) for the full analysis.
+[`serpent_audit.md`](https://github.com/xero/lvthn/wiki/serpent_audit) for the full analysis.
 
 **Implementation.** Serpent's S-boxes are implemented as Boolean gate
 circuits — no table lookups, no data-dependent memory access, no
@@ -73,7 +73,7 @@ a single wrong bit compounds to a completely wrong output within the first
 few iterations.
 
 Vector provenance, verification methodology, and audit history for every
-corpus are documented in [`docs/TESTING.md`](docs/TESTING.md).
+corpus are documented in [`docs/vector_corpus.md`](docs/vector_corpus.md).
 
 ## Security audit
 
@@ -89,8 +89,8 @@ ECB/CBC Monte Carlo. The SHA-256 implementation was independently
 confirmed correct against FIPS 180-4 and RFC 4231 — implementation
 and test vectors both verified from primary sources.
 
-Full audit trail in [docs/AUDIT.md](docs/AUDIT.md) and
-[docs/SHA256_AUDIT.md](docs/SHA256_AUDIT.md).
+Full audit trail in [docs/serpent_audit.md](https://github.com/xero/lvthn/wiki/serpent_audit) and
+[docs/sha256_audit.md](https://github.com/xero/lvthn/wiki/sha256_audit).
 
 ## Design decisions
 
@@ -196,18 +196,7 @@ bun run test
 npm run test
 ```
 
-See [docs/TESTING.md](docs/TESTING.md) for more details.
-
-
-## Contributing
-
-1. Create an issue and describe your idea
-2. [Fork it](https://github.com/xero/leviathan/fork)
-3. Create your feature branch (`git checkout -b my-new-feature`)
-4. Commit your changes (`git commit -am 'Add some feature'`)
-5. Publish the branch (`git push origin my-new-feature`)
-6. Create a new pull request
-
+See [docs/test_suite.md](https://github.com/xero/lvthn/wiki/test_suite) for more details.
 
 ## Security Notices
 
@@ -222,7 +211,7 @@ Boolean gate circuits with no table lookups and no data-dependent branches. This
 most timing-safe Serpent implementation approach available in JavaScript.
 
 **Absent primitives**: SHA-1, AES-Rijndael, ECB block mode, PKCS5, and zero padding
-are absent from this library by design. (See: [Cryptographic Audit](./AUDIT.md))
+are absent from this library by design. (See: [Cryptographic Audit](https://github.com/xero/lvthn/wiki/serpent_audit))
 
 **JIT caveat**: JavaScript engines provide no formal constant-time guarantees for
 arbitrary code. The mitigations above eliminate the most practical attack vectors;
