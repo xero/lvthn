@@ -1,12 +1,11 @@
 # Serpent Reference Document
 
-**Prepared by:** Claude Code (Anthropic)
 **Date:** 2026-02-27
 **Scope:** Algorithm specification, known attacks, and implementation analysis for the
 leviathan TypeScript Serpent library.
 **Sources:** Anderson/Biham/Knudsen original papers, Ross Anderson's AES submission
 reference implementation (floppy1/floppy4), audit notes from the leviathan Serpent256
-cryptographic audit.
+cryptographic implementation audit.
 
 ---
 

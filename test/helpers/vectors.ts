@@ -341,7 +341,7 @@ export function parseNessie(text: string): NessieVector[] {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// NESSIE preprocessing (from CLAUDE.md project instructions):
+// NESSIE preprocessing
 //
 // The NESSIE test vectors use big-endian word order; leviathan uses the original
 // AES submission format (little-endian words, reversed key). To convert:
@@ -350,7 +350,7 @@ export function parseNessie(text: string): NessieVector[] {
 //   2. Byte-swap each DWORD to little-endian
 //   3. Byte-swap each 32-bit word of the plaintext to little-endian
 //
-// §CLAUDE.md lines 168-171
+// @see: /docs/vector_corpus.md#nessie-byte-order-preprocessing
 // ─────────────────────────────────────────────────────────────────────────────
 
 export function nessiePreprocessKey(keyHex: string): Uint8Array {

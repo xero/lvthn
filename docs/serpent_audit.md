@@ -1,6 +1,5 @@
 # Serpent256 Cryptographic Audit — leviathan Library
 
-**Auditor:** Claude Code (Anthropic)
 **Date:** 2026-02-27
 **Target:** `sources/leviathan/src/serpent.ts` (TypeScript)
 **Reference:** `sources/first_release_c_and_java/serpent/floppy1/` (ground truth)
@@ -240,7 +239,7 @@ As documented in `2011_ACISP_MLC.pdf` and `criptografia_mencao_honrosa.pdf`:
 **P1.3 Add intermediate-value instrumentation hook**
 - Add optional `debugCallback?: (round: number, state: Uint8Array) => void` parameter to `encrypt`/`decrypt`
 - Call it after each round's S-box (and LT for rounds 0..30) with current `r[]` converted to bytes
-- Rationale: Required by CLAUDE.md to implement `ecb_iv.txt` tests without modifying the algorithm path
+- Rationale: implement `ecb_iv.txt` testing without modifying the algorithm path
 
 **P1.4 Implement comprehensive test suite** (new file: `test/spec/serpent_comprehensive_test.ts`)
 - Parse and run all floppy4 vector types: `ecb_vt`, `ecb_vk`, `ecb_tbl`, `ecb_iv`, `ecb_e_m`, `ecb_d_m`, `cbc_e_m`, `cbc_d_m`
