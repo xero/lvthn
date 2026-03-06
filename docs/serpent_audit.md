@@ -151,7 +151,7 @@ This leaks the number of carry propagations in the counter, which correlates wit
 
 ### Known Cryptanalytic Attacks
 
-As documented in `2011_ACISP_MLC.pdf` and `criptografia_mencao_honrosa.pdf`:
+As documented in [2011_ACISP_MLC.pdf](https://personal.ntu.edu.sg/wuhj/research/publications/2011_ACISP_MLC.pdf) ([mirror](https://archive.is/6pwMM)) and [criptografia_mencao_honrosa.pdf](https://sol.sbc.org.br/index.php/sbseg/article/view/19225/19054) ([mirror](https://archive.is/ZZjrT)):
 - Best known attacks reach at most 12 rounds (vs 32 implemented): no practical attack.
 - Biclique attack (full 32-round): 2^255.21 — only ~0.8 bits better than brute force, impractical.
 - A correct 32-round Serpent-256 implementation is secure against all known attacks.
@@ -605,4 +605,4 @@ Mocha `this.timeout(ms)` was replaced with Vitest's third `it()` argument:
 ### Verification
 
 - `npx tsc --noEmit`: **0 errors**
-- Test suite: **4770/4770 passed** (4718 pre-existing + 52 new from ported Mocha tests)
+- Test suite: **4770/4770 passed** (4718 pre-existing + 52 new from ported tests)

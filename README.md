@@ -27,6 +27,7 @@ since the AES competition. The current state of the art:
 - **Best known reduced-round attack:** multidimensional linear cryptanalysis
   reaching 12 of 32 rounds (Nguyen, Wu & Wang, ACISP 2011), less than
   half the full cipher, requiring 2¹¹⁸ known plaintexts and 2²²⁸·⁸ time.
+  [source](https://personal.ntu.edu.sg/wuhj/research/publications/2011_ACISP_MLC.pdf) & [mirror](https://archive.is/6pwMM)
 - **Best known full-round attack:** biclique cryptanalysis of full 32-round
   Serpent-256 (de Carvalho & Kowada, SBSeg 2020), time complexity 2²⁵⁵·²¹,
   only 0.79 bits below the 256-bit brute-force ceiling of 2²⁵⁶, and requires
@@ -34,9 +35,9 @@ since the AES competition. The current state of the art:
   For comparison, the analogous biclique attack on full-round AES-256
   (Bogdanov et al., 2011) reaches 2²⁵⁴·⁴. Serpent-256 is marginally harder
   to attack by this method than AES-256.
+  [source](https://sol.sbc.org.br/index.php/sbseg/article/view/19225/19054) & [mirror](https://archive.is/ZZjrT)
 
-The attack papers are included in the repository. See
-[`serpent_audit.md`](https://github.com/xero/lvthn/wiki/serpent_audit) for the full analysis.
+See: [`serpent_audit.md`](https://github.com/xero/lvthn/wiki/serpent_audit) for the full analysis.
 
 **Implementation.** Serpent's S-boxes are implemented as Boolean gate
 circuits: no table lookups, no data-dependent memory access, no
@@ -46,12 +47,14 @@ available in a JavaScript runtime, where JIT optimisation can otherwise
 introduce observable timing variation.
 
 **Key size.** 256-bit keys only in the default API.
-_No 128 or 192-bit variants, no key-size downgrade risk._
+
+_No 128 or 192-bit variants mitigates key-size downgrade risk._
 
 ## Correctness and verification
 
-Every primitive is verified against authoritative external vectors before
-inclusion. The test suite runs **4864 tests** across the following corpora:
+Every primitive is verified against authoritative external vectors before inclusion.
+
+The test suite runs **4864 tests** across the following corpora:
 
 | Source                                                          | Vectors        | Primitives                 |
 | --------------------------------------------------------------- | -------------- | -------------------------- |
@@ -184,6 +187,7 @@ console.log(Convert.bin2str(recovered)); // "Hello, leviathan!"
 | ----------------------------------------------------------------- | ------------------------------------------------- |
 | [Vector Corpus](https://github.com/xero/lvthn/wiki/vector_corpus) | Testing Documentation and Vector corpus (~12,500) |
 | [Testing Suite](https://github.com/xero/lvthn/wiki/test_suite)    | Current Testing Suite Status                      |
+
 ## Test suite
 
 leviathan uses Vitest. To run all tests:
