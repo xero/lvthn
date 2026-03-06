@@ -65,7 +65,7 @@ export declare const ARGON2ID_SENSITIVE: Argon2idParams;
  */
 export declare const ARGON2ID_DERIVE: Argon2idParams;
 /**
- * Argon2id — memory-hard password hashing and key derivation.
+ * Argon2id — memory-hardened password hashing and key derivation.
  *
  * Argon2id is the winner of the Password Hashing Competition (2015) and is
  * standardised in RFC 9106 (2021). It is the recommended replacement for
@@ -98,56 +98,56 @@ export declare const ARGON2ID_DERIVE: Argon2idParams;
  */
 export declare class Argon2id {
     /**
-     * Hash a password or derive a key from a passphrase.
-     *
-     * Generates a random salt via `crypto.getRandomValues` if none is provided.
-     * The global `crypto` object is available in Node.js 19+, Bun, and all
-     * modern browsers.
-     *
-     * **Security:** always store the returned `salt` and `params` alongside the
-     * `hash`. All three are required for later verification or re-derivation.
-     * Losing the salt makes the hash permanently unverifiable.
-     *
-     * @param password - plaintext password or passphrase (string or Uint8Array)
-     * @param salt     - optional salt; randomly generated if omitted
-     * @param params   - Argon2id parameters (default: ARGON2ID_INTERACTIVE)
-     * @returns hash, the salt used, and the parameters used
-     */
+   * Hash a password or derive a key from a passphrase.
+   *
+   * Generates a random salt via `crypto.getRandomValues` if none is provided.
+   * The global `crypto` object is available in Node.js 19+, Bun, and all
+   * modern browsers.
+   *
+   * **Security:** always store the returned `salt` and `params` alongside the
+   * `hash`. All three are required for later verification or re-derivation.
+   * Losing the salt makes the hash permanently unverifiable.
+   *
+   * @param password - plaintext password or passphrase (string or Uint8Array)
+   * @param salt     - optional salt; randomly generated if omitted
+   * @param params   - Argon2id parameters (default: ARGON2ID_INTERACTIVE)
+   * @returns hash, the salt used, and the parameters used
+   */
     hash(password: string | Uint8Array, salt?: Uint8Array, params?: Argon2idParams): Promise<Argon2idResult>;
     /**
-     * Verify a password against a previously computed hash.
-     *
-     * Recomputes the hash with the provided salt and params, then compares
-     * the result using `constantTimeEqual` — a constant-time XOR-accumulate
-     * comparison that always visits every byte regardless of content. This
-     * prevents timing oracle attacks that could distinguish correct from
-     * incorrect bytes.
-     *
-     * **Never** use `===`, `Buffer.equals()`, or `Array.every()` to compare
-     * Argon2id hashes — they are not constant-time.
-     *
-     * @param password - plaintext password to verify
-     * @param hash     - previously computed hash (from {@link Argon2idResult.hash})
-     * @param salt     - salt used when the hash was computed
-     * @param params   - parameters used when the hash was computed
-     * @returns true if password matches, false otherwise
-     */
+   * Verify a password against a previously computed hash.
+   *
+   * Recomputes the hash with the provided salt and params, then compares
+   * the result using `constantTimeEqual` — a constant-time XOR-accumulate
+   * comparison that always visits every byte regardless of content. This
+   * prevents timing oracle attacks that could distinguish correct from
+   * incorrect bytes.
+   *
+   * **Never** use `===`, `Buffer.equals()`, or `Array.every()` to compare
+   * Argon2id hashes — they are not constant-time.
+   *
+   * @param password - plaintext password to verify
+   * @param hash     - previously computed hash (from {@link Argon2idResult.hash})
+   * @param salt     - salt used when the hash was computed
+   * @param params   - parameters used when the hash was computed
+   * @returns true if password matches, false otherwise
+   */
     verify(password: string | Uint8Array, hash: Uint8Array, salt: Uint8Array, params?: Argon2idParams): Promise<boolean>;
     /**
-     * Derive a fixed-length encryption key from a passphrase.
-     *
-     * Convenience wrapper around {@link hash} using {@link ARGON2ID_DERIVE}
-     * parameters. The returned key is directly usable as a Serpent-256 key.
-     *
-     * **Security:** store the returned `salt` alongside the ciphertext — it
-     * is required to re-derive the same key for decryption. The salt is not
-     * secret but must be unique per encryption.
-     *
-     * @param passphrase - source passphrase (string or Uint8Array)
-     * @param salt       - optional salt; randomly generated if omitted
-     * @param keyLength  - output key length in bytes: 16, 24, or 32 (default: 32)
-     * @returns { key, salt } — always store the salt alongside the ciphertext
-     */
+   * Derive a fixed-length encryption key from a passphrase.
+   *
+   * Convenience wrapper around {@link hash} using {@link ARGON2ID_DERIVE}
+   * parameters. The returned key is directly usable as a Serpent-256 key.
+   *
+   * **Security:** store the returned `salt` alongside the ciphertext — it
+   * is required to re-derive the same key for decryption. The salt is not
+   * secret but must be unique per encryption.
+   *
+   * @param passphrase - source passphrase (string or Uint8Array)
+   * @param salt       - optional salt; randomly generated if omitted
+   * @param keyLength  - output key length in bytes: 16, 24, or 32 (default: 32)
+   * @returns { key, salt } — always store the salt alongside the ciphertext
+   */
     deriveKey(passphrase: string | Uint8Array, salt?: Uint8Array, keyLength?: 16 | 24 | 32): Promise<{
         key: Uint8Array;
         salt: Uint8Array;

@@ -2,8 +2,14 @@ import { defineConfig } from "vitest/config";
 
 export default defineConfig({
   test: {
-    include: ["test/spec/**/*.test.ts"],
-    exclude: ["**/node_modules/**", "**/dist/**"],
+    include: [
+			"test/spec/**/*.test.ts",
+		],
+    exclude: [
+			"**/node_modules/**",
+			"**/docs/**",
+			"**/dist/**",
+		],
     globals: false,
     testTimeout: 600000, // 10 minutes — Monte Carlo: 400 × 10000 iterations
     hookTimeout: 30000,

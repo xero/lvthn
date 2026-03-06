@@ -1,4 +1,3 @@
-///////////////////////////////////////////////////////////////////////////////
 //                  ▄▄▄▄▄▄▄▄▄▄
 //           ▄████████████████████▄▄          This file is part of the
 //        ▄██████████████████████ ▀████▄      leviathan crypto library
@@ -21,15 +20,20 @@
 //                           ▀█████▀▀
 //
 // SHA512 Generates a 64 byte (512 bit) hash value
-///////////////////////////////////////////////////////////////////////////////
 import { Convert, Util } from './base';
 /**
  * SHA512 class
  */
 export class SHA512 {
+    hashSize;
+    buffer;
+    bufferIndex;
+    count;
+    K;
+    H;
     /**
-     * SHA512 ctor
-     */
+   * SHA512 ctor
+   */
     constructor() {
         this.hashSize = 64;
         this.buffer = new Uint8Array(128); // 128 byte array
@@ -58,9 +62,9 @@ export class SHA512 {
         this.init();
     }
     /**
-     * Init the hash
-     * @return {Object} this
-     */
+   * Init the hash
+   * @return {Object} this
+   */
     init() {
         this.H = new Uint32Array([0x6a09e667, 0xf3bcc908, 0xbb67ae85, 0x84caa73b, 0x3c6ef372, 0xfe94f82b, 0xa54ff53a, 0x5f1d36f1,
             0x510e527f, 0xade682d1, 0x9b05688c, 0x2b3e6c1f, 0x1f83d9ab, 0xfb41bd6b, 0x5be0cd19, 0x137e2179]);
@@ -70,13 +74,16 @@ export class SHA512 {
         return this;
     }
     /**
-     * Perform one transformation cycle
-     */
+   * Perform one transformation cycle
+   */
     transform() {
-        let h = this.H, h0h = h[0], h0l = h[1], h1h = h[2], h1l = h[3], h2h = h[4], h2l = h[5], h3h = h[6], h3l = h[7], h4h = h[8], h4l = h[9], h5h = h[10], h5l = h[11], h6h = h[12], h6l = h[13], h7h = h[14], h7l = h[15];
+        const h = this.H;
+        const h0h = h[0], h1h = h[2], h2h = h[4], h3h = h[6], h4h = h[8], h5h = h[10], h6h = h[12], h7h = h[14];
+        let h0l = h[1], h1l = h[3], h2l = h[5], h3l = h[7], h4l = h[9], h5l = h[11], h6l = h[13], h7l = h[15];
         let ah = h0h, al = h0l, bh = h1h, bl = h1l, ch = h2h, cl = h2l, dh = h3h, dl = h3l, eh = h4h, el = h4l, fh = h5h, fl = h5l, gh = h6h, gl = h6l, hh = h7h, hl = h7l;
         // convert byte buffer into w[0..31]
-        let i, w = new Uint32Array(160);
+        let i;
+        const w = new Uint32Array(160);
         for (i = 0; i < 32; i++) {
             w[i] = (this.buffer[(i << 2) + 3]) |
                 (this.buffer[(i << 2) + 2] << 8) |
@@ -105,10 +112,10 @@ export class SHA512 {
                 ((gamma1xl << 3) | (gamma1xh >>> 29)) ^
                 ((gamma1xh << 26) | (gamma1xl >>> 6));
             // shortcuts
-            wr7h = w[(i - 7) * 2],
-                wr7l = w[(i - 7) * 2 + 1],
-                wr16h = w[(i - 16) * 2],
-                wr16l = w[(i - 16) * 2 + 1];
+            wr7h = w[(i - 7) * 2];
+            wr7l = w[(i - 7) * 2 + 1];
+            wr16h = w[(i - 16) * 2];
+            wr16l = w[(i - 16) * 2 + 1];
             // W(round) = gamma0 + W(round - 7) + gamma1 + W(round - 16)
             wrl = gamma0l + wr7l;
             wrh = gamma0h + wr7h + ((wrl >>> 0) < (gamma0l >>> 0) ? 1 : 0);
@@ -187,23 +194,23 @@ export class SHA512 {
         h[14] = (h7h + hh + ((h7l >>> 0) < (hl >>> 0) ? 1 : 0)) | 0;
     }
     /**
-     * Update the hash with additional message data
-     * @param {Uint8Array} msg Additional message data as byte array
-     * @return {SHA512} this
-     */
+   * Update the hash with additional message data
+   * @param {Uint8Array} msg Additional message data as byte array
+   * @return {SHA512} this
+   */
     update(msg) {
         msg = msg || new Uint8Array(0);
         // process the msg as many times as possible, the rest is stored in the buffer
         // message is processed in 1024 bit (128 byte chunks)
-        for (let i = 0; i < msg.length; i++) {
-            this.buffer[this.bufferIndex++] = msg[i];
+        for (const byte of msg) {
+            this.buffer[this.bufferIndex++] = byte;
             if (this.bufferIndex === 128) {
                 this.transform();
                 this.bufferIndex = 0;
             }
         }
         // counter update (number of message bits)
-        let c = this.count;
+        const c = this.count;
         if ((c[0] += (msg.length << 3)) < (msg.length << 3)) {
             c[1]++;
         }
@@ -211,14 +218,15 @@ export class SHA512 {
         return this;
     }
     /**
-     * Finalize the hash with additional message data
-     * @param {Uint8Array} msg Additional message data as byte array
-     * @return {Uint8Array} Hash as 64 byte array
-     */
+   * Finalize the hash with additional message data
+   * @param {Uint8Array} msg Additional message data as byte array
+   * @return {Uint8Array} Hash as 64 byte array
+   */
     digest(msg) {
         this.update(msg);
         // append '1'
-        var b = this.buffer, idx = this.bufferIndex;
+        const b = this.buffer;
+        let idx = this.bufferIndex;
         b[idx++] = 0x80;
         // zeropad up to byte pos 112
         while (idx !== 112) {
@@ -229,7 +237,7 @@ export class SHA512 {
             b[idx++] = 0;
         }
         // append length in bits
-        let c = this.count;
+        const c = this.count;
         b[112] = b[113] = b[114] = b[115] = b[116] = b[117] = b[118] = b[119] = 0;
         b[120] = (c[1] >>> 24) & 0xff;
         b[121] = (c[1] >>> 16) & 0xff;
@@ -241,7 +249,8 @@ export class SHA512 {
         b[127] = (c[0] >>> 0) & 0xff;
         this.transform();
         // return the hash as byte array
-        let i, hash = new Uint8Array(64);
+        let i;
+        const hash = new Uint8Array(64);
         for (i = 0; i < 16; i++) {
             hash[(i << 2) + 0] = (this.H[i] >>> 24) & 0xff;
             hash[(i << 2) + 1] = (this.H[i] >>> 16) & 0xff;
@@ -253,19 +262,19 @@ export class SHA512 {
         return hash;
     }
     /**
-     * All in one step
-     * @param {Uint8Array} msg Additional message data
-     * @return {Uint8Array} Hash as 64 byte array
-     */
+   * All in one step
+   * @param {Uint8Array} msg Additional message data
+   * @return {Uint8Array} Hash as 64 byte array
+   */
     hash(msg) {
         return this.init().digest(msg);
     }
     /**
-     * Performs a quick selftest
-     * @return {Boolean} True if successful
-     */
+   * Performs a quick selftest
+   * @return {Boolean} True if successful
+   */
     selftest() {
-        let cumulative = new SHA512(), sha = new SHA512();
+        const cumulative = new SHA512(), sha = new SHA512();
         let toBeHashed = '', hash;
         for (let i = 0; i < 10; i++) {
             for (let n = 100 * i; n < 100 * (i + 1); n++) {

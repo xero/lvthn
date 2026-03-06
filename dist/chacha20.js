@@ -1,4 +1,3 @@
-///////////////////////////////////////////////////////////////////////////////
 //                  ▄▄▄▄▄▄▄▄▄▄
 //           ▄████████████████████▄▄          This file is part of the
 //        ▄██████████████████████ ▀████▄      leviathan crypto library
@@ -21,25 +20,27 @@
 //                           ▀█████▀▀
 // chacha20 stream cipher. This implementation is derived from chacha.c
 // @see http://cr.yp.to/chacha.html
-///////////////////////////////////////////////////////////////////////////////
 /**
  * ChaCha20 class
  */
 export class ChaCha20 {
+    keySize;
+    nonceSize;
+    input;
     /**
-     * ctor
-     */
+   * ctor
+   */
     constructor() {
         this.keySize = 32; // 256 bit key
         this.nonceSize = 8; //  64 bit nonce
     }
     /**
-     * Init, private function
-      * @param {Array} key The secret key as byte array (32 byte)
-      * @param {Array} nonce The nonce (IV) as byte array (8 byte)
-      * @param {Number} counter Optional counter init value, 0 is default
-      * @return {ChaCha20} this
-     */
+   * Init, private function
+    * @param {Array} key The secret key as byte array (32 byte)
+    * @param {Array} nonce The nonce (IV) as byte array (8 byte)
+    * @param {Number} counter Optional counter init value, 0 is default
+    * @return {ChaCha20} this
+   */
     init(key, nonce, counter = 0) {
         this.input = new Uint32Array(16);
         this.input[0] = 0x61707865; // constant "expand 32-byte k"
@@ -86,8 +87,8 @@ export class ChaCha20 {
         x[b] = this.ROTATE(x[b] ^ x[c], 7);
     }
     stream(src, dst, len) {
-        let s = new Uint32Array(16), buf = new Uint8Array(64);
-        let i = 0, dpos = 0, spos = 0;
+        const s = new Uint32Array(16), buf = new Uint8Array(64);
+        let i, dpos = 0, spos = 0;
         while (len > 0) {
             for (i = 16; i--;) {
                 s[i] = this.input[i];
@@ -127,35 +128,35 @@ export class ChaCha20 {
         }
     }
     /**
-     * Encrypt a byte array, native chacha20 function
-     * @param {Uint8Array} key The secret key as byte array (32 byte)
-     * @param {Uint8Array} pt Plaintext as byte array
-     * @param {Uint8Array} iv The nonce (IV) as byte array (8 byte)
-     * @param {Number} cnt Optional counter init value, 0 is default
-     * @return {Uint8Array} ct Ciphertext as byte array
-     */
+   * Encrypt a byte array, native chacha20 function
+   * @param {Uint8Array} key The secret key as byte array (32 byte)
+   * @param {Uint8Array} pt Plaintext as byte array
+   * @param {Uint8Array} iv The nonce (IV) as byte array (8 byte)
+   * @param {Number} cnt Optional counter init value, 0 is default
+   * @return {Uint8Array} ct Ciphertext as byte array
+   */
     encrypt(key, pt, iv, cnt = 0) {
-        let ct = new Uint8Array(pt.length);
+        const ct = new Uint8Array(pt.length);
         this.init(key, iv, cnt).stream(pt, ct, pt.length);
         return ct;
     }
     /**
-     * Decrypt a byte array, native chacha20 function
-     * @param {Uint8Array} key The secret key as byte array
-     * @param {Uint8Array} ct Ciphertext as byte array
-     * @param {Uint8Array} iv The nonce (IV) as byte array
-     * @param {Number} cnt Optional counter init value, 0 is default
-     * @return {Uint8Array} pt Plaintext as byte array
-     */
+   * Decrypt a byte array, native chacha20 function
+   * @param {Uint8Array} key The secret key as byte array
+   * @param {Uint8Array} ct Ciphertext as byte array
+   * @param {Uint8Array} iv The nonce (IV) as byte array
+   * @param {Number} cnt Optional counter init value, 0 is default
+   * @return {Uint8Array} pt Plaintext as byte array
+   */
     decrypt(key, ct, iv, cnt = 0) {
-        let pt = new Uint8Array(ct.length);
+        const pt = new Uint8Array(ct.length);
         this.init(key, iv, cnt).stream(ct, pt, ct.length);
         return pt;
     }
     /**
-     * Performs a quick selftest
-     * @return {Boolean} True if successful
-     */
+   * Performs a quick selftest
+   * @return {Boolean} True if successful
+   */
     selftest() {
         return true;
     }

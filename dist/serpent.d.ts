@@ -18,53 +18,53 @@ export declare class Serpent implements Blockcipher {
     wMax: number;
     /** Optional hook called after every cipher round during encrypt/decrypt. */
     roundHook: RoundHook | null;
-    rotW: Function;
-    getW: Function;
-    setW: Function;
-    setWInv: Function;
-    keyIt: Function;
-    keyLoad: Function;
-    keyStore: Function;
-    S: Array<Function>;
-    SI: Array<Function>;
+    rotW: (w: number, n: number) => number;
+    getW: (a: Uint8Array, i: number) => number;
+    setW: (a: Uint8Array, i: number, w: number) => void;
+    setWInv: (a: Uint8Array, i: number, w: number) => void;
+    keyIt: (a: number, b: number, c: number, d: number, i: number, r: number[]) => void;
+    keyLoad: (a: number, b: number, c: number, d: number, i: number, r: number[]) => void;
+    keyStore: (a: number, b: number, c: number, d: number, i: number, r: number[]) => void;
+    S: ((r: number[], x0: number, x1: number, x2: number, x3: number, x4: number) => void)[];
+    SI: ((r: number[], x0: number, x1: number, x2: number, x3: number, x4: number) => void)[];
     /**
-     * Serpent ctor
-     */
+   * Serpent ctor
+   */
     constructor();
     /**
-     * Init the cipher, private function
-     * @param {Uint8Array} key The key. The key size can be 128, 192 or 256 bits
-     */
+   * Init the cipher, private function
+   * @param {Uint8Array} key The key. The key size can be 128, 192 or 256 bits
+   */
     private init;
     private K;
     private LK;
     private KL;
     /**
-     * Expose the derived subkeys for testing/verification.
-     * Returns a copy of the 132-word subkey array (33 subkeys × 4 words each).
-     * this.key[4*i .. 4*i+3] = [X0, X1, X2, X3] of subkey i (i=0..32).
-     * Note: ecb_iv.txt SK[] values are printed by render() in REVERSED word order
-     * (word[3] first, word[0] last), so SK[i] from file = X3|X2|X1|X0 in hex.
-     */
+   * Expose the derived subkeys for testing/verification.
+   * Returns a copy of the 132-word subkey array (33 subkeys × 4 words each).
+   * this.key[4*i .. 4*i+3] = [X0, X1, X2, X3] of subkey i (i=0..32).
+   * Note: ecb_iv.txt SK[] values are printed by render() in REVERSED word order
+   * (word[3] first, word[0] last), so SK[i] from file = X3|X2|X1|X0 in hex.
+   */
     getSubkeys(key: Uint8Array): Uint32Array;
     /**
-     * Serpent block encryption
-     * @param {Uint8Array} key Key
-     * @param {Uint8Array} pt The plaintext
-     * @return {Uint8Array} Ciphertext
-     */
+   * Serpent block encryption
+   * @param {Uint8Array} key Key
+   * @param {Uint8Array} pt The plaintext
+   * @return {Uint8Array} Ciphertext
+   */
     encrypt(key: Uint8Array, pt: Uint8Array): Uint8Array;
     /**
-     * Serpent block decryption
-     * @param {Uint8Array} key Key
-     * @param {Uint8Array} ct The ciphertext
-     * @return {Uint8Array} Plaintext
-     */
+   * Serpent block decryption
+   * @param {Uint8Array} key Key
+   * @param {Uint8Array} ct The ciphertext
+   * @return {Uint8Array} Plaintext
+   */
     decrypt(key: Uint8Array, ct: Uint8Array): Uint8Array;
     /**
-     * Performs a quick selftest
-     * @return {Boolean} True if successful
-     */
+   * Performs a quick selftest
+   * @return {Boolean} True if successful
+   */
     selftest(): boolean;
 }
 export declare class Serpent_CBC implements Streamcipher {

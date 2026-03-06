@@ -1,4 +1,3 @@
-///////////////////////////////////////////////////////////////////////////////
 //                  ▄▄▄▄▄▄▄▄▄▄
 //           ▄████████████████████▄▄          This file is part of the
 //        ▄██████████████████████ ▀████▄      leviathan crypto library
@@ -20,10 +19,8 @@
 //   ▀██████▀             ▀████▄▄▄████▀       for its {ab,mis,}use.
 //                           ▀█████▀▀
 // leviathan interface, conversion, and utility functions
-///////////////////////////////////////////////////////////////////////////////
 // V E R S I O N
 export const version = '1.1.4';
-///////////////////////////////////////////////////////////////////////////////
 // C O N V E R T E R
 export var Convert;
 (function (Convert) {
@@ -34,9 +31,10 @@ export var Convert;
      */
     function str2bin(str) {
         str = str.replace(/\r\n/g, '\n');
-        let bin = new Uint8Array(str.length * 3), p = 0;
+        const bin = new Uint8Array(str.length * 3);
+        let p = 0;
         for (let i = 0, len = str.length; i < len; i++) {
-            let c = str.charCodeAt(i);
+            const c = str.charCodeAt(i);
             if (c < 128) {
                 bin[p++] = c;
             }
@@ -65,7 +63,7 @@ export var Convert;
         if (hex.length % 2) {
             hex += '0';
         }
-        let bin = new Uint8Array(hex.length >>> 1);
+        const bin = new Uint8Array(hex.length >>> 1);
         for (let i = 0, len = hex.length >>> 1; i < len; i++) {
             bin[i] = parseInt(hex.substr(i << 1, 2), 16);
         }
@@ -78,7 +76,7 @@ export var Convert;
      * @return {Uint8Array} bin 4 byte array
      */
     function int2bin(integer) {
-        let bin = new Uint8Array(4);
+        const bin = new Uint8Array(4);
         bin[0] = (integer) & 0xff;
         bin[1] = (integer >>> 8) & 0xff;
         bin[2] = (integer >>> 16) & 0xff;
@@ -92,12 +90,13 @@ export var Convert;
      * @return {Uint8Array} bin 8 byte array
      */
     function number2bin(value) {
-        let bin = new Uint8Array(8);
+        const bin = new Uint8Array(8);
         if (Math.floor(value) === value) {
             const TWO_PWR_32 = 4294967296;
             let lo = (value % TWO_PWR_32) | 0, hi = (value / TWO_PWR_32) | 0;
             if (value < 0) {
-                lo = ~(-value % TWO_PWR_32) | 0, hi = ~(-value / TWO_PWR_32) | 0;
+                lo = ~(-value % TWO_PWR_32) | 0;
+                hi = ~(-value / TWO_PWR_32) | 0;
                 lo = (lo + 1) & 0xffffffff;
                 if (!lo)
                     hi++;
@@ -113,8 +112,8 @@ export var Convert;
             bin[i] = (hi >>> 24) & 0xff;
         }
         else { // it's a float / double
-            var f = new Float64Array([value]);
-            var d = new Uint8Array(f.buffer);
+            const f = new Float64Array([value]);
+            const d = new Uint8Array(f.buffer);
             bin.set(d);
         }
         return bin;
@@ -137,7 +136,9 @@ export var Convert;
         if (base64.charAt(base64.length - 2) === '=')
             strlen--;
         if (typeof atob !== 'undefined') {
-            return new Uint8Array(atob(base64).split('').map(function (c) { return c.charCodeAt(0); }));
+            return new Uint8Array(atob(base64).split('').map(function (c) {
+                return c.charCodeAt(0);
+            }));
         }
         else {
             // atob not available
@@ -159,17 +160,18 @@ export var Convert;
                 41, 42, 43, 44, 45, 46, 47, 48, // p q r s  t u v w
                 49, 50, 51, -1, -1, -1, -1, -1 // x y z .  . . . .
             ]);
-            let p = 0, bin = new Uint8Array(strlen);
+            let p = 0;
+            const bin = new Uint8Array(strlen);
             for (let i = 0, len = base64.length; i < len;) {
-                let sextet_a = base64.charAt(i) === '=' || base64.charCodeAt(i) > 'z'.charCodeAt(0) ? 0 : decodingTable[base64.charCodeAt(i)];
+                const sextet_a = base64.charAt(i) === '=' || base64.charCodeAt(i) > 'z'.charCodeAt(0) ? 0 : decodingTable[base64.charCodeAt(i)];
                 i++;
-                let sextet_b = base64.charAt(i) === '=' || base64.charCodeAt(i) > 'z'.charCodeAt(0) ? 0 : decodingTable[base64.charCodeAt(i)];
+                const sextet_b = base64.charAt(i) === '=' || base64.charCodeAt(i) > 'z'.charCodeAt(0) ? 0 : decodingTable[base64.charCodeAt(i)];
                 i++;
-                let sextet_c = base64.charAt(i) === '=' || base64.charCodeAt(i) > 'z'.charCodeAt(0) ? 0 : decodingTable[base64.charCodeAt(i)];
+                const sextet_c = base64.charAt(i) === '=' || base64.charCodeAt(i) > 'z'.charCodeAt(0) ? 0 : decodingTable[base64.charCodeAt(i)];
                 i++;
-                let sextet_d = base64.charAt(i) === '=' || base64.charCodeAt(i) > 'z'.charCodeAt(0) ? 0 : decodingTable[base64.charCodeAt(i)];
+                const sextet_d = base64.charAt(i) === '=' || base64.charCodeAt(i) > 'z'.charCodeAt(0) ? 0 : decodingTable[base64.charCodeAt(i)];
                 i++;
-                let triple = (sextet_a << 18) +
+                const triple = (sextet_a << 18) +
                     (sextet_b << 12) +
                     (sextet_c << 6) +
                     (sextet_d);
@@ -191,7 +193,7 @@ export var Convert;
      * @return {String} Hex sting
      */
     function bin2hex(bin, uppercase = false) {
-        let hex = uppercase ? '0123456789ABCDEF' : '0123456789abcdef';
+        const hex = uppercase ? '0123456789ABCDEF' : '0123456789abcdef';
         let str = '';
         for (let i = 0, len = bin.length; i < len; i++) {
             str += hex.charAt((bin[i] >>> 4) & 0x0f) + hex.charAt(bin[i] & 0x0f);
@@ -206,7 +208,8 @@ export var Convert;
      * @return {String} UTF-8 Text string
      */
     function bin2str(bin) {
-        let str = '', len = bin.length, i = 0, c, c2, c3;
+        let str = '', i = 0, c, c2, c3;
+        const len = bin.length;
         while (i < len) {
             c = bin[i];
             if (c < 128) {
@@ -234,7 +237,7 @@ export var Convert;
      * @return {Uint32Array} bin values in long format
      */
     function bin2longbin(bin) {
-        let longbin = new Uint32Array(bin.length >>> 2);
+        const longbin = new Uint32Array(bin.length >>> 2);
         for (let i = 0, len = bin.length; i < len; i++) {
             longbin[i >>> 2] |= (bin[i] << ((i % 4) << 3));
         }
@@ -249,8 +252,8 @@ export var Convert;
     function bin2number(bin) {
         const TWO_PWR_32 = 4294967296;
         let i = 0;
-        let lo = bin[i++] | bin[i++] << 8 | bin[i++] << 16 | bin[i++] << 24;
-        let hi = bin[i++] | bin[i++] << 8 | bin[i++] << 16 | bin[i] << 24;
+        const lo = bin[i++] | bin[i++] << 8 | bin[i++] << 16 | bin[i++] << 24;
+        const hi = bin[i++] | bin[i++] << 8 | bin[i++] << 16 | bin[i] << 24;
         return hi * TWO_PWR_32 + ((lo >= 0) ? lo : TWO_PWR_32 + lo);
     }
     Convert.bin2number = bin2number;
@@ -267,16 +270,17 @@ export var Convert;
         }
         else {
             // btoa not available
-            let base64 = '', encodingTable = url ? 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_' :
+            let base64 = '';
+            const encodingTable = url ? 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_' :
                 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
             for (let i = 0, len = bin.length; i < len;) {
-                let octet_a = i < bin.length ? bin[i] : 0;
+                const octet_a = i < bin.length ? bin[i] : 0;
                 i++;
-                let octet_b = i < bin.length ? bin[i] : 0;
+                const octet_b = i < bin.length ? bin[i] : 0;
                 i++;
-                let octet_c = i < bin.length ? bin[i] : 0;
+                const octet_c = i < bin.length ? bin[i] : 0;
                 i++;
-                let triple = (octet_a << 0x10) + (octet_b << 0x08) + octet_c;
+                const triple = (octet_a << 0x10) + (octet_b << 0x08) + octet_c;
                 base64 += encodingTable.charAt((triple >>> 18) & 0x3F);
                 base64 += encodingTable.charAt((triple >>> 12) & 0x3F);
                 base64 += (i < bin.length + 2) ? encodingTable.charAt((triple >>> 6) & 0x3F) : (url ? '%3d' : '=');
@@ -287,7 +291,6 @@ export var Convert;
     }
     Convert.bin2base64 = bin2base64;
 })(Convert || (Convert = {}));
-///////////////////////////////////////////////////////////////////////////////
 // C O N S T A N T - T I M E   E Q U A L I T Y
 /**
  * Constant-time byte-array equality test.
@@ -319,7 +322,6 @@ export const constantTimeEqual = (a, b) => {
         diff |= a[i] ^ b[i];
     return diff === 0;
 };
-///////////////////////////////////////////////////////////////////////////////
 // U T I L S
 export var Util;
 (function (Util) {
@@ -360,7 +362,7 @@ export var Util;
      * @return {Uint8Array} Concatenated result array
      */
     function concat(lh, rh) {
-        let x = new Uint8Array(lh.length + rh.length);
+        const x = new Uint8Array(lh.length + rh.length);
         x.set(lh, 0);
         x.set(rh, lh.length);
         return x;

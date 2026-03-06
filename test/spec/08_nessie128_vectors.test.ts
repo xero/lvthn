@@ -1,4 +1,3 @@
-///////////////////////////////////////////////////////////////////////////////
 //                  ▄▄▄▄▄▄▄▄▄▄
 //           ▄████████████████████▄▄          this file is part of the
 //        ▄██████████████████████ ▀████▄      leviathan crypto library
@@ -34,22 +33,21 @@
 // cipher=264E5481EFF42A4606ABDA06C0BFDA3D) passes with this preprocessing.
 //
 // Run AFTER 06_nessie_helpers.test.ts and 07_nessie_vectors.test.ts.
-///////////////////////////////////////////////////////////////////////////////
 
 import { describe, it, expect } from 'vitest';
 import { readFileSync } from 'fs';
 import { resolve } from 'path';
 import {
-  prepareNessieKey,
-  prepareNessiePlaintext,
-  prepareNessieCiphertext,
-  parseNessieVectors,
+	prepareNessieKey,
+	prepareNessiePlaintext,
+	prepareNessieCiphertext,
+	parseNessieVectors,
 } from '../helpers/nessie';
 import { Serpent } from '../../src/serpent';
 import { Convert } from '../../src/base';
 
 function hex(bytes: Uint8Array): string {
-  return Convert.bin2hex(bytes).toUpperCase();
+	return Convert.bin2hex(bytes).toUpperCase();
 }
 
 // ---------------------------------------------------------------------------
@@ -58,8 +56,8 @@ function hex(bytes: Uint8Array): string {
 
 const VECTORS_DIR = resolve(__dirname, '../vectors');
 const text = readFileSync(
-  resolve(VECTORS_DIR, 'Serpent-128-128.verified.test-vectors.txt'),
-  'utf8'
+	resolve(VECTORS_DIR, 'Serpent-128-128.verified.test-vectors.txt'),
+	'utf8'
 );
 const vectors = parseNessieVectors(text);
 const s = new Serpent();
@@ -69,17 +67,17 @@ const s = new Serpent();
 // ---------------------------------------------------------------------------
 
 describe('NESSIE Serpent-128-128 — parser', () => {
-  it('parses exactly 1028 vectors', () => {
-    expect(vectors.length).toBe(1028);
-  });
+	it('parses exactly 1028 vectors', () => {
+		expect(vectors.length).toBe(1028);
+	});
 
-  it('Set 1, v#0 has correct fields', () => {
-    const v = vectors.find(v => v.set === 'Set 1' && v.num === 0)!;
-    expect(v).toBeDefined();
-    expect(v.key).toBe('80000000000000000000000000000000');
-    expect(v.plain).toBe('00000000000000000000000000000000');
-    expect(v.cipher).toBe('264E5481EFF42A4606ABDA06C0BFDA3D');
-  });
+	it('Set 1, v#0 has correct fields', () => {
+		const v = vectors.find(v => v.set === 'Set 1' && v.num === 0)!;
+		expect(v).toBeDefined();
+		expect(v.key).toBe('80000000000000000000000000000000');
+		expect(v.plain).toBe('00000000000000000000000000000000');
+		expect(v.cipher).toBe('264E5481EFF42A4606ABDA06C0BFDA3D');
+	});
 });
 
 // ---------------------------------------------------------------------------
@@ -87,14 +85,14 @@ describe('NESSIE Serpent-128-128 — parser', () => {
 // ---------------------------------------------------------------------------
 
 describe('NESSIE Serpent-128-128 — encrypt (all 1028 vectors)', () => {
-  for (const v of vectors) {
-    it(`${v.set}, v#${v.num} — encrypt`, () => {
-      const key    = prepareNessieKey(v.key);
-      const pt     = prepareNessiePlaintext(v.plain);
-      const expCT  = prepareNessieCiphertext(v.cipher);
-      expect(hex(s.encrypt(key, pt))).toBe(hex(expCT));
-    });
-  }
+	for (const v of vectors) {
+		it(`${v.set}, v#${v.num} — encrypt`, () => {
+			const key    = prepareNessieKey(v.key);
+			const pt     = prepareNessiePlaintext(v.plain);
+			const expCT  = prepareNessieCiphertext(v.cipher);
+			expect(hex(s.encrypt(key, pt))).toBe(hex(expCT));
+		});
+	}
 });
 
 // ---------------------------------------------------------------------------
@@ -102,12 +100,12 @@ describe('NESSIE Serpent-128-128 — encrypt (all 1028 vectors)', () => {
 // ---------------------------------------------------------------------------
 
 describe('NESSIE Serpent-128-128 — decrypt (all 1028 vectors)', () => {
-  for (const v of vectors) {
-    it(`${v.set}, v#${v.num} — decrypt`, () => {
-      const key    = prepareNessieKey(v.key);
-      const ct     = prepareNessieCiphertext(v.cipher);
-      const expPT  = prepareNessiePlaintext(v.plain);
-      expect(hex(s.decrypt(key, ct))).toBe(hex(expPT));
-    });
-  }
+	for (const v of vectors) {
+		it(`${v.set}, v#${v.num} — decrypt`, () => {
+			const key    = prepareNessieKey(v.key);
+			const ct     = prepareNessieCiphertext(v.cipher);
+			const expPT  = prepareNessiePlaintext(v.plain);
+			expect(hex(s.decrypt(key, ct))).toBe(hex(expPT));
+		});
+	}
 });

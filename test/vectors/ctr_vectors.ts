@@ -1,4 +1,3 @@
-///////////////////////////////////////////////////////////////////////////////
 //                  ▄▄▄▄▄▄▄▄▄▄
 //           ▄████████████████████▄▄          this file is part of the
 //        ▄██████████████████████ ▀████▄      leviathan crypto library
@@ -64,7 +63,6 @@
 //   is confirmed against floppy4 KAT values:
 //     Case A (128-bit zero key): block 0 = E9BA668276B81896D093A9E67AB12036
 //     Case B (256-bit zero key): block 0 = 8910494504181950F98DD998A82B6749
-///////////////////////////////////////////////////////////////////////////////
 
 export interface CtrVector {
   label:   string;
@@ -76,57 +74,57 @@ export interface CtrVector {
 }
 
 export const VECTORS: CtrVector[] = [
-  {
-    label:  'A',
-    keyHex: '00000000000000000000000000000000',                            // 128-bit all-zero key
-    ivHex:  '00000000000000000000000000000000',
-    ptHex:  '000000000000000000000000000000000000000000000000' +           // 3 blocks all-zero PT
+	{
+		label: 'A',
+		keyHex: '00000000000000000000000000000000',                            // 128-bit all-zero key
+		ivHex: '00000000000000000000000000000000',
+		ptHex: '000000000000000000000000000000000000000000000000' +           // 3 blocks all-zero PT
             '000000000000000000000000000000000000000000000000',
-    ctHex:  'E9BA668276B81896D093A9E67AB12036' +                          // block 0
+		ctHex: 'E9BA668276B81896D093A9E67AB12036' +                          // block 0
             'BC0ABF8C2037A9263586DE6BA1CEED9B' +                          // block 1
             '0F250F3B1F294E54A3E34512B0AB5D0C',                           // block 2
-    blocks: 3,
-  },
-  {
-    label:  'B',
-    keyHex: '0000000000000000000000000000000000000000000000000000000000000000', // 256-bit all-zero key
-    ivHex:  '00000000000000000000000000000000',
-    ptHex:  '000000000000000000000000000000000000000000000000' +
+		blocks: 3,
+	},
+	{
+		label: 'B',
+		keyHex: '0000000000000000000000000000000000000000000000000000000000000000', // 256-bit all-zero key
+		ivHex: '00000000000000000000000000000000',
+		ptHex: '000000000000000000000000000000000000000000000000' +
             '000000000000000000000000000000000000000000000000',
-    ctHex:  '8910494504181950F98DD998A82B6749' +                          // block 0 = ECB(zero-256,zero)
+		ctHex: '8910494504181950F98DD998A82B6749' +                          // block 0 = ECB(zero-256,zero)
             '9FAA1E723BE36AA803321C2383DE86AD' +                          // block 1
             '0A3E7E267FBEF117CE63FCB3F0092CBC',                           // block 2
-    blocks: 3,
-  },
-  {
-    label:  'C',
-    keyHex: '00000000000000000000000000000000',                            // 128-bit all-zero key
-    ivHex:  'FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF',                            // all-FF IV (counter wrap test)
-    ptHex:  'FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF' +                          // 2 blocks all-FF PT
+		blocks: 3,
+	},
+	{
+		label: 'C',
+		keyHex: '00000000000000000000000000000000',                            // 128-bit all-zero key
+		ivHex: 'FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF',                            // all-FF IV (counter wrap test)
+		ptHex: 'FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF' +                          // 2 blocks all-FF PT
             'FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF',
-    ctHex:  '1694760FECE869FDFA46403BF189B54D' +                         // block 0 (ctr=0xFF×16)
+		ctHex: '1694760FECE869FDFA46403BF189B54D' +                         // block 0 (ctr=0xFF×16)
             '1645997D8947E7692F6C5619854EDFC9',                           // block 1 (ctr wrapped to 0x00×16)
-    blocks: 2,
-  },
-  {
-    label:  'D',
-    keyHex: '000102030405060708090A0B0C0D0E0F101112131415161718191A1B1C1D1E1F', // 256-bit key
-    ivHex:  '000102030405060708090A0B0C0D0E0F',
-    ptHex:  '000102030405060708090A0B0C0D0E0F' +
+		blocks: 2,
+	},
+	{
+		label: 'D',
+		keyHex: '000102030405060708090A0B0C0D0E0F101112131415161718191A1B1C1D1E1F', // 256-bit key
+		ivHex: '000102030405060708090A0B0C0D0E0F',
+		ptHex: '000102030405060708090A0B0C0D0E0F' +
             '101112131415161718191A1B1C1D1E1F',
-    ctHex:  '64A81834E99AE14EA0477CDDF90076E1' +
+		ctHex: '64A81834E99AE14EA0477CDDF90076E1' +
             '78B4FA40E07C3157F13E8E77855C8EDA',
-    blocks: 2,
-  },
-  {
-    label:  'E',
-    keyHex: '000000000000000000000000000000000000000000000000', // 192-bit all-zero key
-    ivHex:  '00000000000000000000000000000000',
-    ptHex:  '000000000000000000000000000000000000000000000000' +
+		blocks: 2,
+	},
+	{
+		label: 'E',
+		keyHex: '000000000000000000000000000000000000000000000000', // 192-bit all-zero key
+		ivHex: '00000000000000000000000000000000',
+		ptHex: '000000000000000000000000000000000000000000000000' +
             '000000000000000000000000000000000000000000000000',
-    ctHex:  '42046B25C85DBD6B402B296A97EF83A5' +
+		ctHex: '42046B25C85DBD6B402B296A97EF83A5' +
             '47402E1C09E0C315B13CAB5A5AA17E49' +
             '9DCAABB7839129739D1C6F5501624E44',
-    blocks: 3,
-  },
+		blocks: 3,
+	},
 ];

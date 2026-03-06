@@ -1,4 +1,3 @@
-/////////////////////////////////////////////////////////////////////////////////
 //                  ▄▄▄▄▄▄▄▄▄▄
 //           ▄████████████████████▄▄          This file is part of the
 //        ▄██████████████████████ ▀████▄      leviathan crypto library
@@ -46,28 +45,27 @@
 //
 // This helper is intentionally self-contained — it has no dependency on the
 // AES submission parsers or any other test helper.
-///////////////////////////////////////////////////////////////////////////////
 
 // ---------------------------------------------------------------------------
 // Low-level utilities
 // ---------------------------------------------------------------------------
 
 function hexToBytes(hex: string): Uint8Array {
-  const h = hex.replace(/\s/g, '');
-  const out = new Uint8Array(h.length / 2);
-  for (let i = 0; i < h.length; i += 2) {
-    out[i >>> 1] = parseInt(h.slice(i, i + 2), 16);
-  }
-  return out;
+	const h = hex.replace(/\s/g, '');
+	const out = new Uint8Array(h.length / 2);
+	for (let i = 0; i < h.length; i += 2) {
+		out[i >>> 1] = parseInt(h.slice(i, i + 2), 16);
+	}
+	return out;
 }
 
 /** Reverse all bytes in a buffer. This is the core transform for all NESSIE↔leviathan conversion. */
 function reverseAll(bytes: Uint8Array): Uint8Array {
-  const out = new Uint8Array(bytes.length);
-  for (let i = 0; i < bytes.length; i++) {
-    out[i] = bytes[bytes.length - 1 - i];
-  }
-  return out;
+	const out = new Uint8Array(bytes.length);
+	for (let i = 0; i < bytes.length; i++) {
+		out[i] = bytes[bytes.length - 1 - i];
+	}
+	return out;
 }
 
 // ---------------------------------------------------------------------------
@@ -89,7 +87,7 @@ function reverseAll(bytes: Uint8Array): Uint8Array {
  * @param hexKey 64 hex characters (two key lines from the file, concatenated)
  */
 export const prepareNessieKey = (hexKey: string): Uint8Array => {
-  return reverseAll(hexToBytes(hexKey));
+	return reverseAll(hexToBytes(hexKey));
 };
 
 /**
@@ -105,7 +103,7 @@ export const prepareNessieKey = (hexKey: string): Uint8Array => {
  * @param hexPT 32 hex characters
  */
 export const prepareNessiePlaintext = (hexPT: string): Uint8Array => {
-  return reverseAll(hexToBytes(hexPT));
+	return reverseAll(hexToBytes(hexPT));
 };
 
 /**
@@ -118,7 +116,7 @@ export const prepareNessiePlaintext = (hexPT: string): Uint8Array => {
  * @param hexCT 32 hex characters
  */
 export const prepareNessieCiphertext = (hexCT: string): Uint8Array => {
-  return reverseAll(hexToBytes(hexCT));
+	return reverseAll(hexToBytes(hexCT));
 };
 
 // ---------------------------------------------------------------------------
@@ -154,101 +152,101 @@ export interface NessieVector {
  * consistent and throws if any vector fails.
  */
 export function parseNessieVectors(text: string): NessieVector[] {
-  const vectors: NessieVector[] = [];
-  const lines = text.split(/\r?\n/);
+	const vectors: NessieVector[] = [];
+	const lines = text.split(/\r?\n/);
 
-  let current: Partial<NessieVector> | null = null;
-  let keyPart1: string | null = null;
-  let awaitingKeyLine2 = false;
+	let current: Partial<NessieVector> | null = null;
+	let keyPart1: string | null = null;
+	let awaitingKeyLine2 = false;
 
-  const finalize = () => {
-    if (current && current.key && current.plain && current.cipher && current.roundTrip !== undefined) {
-      vectors.push(current as NessieVector);
-    }
-    current = null;
-    keyPart1 = null;
-    awaitingKeyLine2 = false;
-  };
+	const finalize = () => {
+		if (current && current.key && current.plain && current.cipher && current.roundTrip !== undefined) {
+			vectors.push(current as NessieVector);
+		}
+		current = null;
+		keyPart1 = null;
+		awaitingKeyLine2 = false;
+	};
 
-  for (const line of lines) {
-    const trimmed = line.trim();
+	for (const line of lines) {
+		const trimmed = line.trim();
 
-    // "Set N, vector# M:" — note: some entries have no space before the number
-    // e.g. "Set 3, vector#254:" vs "Set 1, vector#  0:"
-    const setMatch = trimmed.match(/^(Set \d+), vector#\s*(\d+):$/);
-    if (setMatch) {
-      finalize();
-      current = {
-        set: setMatch[1],
-        num: parseInt(setMatch[2], 10),
-        hasEncryptedField: false,
-      };
-      continue;
-    }
+		// "Set N, vector# M:" — note: some entries have no space before the number
+		// e.g. "Set 3, vector#254:" vs "Set 1, vector#  0:"
+		const setMatch = trimmed.match(/^(Set \d+), vector#\s*(\d+):$/);
+		if (setMatch) {
+			finalize();
+			current = {
+				set: setMatch[1],
+				num: parseInt(setMatch[2], 10),
+				hasEncryptedField: false,
+			};
+			continue;
+		}
 
-    if (!current) continue;
+		if (!current) continue;
 
-    if (trimmed.startsWith('key=')) {
-      keyPart1 = trimmed.slice(4).replace(/\s/g, '').toUpperCase();
-      awaitingKeyLine2 = true;
-      continue;
-    }
+		if (trimmed.startsWith('key=')) {
+			keyPart1 = trimmed.slice(4).replace(/\s/g, '').toUpperCase();
+			awaitingKeyLine2 = true;
+			continue;
+		}
 
-    // Second line of the two-line key (pure hex after leading whitespace).
-    // If the next line is NOT pure hex, the key was complete on one line
-    // (e.g., 128-bit key = 32 hex chars). Fall through to process the
-    // current line as a regular field in that case.
-    if (awaitingKeyLine2) {
-      if (trimmed.length > 0 && /^[0-9A-Fa-f]+$/.test(trimmed)) {
-        current.key = keyPart1! + trimmed.toUpperCase();
-        awaitingKeyLine2 = false;
-        continue;
-      } else {
-        // Single-line key (128- or 192-bit key)
-        current.key = keyPart1!;
-        awaitingKeyLine2 = false;
-        // Fall through to parse this line as a normal field
-      }
-    }
+		// Second line of the two-line key (pure hex after leading whitespace).
+		// If the next line is NOT pure hex, the key was complete on one line
+		// (e.g., 128-bit key = 32 hex chars). Fall through to process the
+		// current line as a regular field in that case.
+		if (awaitingKeyLine2) {
+			if (trimmed.length > 0 && /^[0-9A-Fa-f]+$/.test(trimmed)) {
+				current.key = keyPart1! + trimmed.toUpperCase();
+				awaitingKeyLine2 = false;
+				continue;
+			} else {
+				// Single-line key (128- or 192-bit key)
+				current.key = keyPart1!;
+				awaitingKeyLine2 = false;
+				// Fall through to parse this line as a normal field
+			}
+		}
 
-    if (trimmed.startsWith('plain=')) {
-      current.plain = trimmed.slice(6).toUpperCase();
-      continue;
-    }
-    if (trimmed.startsWith('cipher=')) {
-      current.cipher = trimmed.slice(7).toUpperCase();
-      continue;
-    }
-    if (trimmed.startsWith('decrypted=')) {
-      current.roundTrip = trimmed.slice(10).toUpperCase();
-      current.hasEncryptedField = false;
-      continue;
-    }
-    if (trimmed.startsWith('encrypted=')) {
-      current.roundTrip = trimmed.slice(10).toUpperCase();
-      current.hasEncryptedField = true;
-      continue;
-    }
-    // Ignore "Iterated N times=..." lines and blank lines
-  }
+		if (trimmed.startsWith('plain=')) {
+			current.plain = trimmed.slice(6).toUpperCase();
+			continue;
+		}
+		if (trimmed.startsWith('cipher=')) {
+			current.cipher = trimmed.slice(7).toUpperCase();
+			continue;
+		}
+		if (trimmed.startsWith('decrypted=')) {
+			current.roundTrip = trimmed.slice(10).toUpperCase();
+			current.hasEncryptedField = false;
+			continue;
+		}
+		if (trimmed.startsWith('encrypted=')) {
+			current.roundTrip = trimmed.slice(10).toUpperCase();
+			current.hasEncryptedField = true;
+			continue;
+		}
+		// Ignore "Iterated N times=..." lines and blank lines
+	}
 
-  finalize();
+	finalize();
 
-  // Sanity check: round-trip confirmation must be consistent
-  for (const v of vectors) {
-    const label = `${v.set}, vector# ${v.num}`;
-    if (v.hasEncryptedField) {
-      // Sets 5–8: encrypted = encrypt(plain) = cipher
-      if (v.roundTrip !== v.cipher) {
-        throw new Error(`Parser sanity check failed at ${label}: encrypted (${v.roundTrip}) !== cipher (${v.cipher})`);
-      }
-    } else {
-      // Sets 1–4: decrypted = decrypt(cipher) = plain
-      if (v.roundTrip !== v.plain) {
-        throw new Error(`Parser sanity check failed at ${label}: decrypted (${v.roundTrip}) !== plain (${v.plain})`);
-      }
-    }
-  }
+	// Sanity check: round-trip confirmation must be consistent
+	for (const v of vectors) {
+		const label = `${v.set}, vector# ${v.num}`;
+		if (v.hasEncryptedField) {
+			// Sets 5–8: encrypted = encrypt(plain) = cipher
+			if (v.roundTrip !== v.cipher) {
+				throw new Error(`Parser sanity check failed at ${label}: encrypted (${v.roundTrip}) !== cipher (${v.cipher})`);
+			}
+		} else {
+			// Sets 1–4: decrypted = decrypt(cipher) = plain
+			if (v.roundTrip !== v.plain) {
+				throw new Error(`Parser sanity check failed at ${label}: decrypted (${v.roundTrip}) !== plain (${v.plain})`);
+			}
+		}
+	}
 
-  return vectors;
+	return vectors;
 }

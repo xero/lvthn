@@ -1,4 +1,3 @@
-///////////////////////////////////////////////////////////////////////////////
 //                  ▄▄▄▄▄▄▄▄▄▄
 //           ▄████████████████████▄▄          This file is part of the
 //        ▄██████████████████████ ▀████▄      leviathan crypto library
@@ -23,18 +22,25 @@
 //  SHA3 Generates a KECCAK, SHA3 or SHAKE hash value.
 //  Implementation based on the final NIST version.
 //
-///////////////////////////////////////////////////////////////////////////////
 import { Convert, Util } from './base';
 /**
  * Keccak class
  */
 export class Keccak {
+    padding;
+    hashSize;
+    blockCount;
+    byteCount;
+    buffer;
+    bufferIndex;
+    s;
+    RC;
     /**
-     * Keccak ctor
-     * @param {Number} bits Capacity
-     * @param {Number} padding Padding value, 1 for Keccak, 6 for SHA3 and 31 for SHAKE
-     * @param {Number} length Optional length of the output hash in bits. If not given bits is taken as default.
-     */
+   * Keccak ctor
+   * @param {Number} bits Capacity
+   * @param {Number} padding Padding value, 1 for Keccak, 6 for SHA3 and 31 for SHAKE
+   * @param {Number} length Optional length of the output hash in bits. If not given bits is taken as default.
+   */
     constructor(bits, padding, length) {
         this.padding = padding;
         this.hashSize = (length || bits) / 8;
@@ -52,9 +58,9 @@ export class Keccak {
         this.init();
     }
     /**
-     * Init the hash
-     * @return {Keccak} this
-     */
+   * Init the hash
+   * @return {Keccak} this
+   */
     init() {
         // init state array
         for (let i = 0; i < 50; i++) {
@@ -65,10 +71,10 @@ export class Keccak {
         return this;
     }
     /**
-     * Update the hash with additional message data
-     * @param {Uint8Array} msg Additional message data as byte array
-     * @return {Keccak} this
-     */
+   * Update the hash with additional message data
+   * @param {Uint8Array} msg Additional message data as byte array
+   * @return {Keccak} this
+   */
     update(msg) {
         msg = msg || new Uint8Array(0);
         // process the msg as many times as possible, the rest is stored in the buffer
@@ -83,14 +89,15 @@ export class Keccak {
         return this;
     }
     /**
-     * Finalize the hash with additional message data
-     * @param {Uint8Array} msg Additional message data as byte array
-     * @return {Uint8Array} Hash as byte array
-     */
+   * Finalize the hash with additional message data
+   * @param {Uint8Array} msg Additional message data as byte array
+   * @return {Uint8Array} Hash as byte array
+   */
     digest(msg) {
         this.update(msg);
         // append: 1-0xxx1 (Keccak), 011-0xxx1 (SHA3), 11111-0xxx1 (SHAKE)
-        let b = this.buffer, idx = this.bufferIndex;
+        const b = this.buffer;
+        let idx = this.bufferIndex;
         b[idx++] = this.padding;
         // zeropad up to byte blockCount
         while (idx < this.byteCount) {
@@ -99,7 +106,7 @@ export class Keccak {
         b[this.byteCount - 1] |= 0x80;
         this.keccakf();
         // return the hash as byte array
-        let hash = new Uint8Array(this.hashSize);
+        const hash = new Uint8Array(this.hashSize);
         for (let i = 0; i < this.hashSize / 4; i++) {
             hash[(i << 2) + 0] = (this.s[i] >>> 0) & 0xff;
             hash[(i << 2) + 1] = (this.s[i] >>> 8) & 0xff;
@@ -111,19 +118,19 @@ export class Keccak {
         return hash;
     }
     /**
-     * All in one step
-     * @param {Uint8Array} msg Additional message data
-     * @return {Uint8Array} Hash as byte array
-     */
+   * All in one step
+   * @param {Uint8Array} msg Additional message data
+   * @return {Uint8Array} Hash as byte array
+   */
     hash(msg) {
         return this.init().digest(msg);
     }
     /**
-     * Absorb function
-     * @private
-     */
+   * Absorb function
+   * @private
+   */
     keccakf() {
-        let s = this.s, b = new Uint32Array(50);
+        const s = this.s;
         let b0, b1, b2, b3, b4, b5, b6, b7, b8, b9, b10, b11, b12, b13, b14, b15, b16, b17, b18, b19, b20, b21, b22, b23, b24, b25, b26, b27, b28, b29, b30, b31, b32, b33, b34, b35, b36, b37, b38, b39, b40, b41, b42, b43, b44, b45, b46, b47, b48, b49;
         // convert byte buffer to words and absorb it
         for (let i = 0; i < this.blockCount; i++) {
@@ -307,11 +314,11 @@ export class Keccak {
         }
     }
     /**
-     * Performs a quick selftest
-     * @return {Boolean} True if successful
-     */
+   * Performs a quick selftest
+   * @return {Boolean} True if successful
+   */
     selftest() {
-        let cumulative = new SHA3_256(), sha = new SHA3_256();
+        const cumulative = new SHA3_256(), sha = new SHA3_256();
         let toBeHashed = '', hash, i, n;
         for (i = 0; i < 10; i++) {
             for (n = 100 * i; n < 100 * (i + 1); n++) {
@@ -324,7 +331,6 @@ export class Keccak {
         return hash === 'fd4998c647300d4b65c0a9d4795f6c2fbc76a0b644b1b0605c4c21f555b67bef';
     }
 }
-///////////////////////////////////////////////////////////////////////////////
 /**
  * Keccak-256 class
  */

@@ -1,4 +1,3 @@
-///////////////////////////////////////////////////////////////////////////////
 //                  ▄▄▄▄▄▄▄▄▄▄
 //           ▄████████████████████▄▄          This file is part of the
 //        ▄██████████████████████ ▀████▄      leviathan crypto library
@@ -32,16 +31,22 @@
 // @see https://blog.mozilla.org/warner/2011/11/29/ed25519-keys
 // @see http://csrc.nist.gov/groups/ST/ecc-workshop-2015/presentations/session6-chou-tung.pdf
 //
-///////////////////////////////////////////////////////////////////////////////
 import { Convert, Util, constantTimeEqual } from './base';
 import { SHA512 } from './sha512';
 /**
  * Curve25519 class
  */
 export class Curve25519 {
+    gf0;
+    gf1;
+    D;
+    D2;
+    I;
+    _9;
+    _121665;
     /**
-     * Curve25519 ctor
-     */
+   * Curve25519 ctor
+   */
     constructor() {
         this.gf0 = this.gf();
         this.gf1 = this.gf([1]);
@@ -53,7 +58,7 @@ export class Curve25519 {
         this.I = this.gf([0xa0b0, 0x4a0e, 0x1b27, 0xc4ee, 0xe478, 0xad2f, 0x1806, 0x2f43, 0xd7a7, 0x3dfb, 0x0099, 0x2b4d, 0xdf0b, 0x4fc1, 0x2480, 0x2b83]);
     }
     gf(init) {
-        let r = new Int32Array(16);
+        const r = new Int32Array(16);
         if (init) {
             for (let i = 0; i < init.length; i++) {
                 r[i] = init[i];
@@ -76,7 +81,8 @@ export class Curve25519 {
     M(o, a, b) {
         // performance: using discrete vars instead of an array and
         // avoidance of 'for' loops here increases performance by factor 3
-        let v, c, t0 = 0, t1 = 0, t2 = 0, t3 = 0, t4 = 0, t5 = 0, t6 = 0, t7 = 0, t8 = 0, t9 = 0, t10 = 0, t11 = 0, t12 = 0, t13 = 0, t14 = 0, t15 = 0, t16 = 0, t17 = 0, t18 = 0, t19 = 0, t20 = 0, t21 = 0, t22 = 0, t23 = 0, t24 = 0, t25 = 0, t26 = 0, t27 = 0, t28 = 0, t29 = 0, t30 = 0, b0 = b[0], b1 = b[1], b2 = b[2], b3 = b[3], b4 = b[4], b5 = b[5], b6 = b[6], b7 = b[7], b8 = b[8], b9 = b[9], b10 = b[10], b11 = b[11], b12 = b[12], b13 = b[13], b14 = b[14], b15 = b[15];
+        const b0 = b[0], b1 = b[1], b2 = b[2], b3 = b[3], b4 = b[4], b5 = b[5], b6 = b[6], b7 = b[7], b8 = b[8], b9 = b[9], b10 = b[10], b11 = b[11], b12 = b[12], b13 = b[13], b14 = b[14], b15 = b[15];
+        let v, c, t0 = 0, t1 = 0, t2 = 0, t3 = 0, t4 = 0, t5 = 0, t6 = 0, t7 = 0, t8 = 0, t9 = 0, t10 = 0, t11 = 0, t12 = 0, t13 = 0, t14 = 0, t15 = 0, t16 = 0, t17 = 0, t18 = 0, t19 = 0, t20 = 0, t21 = 0, t22 = 0, t23 = 0, t24 = 0, t25 = 0, t26 = 0, t27 = 0, t28 = 0, t29 = 0, t30 = 0;
         v = a[0];
         t0 += v * b0;
         t1 += v * b1;
@@ -488,7 +494,7 @@ export class Curve25519 {
         this.M(o, a, a);
     }
     add(p, q) {
-        let a = this.gf(), b = this.gf(), c = this.gf(), d = this.gf(), e = this.gf(), f = this.gf(), g = this.gf(), h = this.gf(), t = this.gf();
+        const a = this.gf(), b = this.gf(), c = this.gf(), d = this.gf(), e = this.gf(), f = this.gf(), g = this.gf(), h = this.gf(), t = this.gf();
         this.Z(a, p[1], p[0]);
         this.Z(t, q[1], q[0]);
         this.M(a, a, t);
@@ -524,7 +530,8 @@ export class Curve25519 {
     }
     sel25519(p, q, b) {
         // b is 0 or 1
-        let i, t, c = ~(b - 1);
+        let i, t;
+        const c = ~(b - 1);
         for (i = 0; i < 16; i++) {
             t = c & (p[i] ^ q[i]);
             p[i] ^= t;
@@ -532,7 +539,8 @@ export class Curve25519 {
         }
     }
     inv25519(o, i) {
-        let a, c = this.gf();
+        let a;
+        const c = this.gf();
         for (a = 0; a < 16; a++) {
             c[a] = i[a];
         }
@@ -547,19 +555,20 @@ export class Curve25519 {
         }
     }
     neq25519(a, b) {
-        let c = new Uint8Array(32), d = new Uint8Array(32);
+        const c = new Uint8Array(32), d = new Uint8Array(32);
         this.pack25519(c, a);
         this.pack25519(d, b);
         // constant-time: prevents timing oracle during curve-point comparison in verify path
         return !constantTimeEqual(c, d);
     }
     par25519(a) {
-        let d = new Uint8Array(32);
+        const d = new Uint8Array(32);
         this.pack25519(d, a);
         return d[0] & 1;
     }
     pow2523(o, i) {
-        let a, c = this.gf();
+        let a;
+        const c = this.gf();
         for (a = 0; a < 16; a++)
             c[a] = i[a];
         for (a = 250; a >= 0; a--) {
@@ -576,7 +585,8 @@ export class Curve25519 {
         }
     }
     pack25519(o, n) {
-        let i, m = this.gf(), t = this.gf();
+        let i;
+        const m = this.gf(), t = this.gf();
         for (i = 0; i < 16; i++) {
             t[i] = n[i];
         }
@@ -590,7 +600,7 @@ export class Curve25519 {
                 m[i - 1] &= 0xffff;
             }
             m[15] = t[15] - 0x7fff - ((m[14] >>> 16) & 1);
-            let b = (m[15] >>> 16) & 1;
+            const b = (m[15] >>> 16) & 1;
             m[14] &= 0xffff;
             this.sel25519(t, m, 1 - b);
         }
@@ -606,7 +616,7 @@ export class Curve25519 {
         o[15] &= 0x7fff;
     }
     unpackNeg(r, p) {
-        let t = this.gf(), chk = this.gf(), num = this.gf(), den = this.gf(), den2 = this.gf(), den4 = this.gf(), den6 = this.gf();
+        const t = this.gf(), chk = this.gf(), num = this.gf(), den = this.gf(), den2 = this.gf(), den4 = this.gf(), den6 = this.gf();
         this.set25519(r[2], this.gf1);
         this.unpack25519(r[1], p);
         this.S(num, r[1]);
@@ -638,14 +648,15 @@ export class Curve25519 {
         return 0;
     }
     /**
-     * Internal scalar mult function
-     * @param q Result
-     * @param s Secret key
-     * @param p Public key
-     */
+   * Internal scalar mult function
+   * @param q Result
+   * @param s Secret key
+   * @param p Public key
+   */
     crypto_scalarmult(q, s, p) {
-        let x = new Int32Array(80), r, i;
-        let a = this.gf(), b = this.gf(), c = this.gf(), d = this.gf(), e = this.gf(), f = this.gf();
+        const x = new Int32Array(80);
+        let r, i;
+        const a = this.gf(), b = this.gf(), c = this.gf(), d = this.gf(), e = this.gf(), f = this.gf();
         this.unpack25519(x, p);
         for (i = 0; i < 16; i++) {
             b[i] = x[i];
@@ -683,31 +694,31 @@ export class Curve25519 {
             x[i + 48] = b[i];
             x[i + 64] = d[i];
         }
-        let x32 = x.subarray(32);
-        let x16 = x.subarray(16);
+        const x32 = x.subarray(32);
+        const x16 = x.subarray(16);
         this.inv25519(x32, x32);
         this.M(x16, x16, x32);
         this.pack25519(q, x16);
     }
     /**
-     * Generate the common key as the produkt of sk1 * pk2
-     * @param {Uint8Array} sk A 32 byte secret key of pair 1
-     * @param {Uint8Array} pk A 32 byte public key of pair 2
-     * @return {Uint8Array} sk * pk
-     */
+   * Generate the common key as the produkt of sk1 * pk2
+   * @param {Uint8Array} sk A 32 byte secret key of pair 1
+   * @param {Uint8Array} pk A 32 byte public key of pair 2
+   * @return {Uint8Array} sk * pk
+   */
     scalarMult(sk, pk) {
-        let q = new Uint8Array(32);
+        const q = new Uint8Array(32);
         this.crypto_scalarmult(q, sk, pk);
         return q;
     }
     /**
-     * Generate a curve 25519 keypair
-     * @param {Uint8Array} seed A 32 byte cryptographic secure random array. This is basically the secret key
-     * @param {Object} Returns sk (Secret key) and pk (Public key) as 32 byte typed arrays
-     */
+   * Generate a curve 25519 keypair
+   * @param {Uint8Array} seed A 32 byte cryptographic secure random array. This is basically the secret key
+   * @param {Object} Returns sk (Secret key) and pk (Public key) as 32 byte typed arrays
+   */
     generateKeys(seed) {
-        let sk = seed.slice();
-        let pk = new Uint8Array(32);
+        const sk = seed.slice();
+        const pk = new Uint8Array(32);
         if (sk.length !== 32) {
             return;
         }
@@ -720,9 +731,9 @@ export class Curve25519 {
         return { sk: sk, pk: pk };
     }
     /**
-     * Performs a quick selftest
-     * @param {Boolean} Returns true if selftest passed
-     */
+   * Performs a quick selftest
+   * @param {Boolean} Returns true if selftest passed
+   */
     selftest() {
         const key = [
             {
@@ -751,7 +762,8 @@ export class Curve25519 {
         for (let i = 0, len = key.length; i < len; i++) {
             sk = Convert.hex2bin(key[i].sk);
             pk = Convert.hex2bin(key[i].pk);
-            if (!Util.compare(this.generateKeys(sk).pk, pk))
+            const keys = this.generateKeys(sk);
+            if (!keys || !Util.compare(keys.pk, pk))
                 return false;
         }
         // scalar multiplication
@@ -765,15 +777,19 @@ export class Curve25519 {
         return true;
     }
 }
-///////////////////////////////////////////////////////////////////////////////
 // E D 2 5 5 1 9
 /**
  * Ed25519 class
  */
 export class Ed25519 {
+    curve;
+    sha512;
+    X;
+    Y;
+    L;
     /**
-     * Ed25519 ctor
-     */
+   * Ed25519 ctor
+   */
     constructor() {
         this.curve = new Curve25519();
         this.sha512 = new SHA512();
@@ -782,8 +798,8 @@ export class Ed25519 {
         this.L = new Uint8Array([0xed, 0xd3, 0xf5, 0x5c, 0x1a, 0x63, 0x12, 0x58, 0xd6, 0x9c, 0xf7, 0xa2, 0xde, 0xf9, 0xde, 0x14, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0x10]);
     }
     pack(r, p) {
-        let CURVE = this.curve;
-        let tx = CURVE.gf(), ty = CURVE.gf(), zi = CURVE.gf();
+        const CURVE = this.curve;
+        const tx = CURVE.gf(), ty = CURVE.gf(), zi = CURVE.gf();
         CURVE.inv25519(zi, p[2]);
         CURVE.M(tx, p[0], zi);
         CURVE.M(ty, p[1], zi);
@@ -816,20 +832,21 @@ export class Ed25519 {
         }
     }
     reduce(r) {
-        let i, x = new Uint32Array(64);
+        let i;
+        const x = new Uint32Array(64);
         for (i = 0; i < 64; i++) {
             x[i] = r[i];
         }
         this.modL(r, x);
     }
     scalarmult(p, q, s) {
-        let CURVE = this.curve;
+        const CURVE = this.curve;
         CURVE.set25519(p[0], CURVE.gf0);
         CURVE.set25519(p[1], CURVE.gf1);
         CURVE.set25519(p[2], CURVE.gf1);
         CURVE.set25519(p[3], CURVE.gf0);
         for (let i = 255; i >= 0; --i) {
-            let b = (s[(i / 8) | 0] >>> (i & 7)) & 1;
+            const b = (s[(i / 8) | 0] >>> (i & 7)) & 1;
             CURVE.cswap(p, q, b);
             CURVE.add(q, p);
             CURVE.add(p, p);
@@ -837,8 +854,8 @@ export class Ed25519 {
         }
     }
     scalarbase(p, s) {
-        let CURVE = this.curve;
-        let q = [CURVE.gf(), CURVE.gf(), CURVE.gf(), CURVE.gf()];
+        const CURVE = this.curve;
+        const q = [CURVE.gf(), CURVE.gf(), CURVE.gf(), CURVE.gf()];
         CURVE.set25519(q[0], this.X);
         CURVE.set25519(q[1], this.Y);
         CURVE.set25519(q[2], CURVE.gf1);
@@ -846,19 +863,19 @@ export class Ed25519 {
         this.scalarmult(p, q, s);
     }
     /**
-     * Generate an ed25519 keypair
-     * Some implementations represent the secret key as a combination of sk and pk. leviathan just uses the sk itself.
-     * @param {Uint8Array} seed A 32 byte cryptographic secure random array. This is basically the secret key
-     * @param {Object} Returns sk (Secret key) and pk (Public key) as 32 byte typed arrays
-     */
+   * Generate an ed25519 keypair
+   * Some implementations represent the secret key as a combination of sk and pk. leviathan just uses the sk itself.
+   * @param {Uint8Array} seed A 32 byte cryptographic secure random array. This is basically the secret key
+   * @param {Object} Returns sk (Secret key) and pk (Public key) as 32 byte typed arrays
+   */
     generateKeys(seed) {
-        let sk = seed.slice();
-        let pk = new Uint8Array(32);
+        const sk = seed.slice();
+        const pk = new Uint8Array(32);
         if (sk.length !== 32) {
             return;
         }
-        let p = [this.curve.gf(), this.curve.gf(), this.curve.gf(), this.curve.gf()];
-        let h = this.sha512.hash(sk).subarray(0, 32);
+        const p = [this.curve.gf(), this.curve.gf(), this.curve.gf(), this.curve.gf()];
+        const h = this.sha512.hash(sk).subarray(0, 32);
         // harden the secret key by clearing bit 0, 1, 2, 255 and setting bit 254
         // clearing the lower 3 bits of the secret key ensures that is it a multiple of 8
         h[0] &= 0xf8;
@@ -869,16 +886,16 @@ export class Ed25519 {
         return { sk: sk, pk: pk };
     }
     /**
-     * Generate a message signature
-     * @param {Uint8Array} msg Message to be signed as byte array
-     * @param {Uint8Array} sk Secret key as 32 byte array
-     * @param {Uint8Array} pk Public key as 32 byte array
-     * @param {Uint8Array} Returns the signature as 64 byte typed array
-     */
+   * Generate a message signature
+   * @param {Uint8Array} msg Message to be signed as byte array
+   * @param {Uint8Array} sk Secret key as 32 byte array
+   * @param {Uint8Array} pk Public key as 32 byte array
+   * @param {Uint8Array} Returns the signature as 64 byte typed array
+   */
     sign(msg, sk, pk) {
-        let CURVE = this.curve;
-        let p = [CURVE.gf(), CURVE.gf(), CURVE.gf(), CURVE.gf()];
-        let h = this.sha512.hash(sk);
+        const CURVE = this.curve;
+        const p = [CURVE.gf(), CURVE.gf(), CURVE.gf(), CURVE.gf()];
+        const h = this.sha512.hash(sk);
         if (sk.length !== 32)
             return;
         if (pk.length !== 32)
@@ -887,16 +904,17 @@ export class Ed25519 {
         h[31] &= 0x7f;
         h[31] |= 0x40;
         // compute r = SHA512(h[32-63] || M)
-        let s = new Uint8Array(64);
-        let r = this.sha512.init().update(h.subarray(32)).digest(msg);
+        const s = new Uint8Array(64);
+        const r = this.sha512.init().update(h.subarray(32)).digest(msg);
         this.reduce(r);
         this.scalarbase(p, r);
         this.pack(s, p);
         // compute k = SHA512(R || A || M)
-        let k = this.sha512.init().update(s.subarray(0, 32)).update(pk).digest(msg);
+        const k = this.sha512.init().update(s.subarray(0, 32)).update(pk).digest(msg);
         this.reduce(k);
         // compute s = (r + k a) mod q
-        let x = new Uint32Array(64), i, j;
+        const x = new Uint32Array(64);
+        let i, j;
         for (i = 0; i < 32; i++)
             x[i] = r[i];
         for (i = 0; i < 32; i++) {
@@ -908,15 +926,15 @@ export class Ed25519 {
         return s;
     }
     /**
-     * Verify a message signature
-     * @param {Uint8Array} msg Message to be signed as byte array
-     * @param {Uint8Array} pk Public key as 32 byte array
-     * @param {Uint8Array} sig Signature as 64 byte array
-     * @param {Boolean} Returns true if signature is valid
-     */
+   * Verify a message signature
+   * @param {Uint8Array} msg Message to be signed as byte array
+   * @param {Uint8Array} pk Public key as 32 byte array
+   * @param {Uint8Array} sig Signature as 64 byte array
+   * @param {Boolean} Returns true if signature is valid
+   */
     verify(msg, pk, sig) {
-        let CURVE = this.curve;
-        let p = [CURVE.gf(), CURVE.gf(), CURVE.gf(), CURVE.gf()], q = [CURVE.gf(), CURVE.gf(), CURVE.gf(), CURVE.gf()];
+        const CURVE = this.curve;
+        const p = [CURVE.gf(), CURVE.gf(), CURVE.gf(), CURVE.gf()], q = [CURVE.gf(), CURVE.gf(), CURVE.gf(), CURVE.gf()];
         if (sig.length !== 64)
             return false;
         if (pk.length !== 32)
@@ -924,10 +942,10 @@ export class Ed25519 {
         if (CURVE.unpackNeg(q, pk))
             return false;
         // compute k = SHA512(R || A || M)
-        let k = this.sha512.init().update(sig.subarray(0, 32)).update(pk).digest(msg);
+        const k = this.sha512.init().update(sig.subarray(0, 32)).update(pk).digest(msg);
         this.reduce(k);
         this.scalarmult(p, q, k);
-        let t = new Uint8Array(32);
+        const t = new Uint8Array(32);
         this.scalarbase(q, sig.subarray(32));
         CURVE.add(p, q);
         this.pack(t, p);
@@ -935,9 +953,9 @@ export class Ed25519 {
         return constantTimeEqual(sig.subarray(0, 32), t);
     }
     /**
-     * Performs a quick selftest
-     * @param {Boolean} Returns true if selftest passed
-     */
+   * Performs a quick selftest
+   * @param {Boolean} Returns true if selftest passed
+   */
     selftest() {
         const v = [
             { sk: '9d61b19deffd5a60ba844af492ec2cc44449c5697b326919703bac031cae7f60',
@@ -954,9 +972,10 @@ export class Ed25519 {
                 s: '0f9ad9793033a2fa06614b277d37381e6d94f65ac2a5a94558d09ed6ce922258c1a567952e863ac94297aec3c0d0c8ddf71084e504860bb6ba27449b55adc40e' }
         ];
         for (let i = 0; i < v.length; i++) {
-            let sk = Convert.hex2bin(v[i].sk), pk = Convert.hex2bin(v[i].pk), m = Convert.hex2bin(v[i].m), s = Convert.hex2bin(v[i].s);
+            const sk = Convert.hex2bin(v[i].sk), pk = Convert.hex2bin(v[i].pk), m = Convert.hex2bin(v[i].m), s = Convert.hex2bin(v[i].s);
             // sign test
-            if (!Util.compare(this.sign(m, sk, pk), s))
+            const sig = this.sign(m, sk, pk);
+            if (!sig || !Util.compare(sig, s))
                 return false;
             // verify test
             if (!this.verify(m, pk, s))

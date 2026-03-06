@@ -1,4 +1,3 @@
-///////////////////////////////////////////////////////////////////////////////
 //                  ▄▄▄▄▄▄▄▄▄▄
 //           ▄████████████████████▄▄          This file is part of the
 //        ▄██████████████████████ ▀████▄      leviathan crypto library
@@ -20,21 +19,21 @@
 //   ▀██████▀             ▀████▄▄▄████▀       for its {ab,mis,}use.
 //                           ▀█████▀▀
 // CBC, CTR, X/XChaCha20-Poly1305 block cipher modes implementations
-///////////////////////////////////////////////////////////////////////////////
 import { constantTimeEqual } from './base';
 export class CBC {
+    blockcipher;
     /**
-     * CBC ctor
-     * @param {Object} blockcipher The block cipher algorithm to use
-     */
+   * CBC ctor
+   * @param {Object} blockcipher The block cipher algorithm to use
+   */
     constructor(blockcipher) {
         this.blockcipher = blockcipher;
     }
     /**
-     * CBC mode encryption
-     */
+   * CBC mode encryption
+   */
     encrypt(key, pt, iv) {
-        let bs = this.blockcipher.blockSize, ct = new Uint8Array(pt.length), et = new Uint8Array(bs);
+        const bs = this.blockcipher.blockSize, ct = new Uint8Array(pt.length), et = new Uint8Array(bs);
         // process first block
         for (let f = 0; f < bs; f++) {
             et[f] = pt[f] ^ (iv[f] || 0);
@@ -50,10 +49,10 @@ export class CBC {
         return ct;
     }
     /**
-     * CBC mode decryption
-     */
+   * CBC mode decryption
+   */
     decrypt(key, ct, iv) {
-        let bs = this.blockcipher.blockSize, pt = new Uint8Array(ct.length);
+        const bs = this.blockcipher.blockSize, pt = new Uint8Array(ct.length);
         // process first block
         pt.set(this.blockcipher.decrypt(key, ct.subarray(0, bs)), 0);
         for (let i = 0, len = bs; i < len; i++) {
@@ -69,22 +68,23 @@ export class CBC {
         return pt;
     }
 }
-//////////////////////////////////////////////////////////////////////////
 export class CTR {
+    blockcipher;
+    ctr;
     /**
-     * CTR ctor
-     * @param {Object} blockcipher The block cipher algorithm to use
-     */
+   * CTR ctor
+   * @param {Object} blockcipher The block cipher algorithm to use
+   */
     constructor(blockcipher) {
         this.blockcipher = blockcipher;
         // init counter
         this.ctr = new Uint8Array(this.blockcipher.blockSize);
     }
     /**
-     * CTR mode encryption
-     */
+   * CTR mode encryption
+   */
     encrypt(key, pt, iv) {
-        let bs = this.blockcipher.blockSize, ct = new Uint8Array(pt.length);
+        const bs = this.blockcipher.blockSize, ct = new Uint8Array(pt.length);
         this.ctr.set(iv || this.ctr);
         // process blocks
         for (let b = 0, len = pt.length / bs; b < len; b++) {
@@ -105,10 +105,10 @@ export class CTR {
         return ct;
     }
     /**
-     * CTR mode decryption
-     */
+   * CTR mode decryption
+   */
     decrypt(key, ct, iv) {
-        let bs = this.blockcipher.blockSize, pt = new Uint8Array(ct.length);
+        const bs = this.blockcipher.blockSize, pt = new Uint8Array(ct.length);
         this.ctr.set(iv || this.ctr);
         // process blocks
         for (let b = 0, len = ct.length / bs; b < len; b++) {
@@ -355,16 +355,16 @@ function buildAeadMacInput(aad, ct) {
  */
 export class ChaCha20Poly1305 {
     /**
-     * Encrypt and authenticate plaintext.
-     *
-     * @param key       256-bit key (32 bytes)
-     * @param nonce     96-bit nonce (12 bytes). MUST be unique per (key, message).
-     *                  Use a counter or derive deterministically. Do NOT generate
-     *                  randomly — use XChaCha20Poly1305 for random nonces.
-     * @param plaintext message to encrypt (any length including zero)
-     * @param aad       additional authenticated data (not encrypted, authenticated)
-     * @returns `{ ciphertext, tag }` — ciphertext.length === plaintext.length, tag is 16 bytes
-     */
+   * Encrypt and authenticate plaintext.
+   *
+   * @param key       256-bit key (32 bytes)
+   * @param nonce     96-bit nonce (12 bytes). MUST be unique per (key, message).
+   *                  Use a counter or derive deterministically. Do NOT generate
+   *                  randomly — use XChaCha20Poly1305 for random nonces.
+   * @param plaintext message to encrypt (any length including zero)
+   * @param aad       additional authenticated data (not encrypted, authenticated)
+   * @returns `{ ciphertext, tag }` — ciphertext.length === plaintext.length, tag is 16 bytes
+   */
     encrypt(key, nonce, plaintext, aad = new Uint8Array(0)) {
         if (key.length !== 32)
             throw new Error('ChaCha20Poly1305: key must be 32 bytes');
@@ -376,19 +376,19 @@ export class ChaCha20Poly1305 {
         return { ciphertext, tag };
     }
     /**
-     * Verify and decrypt ciphertext.
-     *
-     * **Always verifies the Poly1305 tag before decrypting.**
-     * Uses constant-time comparison for tag verification — safe against timing attacks.
-     *
-     * @param key        256-bit key (32 bytes)
-     * @param nonce      96-bit nonce (12 bytes) — must match the value used to encrypt
-     * @param ciphertext ciphertext to decrypt
-     * @param tag        16-byte authentication tag produced by encrypt()
-     * @param aad        additional authenticated data (must match value used to encrypt)
-     * @returns plaintext on success
-     * @throws Error('ChaCha20Poly1305: authentication failed') if tag does not match
-     */
+   * Verify and decrypt ciphertext.
+   *
+   * **Always verifies the Poly1305 tag before decrypting.**
+   * Uses constant-time comparison for tag verification — safe against timing attacks.
+   *
+   * @param key        256-bit key (32 bytes)
+   * @param nonce      96-bit nonce (12 bytes) — must match the value used to encrypt
+   * @param ciphertext ciphertext to decrypt
+   * @param tag        16-byte authentication tag produced by encrypt()
+   * @param aad        additional authenticated data (must match value used to encrypt)
+   * @returns plaintext on success
+   * @throws Error('ChaCha20Poly1305: authentication failed') if tag does not match
+   */
     decrypt(key, nonce, ciphertext, tag, aad = new Uint8Array(0)) {
         if (key.length !== 32)
             throw new Error('ChaCha20Poly1305: key must be 32 bytes');
@@ -422,18 +422,16 @@ export class ChaCha20Poly1305 {
  * Nonce: 192-bit (24 bytes) — safe to generate randomly via crypto.getRandomValues
  */
 export class XChaCha20Poly1305 {
-    constructor() {
-        this._inner = new ChaCha20Poly1305();
-    }
+    _inner = new ChaCha20Poly1305();
     /**
-     * Encrypt and authenticate plaintext using XChaCha20-Poly1305.
-     *
-     * @param key       256-bit key (32 bytes)
-     * @param nonce     192-bit nonce (24 bytes). Safe to generate randomly.
-     * @param plaintext message to encrypt
-     * @param aad       additional authenticated data
-     * @returns `{ ciphertext, tag }` — ciphertext.length === plaintext.length, tag is 16 bytes
-     */
+   * Encrypt and authenticate plaintext using XChaCha20-Poly1305.
+   *
+   * @param key       256-bit key (32 bytes)
+   * @param nonce     192-bit nonce (24 bytes). Safe to generate randomly.
+   * @param plaintext message to encrypt
+   * @param aad       additional authenticated data
+   * @returns `{ ciphertext, tag }` — ciphertext.length === plaintext.length, tag is 16 bytes
+   */
     encrypt(key, nonce, plaintext, aad = new Uint8Array(0)) {
         if (key.length !== 32)
             throw new Error('XChaCha20Poly1305: key must be 32 bytes');
@@ -445,13 +443,13 @@ export class XChaCha20Poly1305 {
         return this._inner.encrypt(subkey, innerNonce, plaintext, aad);
     }
     /**
-     * Verify and decrypt ciphertext using XChaCha20-Poly1305.
-     *
-     * Always verifies the tag before returning plaintext.
-     * Uses constant-time tag comparison.
-     *
-     * @throws Error('XChaCha20Poly1305: authentication failed') if tag is invalid
-     */
+   * Verify and decrypt ciphertext using XChaCha20-Poly1305.
+   *
+   * Always verifies the tag before returning plaintext.
+   * Uses constant-time tag comparison.
+   *
+   * @throws Error('XChaCha20Poly1305: authentication failed') if tag is invalid
+   */
     decrypt(key, nonce, ciphertext, tag, aad = new Uint8Array(0)) {
         if (key.length !== 32)
             throw new Error('XChaCha20Poly1305: key must be 32 bytes');
@@ -465,9 +463,9 @@ export class XChaCha20Poly1305 {
         try {
             return this._inner.decrypt(subkey, innerNonce, ciphertext, tag, aad);
         }
-        catch (_e) {
-            // Re-throw with XChaCha20Poly1305-specific message
-            throw new Error('XChaCha20Poly1305: authentication failed');
+        catch (e) {
+            // Re-throw with XChaCha20Poly1305-specific message, preserving original error chain
+            throw new Error('XChaCha20Poly1305: authentication failed', { cause: e });
         }
     }
 }

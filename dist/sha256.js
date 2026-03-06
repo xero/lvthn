@@ -1,4 +1,3 @@
-///////////////////////////////////////////////////////////////////////////////
 //                  ▄▄▄▄▄▄▄▄▄▄
 //           ▄████████████████████▄▄          This file is part of the
 //        ▄██████████████████████ ▀████▄      leviathan crypto library
@@ -19,15 +18,20 @@
 //  █████▄▄█████▀▀▀▀▀▀▄ ▀███▄      ▄████      assumes absolutely no liability
 //   ▀██████▀             ▀████▄▄▄████▀       for its {ab,mis,}use.
 //                           ▀█████▀▀
-///////////////////////////////////////////////////////////////////////////////
 import { Convert, Util } from './base';
 /**
  * SHA256 class
  */
 export class SHA256 {
+    hashSize;
+    buffer;
+    bufferIndex;
+    count;
+    K;
+    H;
     /**
-     * SHA256 ctor
-     */
+   * SHA256 ctor
+   */
     constructor() {
         this.hashSize = 32;
         this.buffer = new Uint8Array(64);
@@ -44,9 +48,9 @@ export class SHA256 {
         this.init();
     }
     /**
-     * Init the hash
-     * @return {SHA256} this
-     */
+   * Init the hash
+   * @return {SHA256} this
+   */
     init() {
         this.H = new Uint32Array([0x6a09e667, 0xbb67ae85, 0x3c6ef372, 0xa54ff53a, 0x510e527f, 0x9b05688c, 0x1f83d9ab, 0x5be0cd19]);
         this.bufferIndex = 0;
@@ -55,12 +59,14 @@ export class SHA256 {
         return this;
     }
     /**
-     * Perform one transformation cycle
-     */
+   * Perform one transformation cycle
+   */
     transform() {
-        let h = this.H, h0 = h[0], h1 = h[1], h2 = h[2], h3 = h[3], h4 = h[4], h5 = h[5], h6 = h[6], h7 = h[7];
+        const h = this.H;
+        let h0 = h[0], h1 = h[1], h2 = h[2], h3 = h[3], h4 = h[4], h5 = h[5], h6 = h[6], h7 = h[7];
         // convert byte buffer into w[0..15]
-        let i, w = new Uint32Array(16);
+        let i;
+        const w = new Uint32Array(16);
         for (i = 0; i < 16; i++) {
             w[i] = (this.buffer[(i << 2) + 3]) |
                 (this.buffer[(i << 2) + 2] << 8) |
@@ -73,8 +79,8 @@ export class SHA256 {
                 tmp = w[i];
             }
             else {
-                let a = w[(i + 1) & 15];
-                let b = w[(i + 14) & 15];
+                const a = w[(i + 1) & 15];
+                const b = w[(i + 14) & 15];
                 tmp = w[i & 15] = ((a >>> 7 ^ a >>> 18 ^ a >>> 3 ^ a << 25 ^ a << 14) + (b >>> 17 ^ b >>> 19 ^ b >>> 10 ^ b << 15 ^ b << 13) + w[i & 15] + w[(i + 9) & 15]) | 0;
             }
             tmp = (tmp + h7 + (h4 >>> 6 ^ h4 >>> 11 ^ h4 >>> 25 ^ h4 << 26 ^ h4 << 21 ^ h4 << 7) + (h6 ^ h4 & (h5 ^ h6)) + this.K[i]) | 0;
@@ -97,10 +103,10 @@ export class SHA256 {
         h[7] = (h[7] + h7) | 0;
     }
     /**
-     * Update the hash with additional message data
-     * @param {Array} msg Additional message data as byte array
-     * @return {SHA256} this
-     */
+   * Update the hash with additional message data
+   * @param {Array} msg Additional message data as byte array
+   * @return {SHA256} this
+   */
     update(msg) {
         msg = msg || new Uint8Array(0);
         // process the msg as many times as possible, the rest is stored in the buffer
@@ -113,7 +119,7 @@ export class SHA256 {
             }
         }
         // counter update (number of message bits)
-        let c = this.count;
+        const c = this.count;
         if ((c[0] += (msg.length << 3)) < (msg.length << 3)) {
             c[1]++;
         }
@@ -121,14 +127,15 @@ export class SHA256 {
         return this;
     }
     /**
-     * Finalize the hash with additional message data
-     * @param {Uint8Array} msg Additional message data as byte array
-     * @return {Uint8Array} Hash as 32 byte array
-     */
+   * Finalize the hash with additional message data
+   * @param {Uint8Array} msg Additional message data as byte array
+   * @return {Uint8Array} Hash as 32 byte array
+   */
     digest(msg) {
         this.update(msg);
         // append '1'
-        let b = this.buffer, idx = this.bufferIndex;
+        const b = this.buffer;
+        let idx = this.bufferIndex;
         b[idx++] = 0x80;
         // zeropad up to byte pos 56
         while (idx !== 56) {
@@ -139,7 +146,7 @@ export class SHA256 {
             b[idx++] = 0;
         }
         // append length in bits
-        let c = this.count;
+        const c = this.count;
         b[56] = (c[1] >>> 24) & 0xff;
         b[57] = (c[1] >>> 16) & 0xff;
         b[58] = (c[1] >>> 8) & 0xff;
@@ -150,7 +157,8 @@ export class SHA256 {
         b[63] = (c[0] >>> 0) & 0xff;
         this.transform();
         // return the hash as byte array
-        let hash = new Uint8Array(32), i;
+        const hash = new Uint8Array(32);
+        let i;
         for (i = 0; i < 8; i++) {
             hash[(i << 2) + 0] = (this.H[i] >>> 24) & 0xff;
             hash[(i << 2) + 1] = (this.H[i] >>> 16) & 0xff;
@@ -162,19 +170,19 @@ export class SHA256 {
         return hash;
     }
     /**
-     * All in one step
-     * @param {Uint8Array} msg Message data as byte array
-     * @return {Uint8Array} Hash as 32 byte array
-     */
+   * All in one step
+   * @param {Uint8Array} msg Message data as byte array
+   * @return {Uint8Array} Hash as 32 byte array
+   */
     hash(msg) {
         return this.init().digest(msg);
     }
     /**
-     * Performs a quick selftest
-     * @return {Boolean} True if successful
-     */
+   * Performs a quick selftest
+   * @return {Boolean} True if successful
+   */
     selftest() {
-        let cumulative = new SHA256(), sha = new SHA256();
+        const cumulative = new SHA256(), sha = new SHA256();
         let toBeHashed = '', hash, i, n;
         for (i = 0; i < 10; i++) {
             for (n = 100 * i; n < 100 * (i + 1); n++) {

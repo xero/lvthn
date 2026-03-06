@@ -1,4 +1,3 @@
-///////////////////////////////////////////////////////////////////////////////
 //                  ▄▄▄▄▄▄▄▄▄▄
 //           ▄████████████████████▄▄          this file is part of the
 //        ▄██████████████████████ ▀████▄      leviathan crypto library
@@ -44,21 +43,20 @@
 // 3. Decrypt round-trip: decrypt(ct) == pt for all test cases.
 //
 // §serpent-aux.c render()
-///////////////////////////////////////////////////////////////////////////////
 
 import { describe, it, expect, beforeAll } from 'vitest';
 import { Serpent } from '../../src/serpent';
 import type { RoundHook } from '../../src/serpent';
 import {
-  readVector, hex2bytes, bytes2hex, padKey,
-  parseIv, hex2words, words2hex,
-  IvTestCase,
+	readVector, hex2bytes, bytes2hex, padKey,
+	parseIv, hex2words,
+	IvTestCase,
 } from '../helpers/vectors';
 
 let ivCases: IvTestCase[];
 
 beforeAll(() => {
-  ivCases = parseIv(readVector('ecb_iv.txt'));
+	ivCases = parseIv(readVector('ecb_iv.txt'));
 });
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -66,106 +64,106 @@ beforeAll(() => {
 // ─────────────────────────────────────────────────────────────────────────────
 
 describe('AES ecb_iv.txt (intermediate values)', () => {
-  it('parses non-zero test cases', () => {
-    expect(ivCases.length).toBeGreaterThan(0);
-  });
+	it('parses non-zero test cases', () => {
+		expect(ivCases.length).toBeGreaterThan(0);
+	});
 
-  // ── Final CT correctness for all test cases ─────────────────────────────
+	// ── Final CT correctness for all test cases ─────────────────────────────
 
-  it('final CT matches for all ecb_iv test cases', () => {
-    const s = new Serpent();
-    for (const tc of ivCases) {
-      const key = padKey(tc.key, tc.keysize);
-      const pt  = hex2bytes(tc.pt);
-      const ct  = bytes2hex(s.encrypt(key, pt));
-      expect(ct).toEqual(tc.ct);
-    }
-  });
+	it('final CT matches for all ecb_iv test cases', () => {
+		const s = new Serpent();
+		for (const tc of ivCases) {
+			const key = padKey(tc.key, tc.keysize);
+			const pt  = hex2bytes(tc.pt);
+			const ct  = bytes2hex(s.encrypt(key, pt));
+			expect(ct).toEqual(tc.ct);
+		}
+	});
 
-  // ── §MANDATORY: Key schedule verification via SK[] ──────────────────────
-  //
-  // SK[i] in ecb_iv.txt is produced by render() which prints words from
-  // index 3 down to 0: file hex = X3|X2|X1|X0.
-  // leviathan stores [X0,X1,X2,X3] at this.key[4*i .. 4*i+3].
-  // To compare: reverse the 4 file words → [X0,X1,X2,X3] = leviathan order.
+	// ── §MANDATORY: Key schedule verification via SK[] ──────────────────────
+	//
+	// SK[i] in ecb_iv.txt is produced by render() which prints words from
+	// index 3 down to 0: file hex = X3|X2|X1|X0.
+	// leviathan stores [X0,X1,X2,X3] at this.key[4*i .. 4*i+3].
+	// To compare: reverse the 4 file words → [X0,X1,X2,X3] = leviathan order.
 
-  it('§MANDATORY subkey schedule: SK[0..32] match leviathan derived subkeys', () => {
-    const tc = ivCases.find(c => c.keysize === 128);
-    expect(tc).toBeDefined();
-    if (!tc) return;
+	it('§MANDATORY subkey schedule: SK[0..32] match leviathan derived subkeys', () => {
+		const tc = ivCases.find(c => c.keysize === 128);
+		expect(tc).toBeDefined();
+		if (!tc) return;
 
-    const key = padKey(tc.key, tc.keysize!);
-    const s = new Serpent();
-    const subkeys = s.getSubkeys(key); // [X0,X1,X2,X3] per subkey
+		const key = padKey(tc.key, tc.keysize!);
+		const s = new Serpent();
+		const subkeys = s.getSubkeys(key); // [X0,X1,X2,X3] per subkey
 
-    const failures: string[] = [];
+		const failures: string[] = [];
 
-    for (let i = 0; i <= 32; i++) {
-      if (!tc.sk[i] || tc.sk[i].length !== 32) continue;
+		for (let i = 0; i <= 32; i++) {
+			if (!tc.sk[i] || tc.sk[i].length !== 32) continue;
 
-      // File SK[i] = render() output = X3|X2|X1|X0 (4 words, rendered high→low)
-      const fileWords = hex2words(tc.sk[i]); // [X3, X2, X1, X0]
+			// File SK[i] = render() output = X3|X2|X1|X0 (4 words, rendered high→low)
+			const fileWords = hex2words(tc.sk[i]); // [X3, X2, X1, X0]
 
-      // leviathan: this.key[4*i .. 4*i+3] = [X0, X1, X2, X3]
-      const leviathanX0 = subkeys[4 * i + 0] >>> 0;
-      const leviathanX1 = subkeys[4 * i + 1] >>> 0;
-      const leviathanX2 = subkeys[4 * i + 2] >>> 0;
-      const leviathanX3 = subkeys[4 * i + 3] >>> 0;
+			// leviathan: this.key[4*i .. 4*i+3] = [X0, X1, X2, X3]
+			const leviathanX0 = subkeys[4 * i + 0] >>> 0;
+			const leviathanX1 = subkeys[4 * i + 1] >>> 0;
+			const leviathanX2 = subkeys[4 * i + 2] >>> 0;
+			const leviathanX3 = subkeys[4 * i + 3] >>> 0;
 
-      // fileWords[0]=X3, fileWords[1]=X2, fileWords[2]=X1, fileWords[3]=X0
-      const fileX0 = fileWords[3] >>> 0;
-      const fileX1 = fileWords[2] >>> 0;
-      const fileX2 = fileWords[1] >>> 0;
-      const fileX3 = fileWords[0] >>> 0;
+			// fileWords[0]=X3, fileWords[1]=X2, fileWords[2]=X1, fileWords[3]=X0
+			const fileX0 = fileWords[3] >>> 0;
+			const fileX1 = fileWords[2] >>> 0;
+			const fileX2 = fileWords[1] >>> 0;
+			const fileX3 = fileWords[0] >>> 0;
 
-      if (leviathanX0 !== fileX0 || leviathanX1 !== fileX1 ||
+			if (leviathanX0 !== fileX0 || leviathanX1 !== fileX1 ||
           leviathanX2 !== fileX2 || leviathanX3 !== fileX3) {
-        failures.push(
-          `SK[${i}]: leviathan=[${leviathanX0.toString(16).padStart(8,'0')} ${leviathanX1.toString(16).padStart(8,'0')} ${leviathanX2.toString(16).padStart(8,'0')} ${leviathanX3.toString(16).padStart(8,'0')}] ` +
-          `file=[${fileX0.toString(16).padStart(8,'0')} ${fileX1.toString(16).padStart(8,'0')} ${fileX2.toString(16).padStart(8,'0')} ${fileX3.toString(16).padStart(8,'0')}]`
-        );
-      }
-    }
+				failures.push(
+					`SK[${i}]: leviathan=[${leviathanX0.toString(16).padStart(8, '0')} ${leviathanX1.toString(16).padStart(8, '0')} ${leviathanX2.toString(16).padStart(8, '0')} ${leviathanX3.toString(16).padStart(8, '0')}] ` +
+          `file=[${fileX0.toString(16).padStart(8, '0')} ${fileX1.toString(16).padStart(8, '0')} ${fileX2.toString(16).padStart(8, '0')} ${fileX3.toString(16).padStart(8, '0')}]`
+				);
+			}
+		}
 
-    if (failures.length > 0) {
-      throw new Error('Key schedule mismatches:\n' + failures.join('\n'));
-    }
-  });
+		if (failures.length > 0) {
+			throw new Error('Key schedule mismatches:\n' + failures.join('\n'));
+		}
+	});
 
-  // ── §MANDATORY: Decrypt round-trip ─────────────────────────────────────
+	// ── §MANDATORY: Decrypt round-trip ─────────────────────────────────────
 
-  it('§MANDATORY round states: decrypt reverses all round states', () => {
-    // For each ecb_iv test case, verify decrypt(ct) == pt (round-trip)
-    const s = new Serpent();
-    for (const tc of ivCases) {
-      const key = padKey(tc.key, tc.keysize);
-      const ct  = hex2bytes(tc.ct);
-      expect(bytes2hex(s.decrypt(key, ct))).toEqual(tc.pt);
-    }
-  });
+	it('§MANDATORY round states: decrypt reverses all round states', () => {
+		// For each ecb_iv test case, verify decrypt(ct) == pt (round-trip)
+		const s = new Serpent();
+		for (const tc of ivCases) {
+			const key = padKey(tc.key, tc.keysize);
+			const ct  = hex2bytes(tc.ct);
+			expect(bytes2hex(s.decrypt(key, ct))).toEqual(tc.pt);
+		}
+	});
 
-  // ── RoundHook sanity: hook fires 32 times with valid EC values ──────────
+	// ── RoundHook sanity: hook fires 32 times with valid EC values ──────────
 
-  it('roundHook fires exactly 32 times per encrypt', () => {
-    const tc = ivCases.find(c => c.keysize === 128);
-    if (!tc) return;
+	it('roundHook fires exactly 32 times per encrypt', () => {
+		const tc = ivCases.find(c => c.keysize === 128);
+		if (!tc) return;
 
-    const key = padKey(tc.key, tc.keysize!);
-    const pt  = hex2bytes(tc.pt);
+		const key = padKey(tc.key, tc.keysize!);
+		const pt  = hex2bytes(tc.pt);
 
-    const rounds: number[] = [];
-    const s = new Serpent();
-    s.roundHook = ((round: number, _r: number[], _ec: number) => {
-      rounds.push(round);
-    }) as RoundHook;
+		const rounds: number[] = [];
+		const s = new Serpent();
+		s.roundHook = ((round: number, _r: number[], _ec: number) => {
+			rounds.push(round);
+		}) as RoundHook;
 
-    s.encrypt(key, pt);
-    s.roundHook = null;
+		s.encrypt(key, pt);
+		s.roundHook = null;
 
-    expect(rounds.length).toBe(32);
-    // Rounds should be 0..31 in order
-    for (let i = 0; i < 32; i++) {
-      expect(rounds[i]).toBe(i);
-    }
-  });
+		expect(rounds.length).toBe(32);
+		// Rounds should be 0..31 in order
+		for (let i = 0; i < 32; i++) {
+			expect(rounds[i]).toBe(i);
+		}
+	});
 });

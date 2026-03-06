@@ -1,4 +1,3 @@
-///////////////////////////////////////////////////////////////////////////////
 //                  ▄▄▄▄▄▄▄▄▄▄
 //           ▄████████████████████▄▄          This file is part of the
 //        ▄██████████████████████ ▀████▄      leviathan crypto library
@@ -23,27 +22,29 @@
 //  Generates 128 bit UUIDs as V1 (time based) or V4 (random based).
 //  Based on RFC 4122: @see https://tools.ietf.org/html/rfc4122
 //  @deprecated Use the Web Crypto API (`crypto.randomUUID()`) instead.
-///////////////////////////////////////////////////////////////////////////////
 import { Convert } from './base';
 /**
  * UUID class
  * @deprecated Use the Web Crypto API (`crypto.randomUUID()`) instead.
  */
 export class UUID {
+    msec;
+    nsec;
+    clockseq;
     /**
-     * UUID ctor
-     */
+   * UUID ctor
+   */
     constructor() {
         this.msec = 0;
         this.nsec = 0;
         this.clockseq = null;
     }
     /**
-     * Create a time based V1 UUID
-     * @param {Uint8Array} node 6 byte array of unique node identifier like the MAC address or TRUE random data
-     * @param {Uint8Array} clockseq Optional 2 byte array of random data for clockseq init
-     * @return {Uint8Array} UUID as 16 byte typed array or 'undefined' if error
-     */
+   * Create a time based V1 UUID
+   * @param {Uint8Array} node 6 byte array of unique node identifier like the MAC address or TRUE random data
+   * @param {Uint8Array} clockseq Optional 2 byte array of random data for clockseq init
+   * @return {Uint8Array} UUID as 16 byte typed array or 'undefined' if error
+   */
     v1(node, clockseq) {
         let msec, nsec;
         if (typeof performance !== 'undefined' && performance.timing && typeof performance.now === 'function') {
@@ -64,10 +65,10 @@ export class UUID {
         // bump clockseq on clock regression
         if (this.clockseq === null) {
             // init clockseq
-            let cs = clockseq || Convert.str2bin(Math.random().toString());
+            const cs = clockseq || Convert.str2bin(Math.random().toString());
             this.clockseq = (cs[0] | 0) + (cs[1] << 8);
         }
-        let dt = (msec - this.msec) + (nsec - this.nsec) / 10000;
+        const dt = (msec - this.msec) + (nsec - this.nsec) / 10000;
         if (dt < 0) {
             this.clockseq = (this.clockseq + 1) & 0x3fff;
             if (msec > this.msec) {
@@ -76,15 +77,16 @@ export class UUID {
         }
         this.msec = msec;
         this.nsec = nsec;
-        let uuid = new Uint8Array(16), i = 0;
+        const uuid = new Uint8Array(16);
+        let i = 0;
         // time_low
-        var tl = ((msec & 0xfffffff) * 10000 + nsec) % 0x100000000;
+        const tl = ((msec & 0xfffffff) * 10000 + nsec) % 0x100000000;
         uuid[i++] = (tl >>> 24) & 0xff;
         uuid[i++] = (tl >>> 16) & 0xff;
         uuid[i++] = (tl >>> 8) & 0xff;
         uuid[i++] = (tl) & 0xff;
         // time_mid
-        var tmh = (msec / 0x100000000 * 10000) & 0xfffffff;
+        const tmh = (msec / 0x100000000 * 10000) & 0xfffffff;
         uuid[i++] = (tmh >>> 8) & 0xff;
         uuid[i++] = (tmh) & 0xff;
         // time_high_and_version
@@ -103,28 +105,30 @@ export class UUID {
         return uuid;
     }
     /**
-     * Create a random based V4 UUID
-     * @param {Uint8Array} rand 16 byte array of TRUE random data
-     * @return {Uint8Array} UUID as 16 byte typed array or 'undefined' if error
-     */
+   * Create a random based V4 UUID
+   * @param {Uint8Array} rand 16 byte array of TRUE random data
+   * @return {Uint8Array} UUID as 16 byte typed array or 'undefined' if error
+   */
     v4(rand) {
         if (rand.length !== 16)
             return;
-        let uuid = new Uint8Array(rand);
+        const uuid = new Uint8Array(rand);
         // set bits for version and clock_seq_hi_and_reserved
         uuid[6] = (uuid[6] & 0x0f) | 0x40; // version is 'V4'
         uuid[8] = (uuid[8] & 0x3f) | 0x80;
         return uuid;
     }
     /**
-     * Convert an UUID to string format like 550e8400-e29b-11d4-a716-446655440000
-     * @param {Uint8Array} uuid 16 byte UUID as byte array
-     * @return {String} UUID as string
-     */
+   * Convert an UUID to string format like 550e8400-e29b-11d4-a716-446655440000
+   * @param {Uint8Array} uuid 16 byte UUID as byte array
+   * @return {String} UUID as string
+   */
     toString(uuid) {
         if (uuid.length !== 16)
             return 'UUID format error';
-        let i = 0, b2h = Convert.bin2hex;
+        let i = 0;
+        const b2h = Convert.bin2hex;
+        /* eslint-disable no-useless-assignment -- final ++i is part of the consistent subarray-slicing pattern */
         return b2h(uuid.subarray(i, ++i)) + b2h(uuid.subarray(i, ++i)) +
             b2h(uuid.subarray(i, ++i)) + b2h(uuid.subarray(i, ++i)) + '-' +
             b2h(uuid.subarray(i, ++i)) + b2h(uuid.subarray(i, ++i)) + '-' +
@@ -133,5 +137,6 @@ export class UUID {
             b2h(uuid.subarray(i, ++i)) + b2h(uuid.subarray(i, ++i)) +
             b2h(uuid.subarray(i, ++i)) + b2h(uuid.subarray(i, ++i)) +
             b2h(uuid.subarray(i, ++i)) + b2h(uuid.subarray(i, ++i));
+        /* eslint-enable no-useless-assignment */
     }
 }

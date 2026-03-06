@@ -12,44 +12,44 @@ export declare class Keccak implements Hash {
     s: Uint32Array;
     RC: Uint32Array;
     /**
-     * Keccak ctor
-     * @param {Number} bits Capacity
-     * @param {Number} padding Padding value, 1 for Keccak, 6 for SHA3 and 31 for SHAKE
-     * @param {Number} length Optional length of the output hash in bits. If not given bits is taken as default.
-     */
+   * Keccak ctor
+   * @param {Number} bits Capacity
+   * @param {Number} padding Padding value, 1 for Keccak, 6 for SHA3 and 31 for SHAKE
+   * @param {Number} length Optional length of the output hash in bits. If not given bits is taken as default.
+   */
     constructor(bits: number, padding: number, length?: number);
     /**
-     * Init the hash
-     * @return {Keccak} this
-     */
+   * Init the hash
+   * @return {Keccak} this
+   */
     init(): Keccak;
     /**
-     * Update the hash with additional message data
-     * @param {Uint8Array} msg Additional message data as byte array
-     * @return {Keccak} this
-     */
+   * Update the hash with additional message data
+   * @param {Uint8Array} msg Additional message data as byte array
+   * @return {Keccak} this
+   */
     update(msg?: Uint8Array): Keccak;
     /**
-     * Finalize the hash with additional message data
-     * @param {Uint8Array} msg Additional message data as byte array
-     * @return {Uint8Array} Hash as byte array
-     */
+   * Finalize the hash with additional message data
+   * @param {Uint8Array} msg Additional message data as byte array
+   * @return {Uint8Array} Hash as byte array
+   */
     digest(msg?: Uint8Array): Uint8Array;
     /**
-     * All in one step
-     * @param {Uint8Array} msg Additional message data
-     * @return {Uint8Array} Hash as byte array
-     */
+   * All in one step
+   * @param {Uint8Array} msg Additional message data
+   * @return {Uint8Array} Hash as byte array
+   */
     hash(msg?: Uint8Array): Uint8Array;
     /**
-     * Absorb function
-     * @private
-     */
+   * Absorb function
+   * @private
+   */
     private keccakf;
     /**
-     * Performs a quick selftest
-     * @return {Boolean} True if successful
-     */
+   * Performs a quick selftest
+   * @return {Boolean} True if successful
+   */
     selftest(): boolean;
 }
 /**

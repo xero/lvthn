@@ -1,4 +1,3 @@
-///////////////////////////////////////////////////////////////////////////////
 //                  ▄▄▄▄▄▄▄▄▄▄
 //           ▄████████████████████▄▄          This file is part of the
 //        ▄██████████████████████ ▀████▄      leviathan crypto library
@@ -21,7 +20,6 @@
 //                           ▀█████▀▀
 // Bruce Schneier's FORTUNA random generator implementation
 // Some inspiration was taken from the random.js module of sjcl
-///////////////////////////////////////////////////////////////////////////////
 import { Convert, Util } from './base';
 import { Serpent } from './serpent';
 import { SHA256 } from './sha256';
@@ -29,11 +27,26 @@ import { SHA256 } from './sha256';
  * FORTUNA random class
  */
 export class Random {
+    NUM_POOLS;
+    RESEED_LIMIT;
+    MILLISECONDS_PER_RESEED;
+    gen;
+    genKey;
+    genCnt;
+    poolData;
+    poolEntropy;
+    robin;
+    entropy_level;
+    eventId;
+    reseedCnt;
+    lastReseed;
+    active;
+    timer;
     /**
-     * ctor
-     * @param {Number} numPools Number of pools used for entropy acquisition. Defaults to 32 pools, use 16 on limited entropy sources
-     * @param {Uint8Array} entropy Optional array of any length with initial (true) random data (the more the better)
-     */
+   * ctor
+   * @param {Number} numPools Number of pools used for entropy acquisition. Defaults to 32 pools, use 16 on limited entropy sources
+   * @param {Uint8Array} entropy Optional array of any length with initial (true) random data (the more the better)
+   */
     constructor(numPools = 32, entropy) {
         // constants
         this.NUM_POOLS = numPools; // number of pools used for entropy acquisition. Defaults to 32 pools, use 16 on limited entropy sources
@@ -58,39 +71,38 @@ export class Random {
         this.init(entropy);
     }
     /**
-     * Start the generator (public wrapper for init())
-     * Normally start/stop is not necessary, init() is called from ctor
-     */
+   * Start the generator (public wrapper for init())
+   * Normally start/stop is not necessary, init() is called from ctor
+   */
     start() {
         this.init();
     }
     /**
-     * Stop the generator
-     * Normally stopping is not necessary
-     */
+   * Stop the generator
+   * Normally stopping is not necessary
+   */
     stop() {
         this.stopCollectors();
     }
     /**
-     * Return the actual generator entropy (number of available random bytes)
-     * @return {Number} Number of available random bytes
-     */
+   * Return the actual generator entropy (number of available random bytes)
+   * @return {Number} Number of available random bytes
+   */
     getEntropy() {
         return Math.floor(this.entropy_level / 8);
     }
     /**
-     * Add external given entropy
-     * @param {Uint8Array} entropy Random bytes to be added to the entropy pools
-     */
+   * Add external given entropy
+   * @param {Uint8Array} entropy Random bytes to be added to the entropy pools
+   */
     addEntropy(entropy) {
         this.addRandomEvent(entropy, this.robin.rnd, entropy.length * 8);
     }
-    ///////////////////////////////////////////////////////////////////////////////
     // G E N E R A T O R
     /**
-     * Init/start the module (called by ctor as 'autostart')
-     * @param {Uint8Array} entropy Optional array of any length of (true) random bytes to be added to the entropy pools
-     */
+   * Init/start the module (called by ctor as 'autostart')
+   * @param {Uint8Array} entropy Optional array of any length of (true) random bytes to be added to the entropy pools
+   */
     init(entropy) {
         // pool init
         let i;
@@ -126,8 +138,8 @@ export class Random {
         this.startCollectors();
     }
     /**
-     * Reseed the generator with the given byte array
-     */
+   * Reseed the generator with the given byte array
+   */
     reseed(seed) {
         // compute a new 32 byte key
         this.genKey = (new SHA256()).update(this.genKey).digest(seed);
@@ -143,11 +155,11 @@ export class Random {
         this.lastReseed = (new Date()).valueOf();
     }
     /**
-     * Internal function to generates a number of (16 byte) blocks of random output
-     * @param {Number} blocks Number of blocks to generate
-     */
+   * Internal function to generates a number of (16 byte) blocks of random output
+   * @param {Number} blocks Number of blocks to generate
+   */
     generateBlocks(blocks) {
-        let r = new Uint8Array(blocks * 16);
+        const r = new Uint8Array(blocks * 16);
         for (let i = 0; i < blocks; i++) {
             r.set(this.gen.encrypt(this.genKey, this.genCnt), i * 16);
             // increment the 16 byte counter
@@ -163,23 +175,22 @@ export class Random {
         return r;
     }
     /**
-     * Internal function to get random data bytes
-     */
+   * Internal function to get random data bytes
+   */
     pseudoRandomData(length) {
-        let r = new Uint8Array(length);
+        const r = new Uint8Array(length);
         // compute the output
         r.set(this.generateBlocks((length >>> 4) + 1).subarray(0, length));
         // generate two more blocks to get a new key
         this.genKey = this.generateBlocks(2);
         return r;
     }
-    ///////////////////////////////////////////////////////////////////////////////
     // A C C U M U L A T O R
     /**
-     * Get random data bytes
-     * @param {Number} length Number of bytes to generate
-     * @return {Uint8Array} Byte array of crypto secure random values or undefined, if generator is not ready
-     */
+   * Get random data bytes
+   * @param {Number} length Number of bytes to generate
+   * @return {Uint8Array} Byte array of crypto secure random values or undefined, if generator is not ready
+   */
     get(length) {
         if ((this.poolEntropy[0] >= this.RESEED_LIMIT) && (this.lastReseed + this.MILLISECONDS_PER_RESEED < (new Date()).valueOf())) {
             // we need to reseed
@@ -205,11 +216,10 @@ export class Random {
             return this.pseudoRandomData(length);
         }
     }
-    ///////////////////////////////////////////////////////////////////////////////
     // C O L L E C T O R S
     /**
-     * Start the built-in entropy collectors
-     */
+   * Start the built-in entropy collectors
+   */
     startCollectors() {
         if (this.active) {
             return;
@@ -237,8 +247,8 @@ export class Random {
         this.active = true;
     }
     /**
-     * Stop the built-in entropy collectors
-     */
+   * Stop the built-in entropy collectors
+   */
     stopCollectors() {
         if (!this.active) {
             return;
@@ -266,18 +276,19 @@ export class Random {
         this.active = false;
     }
     /**
-     * In case of an event burst (eg. motion events), this executes the given fn once every threshold
-     * @param {Function} fn Function to be throttled
-     * @param {number} threshold Threshold in [ms]
-     * @param {Object} scope Optional scope, defaults to 'this'
-     * @returns {Function} Resulting function
-     */
+   * In case of an event burst (eg. motion events), this executes the given fn once every threshold
+   * @param {Function} fn Function to be throttled
+   * @param {number} threshold Threshold in [ms]
+   * @param {Object} scope Optional scope, defaults to 'this'
+   * @returns {Function} Resulting function
+   */
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-function-type -- legacy throttle utility uses Function.apply with dynamic arguments
     throttle(fn, threshold, scope) {
         let last;
         let deferTimer;
-        return function () {
-            let context = scope || this;
-            let now = +new Date, args = arguments;
+        return function (...args) {
+            const context = scope || this;
+            const now = +new Date;
             if (last && now < last + threshold) {
                 clearTimeout(deferTimer);
                 deferTimer = setTimeout(function () {
@@ -292,11 +303,11 @@ export class Random {
         };
     }
     /**
-     * Add entropy data to pool
-     * @param data {Uint8Array} Entropy data to add
-     * @param pool_idx {Number} Pool index number to add the entropy data to
-     * @param entropy {Number} Added entropy data quality in bits
-     */
+   * Add entropy data to pool
+   * @param data {Uint8Array} Entropy data to add
+   * @param pool_idx {Number} Pool index number to add the entropy data to
+   * @param entropy {Number} Added entropy data quality in bits
+   */
     addRandomEvent(data, pool_idx, entropy = 1) {
         this.poolEntropy[pool_idx] += entropy;
         this.entropy_level += entropy;
@@ -309,25 +320,25 @@ export class Random {
         this.collectorTime();
     }
     collectorMouse(ev) {
-        let x = ev.x || ev.clientX || ev.offsetX || 0, y = ev.y || ev.clientY || ev.offsetY || 0;
+        const x = ev.x || ev.clientX || ev.offsetX || 0, y = ev.y || ev.clientY || ev.offsetY || 0;
         this.addRandomEvent(new Uint8Array([x >>> 8, x & 0xff, y >>> 8, y & 0xff]), this.robin.mouse, 2);
         this.robin.mouse = ++this.robin.mouse % this.NUM_POOLS;
     }
     collectorClick(ev) {
-        let x = ev.x || ev.clientX || ev.offsetX || 0, y = ev.y || ev.clientY || ev.offsetY || 0;
+        const x = ev.x || ev.clientX || ev.offsetX || 0, y = ev.y || ev.clientY || ev.offsetY || 0;
         this.addRandomEvent(new Uint8Array([x >>> 8, x & 0xff, y >>> 8, y & 0xff]), this.robin.mouse, 2);
         this.robin.mouse = ++this.robin.mouse % this.NUM_POOLS;
         this.collectorTime();
     }
     collectorTouch(ev) {
-        let touch = ev.touches[0] || ev.changedTouches[0];
-        let x = touch.pageX || touch.clientX || 0, y = touch.pageY || touch.clientY || 0;
+        const touch = ev.touches[0] || ev.changedTouches[0];
+        const x = touch.pageX || touch.clientX || 0, y = touch.pageY || touch.clientY || 0;
         this.addRandomEvent(new Uint8Array([x >>> 8, x & 0xff, y >>> 8, y & 0xff]), this.robin.touch, 2);
         this.robin.touch = ++this.robin.touch % this.NUM_POOLS;
         this.collectorTime();
     }
-    collectorScroll(_ev) {
-        let x = window.pageXOffset || window.scrollX, y = window.pageYOffset || window.scrollY;
+    collectorScroll(_) {
+        const x = window.pageXOffset || window.scrollX, y = window.pageYOffset || window.scrollY;
         this.addRandomEvent(new Uint8Array([x >>> 8, x & 0xff, y >>> 8, y & 0xff]), this.robin.scroll, 1);
         this.robin.scroll = ++this.robin.scroll % this.NUM_POOLS;
     }
@@ -336,7 +347,9 @@ export class Random {
         const motion = ev;
         const orient = ev;
         if (typeof ev !== 'undefined' && typeof motion.accelerationIncludingGravity !== 'undefined') {
-            let x = motion.accelerationIncludingGravity.x || 0, y = motion.accelerationIncludingGravity.y || 0, z = motion.accelerationIncludingGravity.z || 0;
+            // accelerationIncludingGravity is confirmed non-null by the typeof check above
+            const accel = motion.accelerationIncludingGravity;
+            const x = accel?.x || 0, y = accel?.y || 0, z = accel?.z || 0;
             this.addRandomEvent(new Uint8Array([(x * 100) & 0xff, (y * 100) & 0xff, (z * 100) & 0xff]), this.robin.motion, 3);
         }
         if (typeof ev !== 'undefined' && typeof orient.alpha === 'number' && typeof orient.beta === 'number' && typeof orient.gamma === 'number') {
@@ -365,24 +378,25 @@ export class Random {
     collectorCryptoRandom() {
         // check if running in nodeish env
         if (typeof process !== 'undefined' && typeof process.pid === 'number') {
-            // running on node
+            // running on node — conditional require for Node.js crypto module
             try {
-                let crypto = require('crypto');
-                let rnd = crypto.randomBytes(128);
+                // eslint-disable-next-line @typescript-eslint/no-require-imports -- dynamic require for Node.js crypto entropy fallback
+                const crypto = require('crypto');
+                const rnd = crypto.randomBytes(128);
                 this.addRandomEvent(rnd, this.robin.rnd, 1024);
                 this.robin.rnd = ++this.robin.rnd % this.NUM_POOLS;
             }
-            catch (e) { }
+            catch { /* intentionally empty — crypto may not be available */ }
         }
         if (typeof window !== 'undefined' && window.crypto && typeof window.crypto.getRandomValues === 'function') {
             // running in browser env
             try {
-                let rnd = new Uint8Array(128);
+                const rnd = new Uint8Array(128);
                 window.crypto.getRandomValues(rnd);
                 this.addRandomEvent(rnd, this.robin.rnd, 1024);
                 this.robin.rnd = ++this.robin.rnd % this.NUM_POOLS;
             }
-            catch (e) { }
+            catch { /* intentionally empty — getRandomValues may fail in restricted contexts */ }
         }
     }
 }

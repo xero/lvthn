@@ -1,4 +1,3 @@
-///////////////////////////////////////////////////////////////////////////////
 //                  ▄▄▄▄▄▄▄▄▄▄
 //           ▄████████████████████▄▄          This file is part of the
 //        ▄██████████████████████ ▀████▄      leviathan crypto library
@@ -30,7 +29,6 @@
 // tested against all vectors provided by the authors.
 // Specification can befound here: http://www.cl.cam.ac.uk/~rja14/serpent.html
 //
-///////////////////////////////////////////////////////////////////////////////
 import { Convert, Util } from './base';
 import { CBC, CTR } from './blockmode';
 import { PKCS7 } from './padding';
@@ -38,9 +36,23 @@ import { PKCS7 } from './padding';
  * Serpent class
  */
 export class Serpent {
+    blockSize;
+    key;
+    wMax;
+    /** Optional hook called after every cipher round during encrypt/decrypt. */
+    roundHook;
+    rotW;
+    getW;
+    setW;
+    setWInv;
+    keyIt;
+    keyLoad;
+    keyStore;
+    S;
+    SI;
     /**
-     * Serpent ctor
-     */
+   * Serpent ctor
+   */
     constructor() {
         this.blockSize = 16; // Serpent has a fixed block size of 16 bytes (4x4)
         this.wMax = 0xffffffff;
@@ -400,9 +412,9 @@ export class Serpent {
         ];
     }
     /**
-     * Init the cipher, private function
-     * @param {Uint8Array} key The key. The key size can be 128, 192 or 256 bits
-     */
+   * Init the cipher, private function
+   * @param {Uint8Array} key The key. The key size can be 128, 192 or 256 bits
+   */
     init(key) {
         let i, j, m, n, len;
         const KC = new Uint32Array([7788, 63716, 84032, 7891, 78949, 25146, 28835, 67288, 84032, 40055, 7361, 1940, 77639, 27525, 24193, 75702,
@@ -416,7 +428,7 @@ export class Serpent {
         for (i = 0; i < 8; i++) {
             this.key[i] = (this.key[4 * i] & 0xff) | (this.key[4 * i + 1] & 0xff) << 8 | (this.key[4 * i + 2] & 0xff) << 16 | (this.key[4 * i + 3] & 0xff) << 24;
         }
-        let r = [this.key[3], this.key[4], this.key[5], this.key[6], this.key[7]];
+        const r = [this.key[3], this.key[4], this.key[5], this.key[6], this.key[7]];
         i = 0;
         j = 0;
         while (this.keyIt(j++, 0, 4, 2, i++, r), this.keyIt(j++, 1, 0, 3, i++, r), i < 132) {
@@ -488,32 +500,32 @@ export class Serpent {
         r[c] = this.rotW(r[c], 29);
     }
     /**
-     * Expose the derived subkeys for testing/verification.
-     * Returns a copy of the 132-word subkey array (33 subkeys × 4 words each).
-     * this.key[4*i .. 4*i+3] = [X0, X1, X2, X3] of subkey i (i=0..32).
-     * Note: ecb_iv.txt SK[] values are printed by render() in REVERSED word order
-     * (word[3] first, word[0] last), so SK[i] from file = X3|X2|X1|X0 in hex.
-     */
+   * Expose the derived subkeys for testing/verification.
+   * Returns a copy of the 132-word subkey array (33 subkeys × 4 words each).
+   * this.key[4*i .. 4*i+3] = [X0, X1, X2, X3] of subkey i (i=0..32).
+   * Note: ecb_iv.txt SK[] values are printed by render() in REVERSED word order
+   * (word[3] first, word[0] last), so SK[i] from file = X3|X2|X1|X0 in hex.
+   */
     getSubkeys(key) {
         this.init(key);
         return new Uint32Array(this.key);
     }
     /**
-     * Serpent block encryption
-     * @param {Uint8Array} key Key
-     * @param {Uint8Array} pt The plaintext
-     * @return {Uint8Array} Ciphertext
-     */
+   * Serpent block encryption
+   * @param {Uint8Array} key Key
+   * @param {Uint8Array} pt The plaintext
+   * @return {Uint8Array} Ciphertext
+   */
     encrypt(key, pt) {
         this.init(key);
         const EC = new Uint32Array([44255, 61867, 45034, 52496, 73087, 56255, 43827, 41448, 18242, 1939, 18581, 56255, 64584, 31097, 26469,
             77728, 77639, 4216, 64585, 31097, 66861, 78949, 58006, 59943, 49676, 78950, 5512, 78949, 27525, 52496, 18670, 76143]);
-        let blk = new Uint8Array(pt.length);
+        const blk = new Uint8Array(pt.length);
         // reverse
         for (let i = 0, len = pt.length; i < len; i++) {
             blk[i] = pt[len - i - 1];
         }
-        let r = [this.getW(blk, 0), this.getW(blk, 4), this.getW(blk, 8), this.getW(blk, 12)];
+        const r = [this.getW(blk, 0), this.getW(blk, 4), this.getW(blk, 8), this.getW(blk, 12)];
         this.K(r, 0, 1, 2, 3, 0);
         let n = 0, m = EC[0];
         while (this.S[n % 8](r, m % 5, m % 7, m % 11, m % 13, m % 17), n < 31) {
@@ -534,7 +546,7 @@ export class Serpent {
         if (this.roundHook) {
             this.roundHook(31, r.slice(), EC[31]);
         }
-        let ct = new Uint8Array(pt.length);
+        const ct = new Uint8Array(pt.length);
         this.setWInv(ct, 0, r[3]);
         this.setWInv(ct, 4, r[2]);
         this.setWInv(ct, 8, r[1]);
@@ -542,21 +554,21 @@ export class Serpent {
         return ct;
     }
     /**
-     * Serpent block decryption
-     * @param {Uint8Array} key Key
-     * @param {Uint8Array} ct The ciphertext
-     * @return {Uint8Array} Plaintext
-     */
+   * Serpent block decryption
+   * @param {Uint8Array} key Key
+   * @param {Uint8Array} ct The ciphertext
+   * @return {Uint8Array} Plaintext
+   */
     decrypt(key, ct) {
         this.init(key);
         const DC = new Uint32Array([44255, 60896, 28835, 1837, 1057, 4216, 18242, 77301, 47399, 53992, 1939, 1940, 66420, 39172, 78950,
             45917, 82383, 7450, 67288, 26469, 83149, 57565, 66419, 47400, 58006, 44254, 18581, 18228, 33048, 45034, 66508, 7449]);
-        let blk = new Uint8Array(ct.length);
+        const blk = new Uint8Array(ct.length);
         // reverse
         for (let i = 0, len = ct.length; i < len; i++) {
             blk[i] = ct[len - i - 1];
         }
-        let r = [this.getW(blk, 0), this.getW(blk, 4), this.getW(blk, 8), this.getW(blk, 12)];
+        const r = [this.getW(blk, 0), this.getW(blk, 4), this.getW(blk, 8), this.getW(blk, 12)];
         this.K(r, 0, 1, 2, 3, 32);
         let n = 0, m = DC[0];
         while (this.SI[7 - n % 8](r, m % 5, m % 7, m % 11, m % 13, m % 17), n < 31) {
@@ -570,7 +582,7 @@ export class Serpent {
         if (this.roundHook) {
             this.roundHook(0, r.slice(), DC[31]);
         }
-        let pt = new Uint8Array(ct.length);
+        const pt = new Uint8Array(ct.length);
         this.setWInv(pt, 0, r[4]);
         this.setWInv(pt, 4, r[1]);
         this.setWInv(pt, 8, r[3]);
@@ -578,9 +590,9 @@ export class Serpent {
         return pt;
     }
     /**
-     * Performs a quick selftest
-     * @return {Boolean} True if successful
-     */
+   * Performs a quick selftest
+   * @return {Boolean} True if successful
+   */
     selftest() {
         // AES submission KAT: 128-bit all-zero key, variable plaintext (ecb_vt.txt I=1)
         // Verified against the original AES candidate submission by Ross Anderson.
@@ -593,8 +605,9 @@ export class Serpent {
         return Util.compare(enc, ct128) && Util.compare(dec, pt128);
     }
 }
-///////////////////////////////////////////////////////////////////////////////
 export class Serpent_CBC {
+    cipher;
+    blockmode;
     constructor() {
         this.cipher = new Serpent();
         this.blockmode = new CBC(this.cipher);
@@ -610,6 +623,8 @@ export class Serpent_CBC {
     }
 }
 export class Serpent_CTR {
+    cipher;
+    blockmode;
     constructor() {
         this.cipher = new Serpent();
         this.blockmode = new CTR(this.cipher);
@@ -625,6 +640,8 @@ export class Serpent_CTR {
     }
 }
 export class Serpent_CBC_PKCS7 {
+    cipher;
+    padding;
     constructor() {
         this.cipher = new Serpent_CBC();
         this.padding = new PKCS7();
@@ -640,6 +657,8 @@ export class Serpent_CBC_PKCS7 {
     }
 }
 export class Serpent_CTR_PKCS7 {
+    cipher;
+    padding;
     constructor() {
         this.cipher = new Serpent_CTR();
         this.padding = new PKCS7();
