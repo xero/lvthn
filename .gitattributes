@@ -43,8 +43,6 @@
 *.svg           text eol=lf
 *.ts            text eol=lf
 *.txt           text eol=lf
-*.txt           text eol=lf
-*.wasm          binary
+*.wat           text eol=lf
 *.wasm          text eol=lf
-*.webp          binary
 *.yml           text eol=lf

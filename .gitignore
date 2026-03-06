@@ -7,8 +7,7 @@ test-results/
 sessions/*.bin
 sessions/*.json
 !package.json
-!jslint.json
-# os files
+!tslint.json
 $RECYCLE.BIN/
 *.DS_Store
 *.cab
