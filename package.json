@@ -4,13 +4,15 @@
   "author": "xero (x@xero.style)",
   "license": "MIT",
   "description": "TypeScript+WASM cryptographic library built around Serpent-256. AES finalist w/ more 1st-place security votes than Rijndael from the NIST evaluation committee.",
-	"type": "module",
+  "type": "module",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
     "build": "tsc",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix"
   },
   "files": [
     "dist"
@@ -19,23 +21,27 @@
     "argon2id": "^1.0.1"
   },
   "devDependencies": {
-    "@types/node": "^22.0.0",
+    "@eslint/js": "^10.0.1",
+    "@types/node": "^22.19.15",
+    "eslint": "^10.0.2",
+    "jiti": "^2.6.1",
     "typescript": "5.4.5",
+    "typescript-eslint": "^8.56.1",
     "vitest": "^3.2.4"
   },
   "repository": "github:xero/lvthn",
-	"homepage": "https://github.com/xero/lvthn/wiki",
+  "homepage": "https://github.com/xero/lvthn/wiki",
   "bugs": {
     "url": "https://github.com/xero/lvthn/issues"
   },
   "keywords": [
     "Cryptography",
     "Encryption",
-		"Serpent",
-		"Serpent256",
+    "Serpent",
+    "Serpent256",
     "Cypher",
     "Cipher",
-		"Crypto",
+    "Crypto",
     "Typescript",
     "AES",
     "Chacha20",
@@ -51,7 +57,7 @@
     "PBKDF2",
     "UUID",
     "Fortuna",
-		"CSPRNG",
-		"Entropy"
+    "CSPRNG",
+    "Entropy"
   ]
 }
