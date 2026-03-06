@@ -24,18 +24,19 @@ latency are acceptable, that tradeoff no longer applies.
 **Security margin.** Serpent has been a target of cryptanalytic research
 since the AES competition. The current state of the art:
 
-- **Best known reduced-round attack:** multidimensional linear cryptanalysis
-  reaching 12 of 32 rounds (Nguyen, Wu & Wang, ACISP 2011), less than
-  half the full cipher, requiring 2¹¹⁸ known plaintexts and 2²²⁸·⁸ time.
-  [source](https://personal.ntu.edu.sg/wuhj/research/publications/2011_ACISP_MLC.pdf) & [mirror](https://archive.is/6pwMM)
-- **Best known full-round attack:** biclique cryptanalysis of full 32-round
-  Serpent-256 (de Carvalho & Kowada, SBSeg 2020), time complexity 2²⁵⁵·²¹,
-  only 0.79 bits below the 256-bit brute-force ceiling of 2²⁵⁶, and requires
-  2⁸⁸ chosen ciphertexts, making it strictly less practical than brute force.
-  For comparison, the analogous biclique attack on full-round AES-256
-  (Bogdanov et al., 2011) reaches 2²⁵⁴·⁴. Serpent-256 is marginally harder
-  to attack by this method than AES-256.
-  [source](https://sol.sbc.org.br/index.php/sbseg/article/view/19225/19054) & [mirror](https://archive.is/ZZjrT)
+- **Best known reduced-round attack:**
+    - multidimensional linear cryptanalysis reaching 12 of 32 rounds (Nguyen,
+      Wu & Wang, ACISP 2011), less than half the full cipher, requiring 2¹¹⁸
+      known plaintexts and 2²²⁸·⁸ time.
+    - [source](https://personal.ntu.edu.sg/wuhj/research/publications/2011_ACISP_MLC.pdf) & [mirror](https://archive.is/6pwMM)
+- **Best known full-round attack:**
+    - biclique cryptanalysis of full 32-round Serpent-256 (de Carvalho & Kowada,
+      SBSeg 2020), time complexity 2²⁵⁵·²¹, only 0.79 bits below the 256-bit
+      brute-force ceiling of 2²⁵⁶, and requires 2⁸⁸ chosen ciphertexts, making
+      it strictly less practical than brute force. For comparison, the analogous
+      biclique attack on full-round AES-256 (Bogdanov et al., 2011) reaches
+      2²⁵⁴·⁴. Serpent-256 is marginally harder to attack by this method than AES-256.
+    - [source](https://sol.sbc.org.br/index.php/sbseg/article/view/19225/19054) & [mirror](https://archive.is/ZZjrT)
 
 See: [`serpent_audit.md`](https://github.com/xero/lvthn/wiki/serpent_audit) for the full analysis.
 
