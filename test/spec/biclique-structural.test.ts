@@ -113,10 +113,12 @@ describe('Biclique structural validation — state 66 extraction (Section 6.2 ma
 		const s = new Serpent();
 		const subkeys = s.getSubkeys(ZERO_KEY);
 
-		// Confirm subkeys[89] is not the identity under XOR.
-		// (For the all-zero key this is highly unlikely to be zero; if it ever is,
-		// this test should be re-run with a different anchor key.)
-		expect(subkeys[89]).not.toBe(0);
+		// subkeys[89] for the all-zero key is a fixed, known value.
+		// This assertion will never flake — it's a deterministic property
+		// of the key schedule. If it fails, the key schedule is broken.
+		// @see https://github.com/xero/lvthn/pull/5#discussion_r2900016147
+		const word89 = subkeys[89];
+		expect(word89).not.toBe(0);
 
 		let rawState4 = -1;
 		let xoredState4 = -1;
