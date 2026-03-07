@@ -57,7 +57,7 @@
 ### Findings
 
 #### Our research outperformed the published result via three independent optimizations
-v position (−0.18 bits, eliminating C_falsepos), biclique nibble selection (−0.01 bits), and nabla key index K17 over K18 (−0.01 bits). a total improvement of **0.20 bits**, yielding **2^{255.19}** at **2^{4}** data complexity.
+v position (−0.18 bits, eliminating C_falsepos), biclique nibble selection (−0.01 bits), and nabla key index K17 over K18 (−0.01 bits). A total improvement of **0.20 bits**, yielding **2^{255.19}** at **2^{4}** data complexity.
 
 #### Key structural finding
 
