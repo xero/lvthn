@@ -32,7 +32,7 @@
 | **Deprecated** | [pbkdf2.ts](./pbkdf2.md) | Low memory-hardness KDF — use Argon2id for new code |
 | | [uuid.ts](./uuid.md) | UUID generation — out of scope for a crypto library, may be removed |
 
-## Other Documentation
+## Supporting Documentation
 
 | File | Description |
 | ---- | ----------- |
@@ -44,24 +44,24 @@
 | [SHA256 Reference](./sha256_reference.md) | SHA256 Reference Guide |
 | [Branding](./branding.md) | Project Brand Guide |
 
----
+## Research
 
-## Security Philosophy
+| File | Description |
+| ---- | ----------- |
+| [Biclique Toolchain](https://github.com/xero/BicliqueFinder/blob/main/biclique-toolchain.md)‡ | BicliqueFinder is a semi-automated Java tool for discovering biclique structures in block ciphers. Covers build setup, formula bug discovery, and validation against published figures. |
+| [Biclique Attack Research](https://github.com/xero/BicliqueFinder/blob/main/biclique-research.md)‡ | BicliqueFinder was used to reproduce, validate, and optimize the best known biclique attack on full 32-round Serpent-256. |
 
-leviathan prioritises security margin over speed. The primary symmetric cipher,
-Serpent, was the most conservative AES finalist — it has a 32-round structure
-versus AES's 10/12/14, giving an estimated security margin that remains
-unbroken. Broken or weak primitives have been removed entirely: SHA-1, the ECB
-block mode, PKCS5 and zero padding schemes, and the original AES/Rijndael cipher
-are all absent from this library. Security-sensitive byte comparisons — signature
-verification and MAC tag checking — use `constantTimeEqual`, an XOR-accumulate
-function that always visits every byte regardless of content, preventing
-timing-oracle attacks such as byte-at-a-time HMAC forgery. The Serpent S-boxes
-are implemented as Boolean gate circuits (bitslice form) with no table lookups
-and no data-dependent branches, eliminating the main practical side-channel
-attack vector in pure JavaScript. JavaScript engines provide no formal
-constant-time guarantees; for formally proven constant-time requirements a
-WebAssembly or native implementation is necessary.
+> [!NOTE]
+> ‡ External files hosted in our [BicliqueFinder](https://github.com/xero/BicliqueFinder) fork.
+
+### Findings
+
+#### Our research outperformed the published result via three independent optimizations
+v position (−0.18 bits, eliminating C_falsepos), biclique nibble selection (−0.01 bits), and nabla key index K17 over K18 (−0.01 bits). A total improvement of **0.20 bits**, yielding **2^{255.19}** at **2^{4}** data complexity.
+
+#### Key structural finding
+
+The time-data tradeoff moving away from the ciphertext is never favorable. Each step (K31→K30→K29) trades ~2–4 bits of time complexity for 12–40 bits of data complexity. K31 is not just the best delta key index, it is the only viable one.
 
 ---
 
@@ -72,8 +72,6 @@ bun i leviathan
 # or
 npm install leviathan
 ```
-
----
 
 ## Quick Start
 
@@ -96,3 +94,19 @@ const recovered  = cipher.decrypt(key, ciphertext, iv);
 console.log(Convert.bin2str(recovered)); // "Hello, leviathan!"
 ```
 
+## Security Philosophy
+
+leviathan prioritises security margin over speed. The primary symmetric cipher,
+Serpent, was the most conservative AES finalist — it has a 32-round structure
+versus AES's 10/12/14, giving an estimated security margin that remains
+unbroken. Broken or weak primitives have been removed entirely: SHA-1, the ECB
+block mode, PKCS5 and zero padding schemes, and the original AES/Rijndael cipher
+are all absent from this library. Security-sensitive byte comparisons — signature
+verification and MAC tag checking — use `constantTimeEqual`, an XOR-accumulate
+function that always visits every byte regardless of content, preventing
+timing-oracle attacks such as byte-at-a-time HMAC forgery. The Serpent S-boxes
+are implemented as Boolean gate circuits (bitslice form) with no table lookups
+and no data-dependent branches, eliminating the main practical side-channel
+attack vector in pure JavaScript. JavaScript engines provide no formal
+constant-time guarantees; for formally proven constant-time requirements a
+WebAssembly or native implementation is necessary.
