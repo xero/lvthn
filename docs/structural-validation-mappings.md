@@ -415,7 +415,7 @@ to full LT followed by key XOR (confirmed in serpent_audit.md).
 | BicliqueFinder         | Meaning                      | Leviathan roundHook             |
 |-----------------------|------------------------------|----------------------------------|
 | State 66              | Post-LT round 21, pre-K22   | hookCall 21 (round=21), XOR out K22 |
-| Nibble 8              | Bits 31-28 of X1             | `(state[4] ^ subkeys[89]) >>> 28) & 0xF` |
+| Nibble 8              | Bits 31-28 of X1             | `((state[4] ^ subkeys[89]) >>> 28) & 0xF` |
 | Nibble 9              | Bits 27-24 of X1             | `((state[4] ^ subkeys[89]) >>> 24) & 0xF` |
 | Nibbles 8+9 (byte)    | Bits 31-24 of X1 (MSB)       | `((state[4] ^ subkeys[89]) >>> 24) & 0xFF` |
 
@@ -490,7 +490,7 @@ in leviathan corresponds to BicliqueFinder's nibbles 8+9 of the state.
    The LK function XORs `key[89]` into r[4]. XOR-ing it back out recovers
    the pre-K22 value of X1.
 
-6. Therefore: `(state[4] ^ subkeys[89]) >>> 28) & 0xF` extracts the same
+6. Therefore: `((state[4] ^ subkeys[89]) >>> 28) & 0xF` extracts the same
    mathematical nibble as BicliqueFinder's `getNibble(8)` at state 66.
 
 ### 7.2 Potential validation test
@@ -506,7 +506,7 @@ Confirmed empirically. Encrypted the all-zero plaintext with the all-zero
 
 As both values match, the mapping is confirmed.
 
-See: [test/spec/biclique-structural.test.ts](test/spec/biclique-structural.test.ts)
+See: [test/spec/biclique-structural.test.ts](../test/spec/biclique-structural.test.ts)
 
 ### 7.3 Input byte ordering note
 
@@ -553,7 +553,7 @@ Each step is individually verifiable: encrypt all-zero plaintext/key in both
 implementations then compare state 66 nibbles 8+9. This is a single, inexpensive
 test that validates the entire mapping pipeline.
 
-See: [test/spec/biclique-structural.test.ts](test/spec/biclique-structural.test.ts)
+See: [test/spec/biclique-structural.test.ts](../test/spec/biclique-structural.test.ts)
 
 ### 8.4 K32 subkey mapping anomaly (LOW PRIORITY)
 

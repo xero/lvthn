@@ -117,7 +117,7 @@ export class Random {
 	}
 
 
-		// G E N E R A T O R
+	// G E N E R A T O R
 
 	/**
    * Init/start the module (called by ctor as 'autostart')
@@ -219,7 +219,7 @@ export class Random {
 	}
 
 
-		// A C C U M U L A T O R
+	// A C C U M U L A T O R
 
 	/**
    * Get random data bytes
@@ -256,7 +256,7 @@ export class Random {
 	}
 
 
-		// C O L L E C T O R S
+	// C O L L E C T O R S
 
 	/**
    * Start the built-in entropy collectors

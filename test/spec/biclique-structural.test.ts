@@ -22,11 +22,11 @@
  *      subkeys[89] changes the extracted byte, confirming the extraction tracks
  *      state 66 rather than some fixed or unrelated value.
  *
- * See: @{docs/structural-validation-mappings.md}
+ * @see docs/structural-validation-mappings.md
  */
 
-import { describe, it, expect } from "vitest";
-import { Serpent } from "../../src/serpent";
+import { describe, it, expect } from 'vitest';
+import { Serpent } from '../../src/serpent';
 
 // ---------------------------------------------------------------------------
 // Test vector: all-zero 256-bit key, all-zero plaintext.
@@ -91,8 +91,8 @@ function findKeyBitAffectingWord89(
 // Tests
 // ---------------------------------------------------------------------------
 
-describe("Biclique structural validation — state 66 extraction (Section 6.2 mapping)", () => {
-  it("1. Hook fires and extraction returns a valid byte (0–255)", () => {
+describe('Biclique structural validation — state 66 extraction (Section 6.2 mapping)', () => {
+  it('1. Hook fires and extraction returns a valid byte (0–255)', () => {
     const val = extractState66Byte(ZERO_KEY, ZERO_PT);
     // Hook must have fired — -1 means round 21 was never reached
     expect(val).not.toBe(-1);
@@ -101,7 +101,7 @@ describe("Biclique structural validation — state 66 extraction (Section 6.2 ma
     expect(val).toBeLessThanOrEqual(255);
   });
 
-  it("2. Deterministic — identical inputs always yield the same extracted byte", () => {
+  it('2. Deterministic — identical inputs always yield the same extracted byte', () => {
     const val1 = extractState66Byte(ZERO_KEY, ZERO_PT);
     const val2 = extractState66Byte(ZERO_KEY, ZERO_PT);
     const val3 = extractState66Byte(ZERO_KEY, ZERO_PT);
@@ -109,7 +109,7 @@ describe("Biclique structural validation — state 66 extraction (Section 6.2 ma
     expect(val2).toBe(val3);
   });
 
-  it("3. XOR reversal is non-trivial — subkeys[89] is nonzero and modifies state[4]", () => {
+  it('3. XOR reversal is non-trivial — subkeys[89] is nonzero and modifies state[4]', () => {
     const s = new Serpent();
     const subkeys = s.getSubkeys(ZERO_KEY);
 
@@ -139,7 +139,7 @@ describe("Biclique structural validation — state 66 extraction (Section 6.2 ma
     expect(xoredState4).not.toBe(rawState4);
   });
 
-  it("4. Sensitive to key material — flipping a bit that changes subkeys[89] changes the extracted byte", () => {
+  it('4. Sensitive to key material — flipping a bit that changes subkeys[89] changes the extracted byte', () => {
     // Find a master key bit that provably changes subkeys[89]
     const found = findKeyBitAffectingWord89(ZERO_KEY);
     expect(found).not.toBeNull();
@@ -161,9 +161,9 @@ describe("Biclique structural validation — state 66 extraction (Section 6.2 ma
   // Bonus: confirm the hook is ONLY firing at round 21, not leaking from
   // adjacent rounds. If it fired at, say, round 20 and the round===21 guard
   // were wrong, captured would reflect a different EC constant / register slot.
-  it("5. Hook is guarded to round 21 only — no cross-round contamination", () => {
+  it('5. Hook is guarded to round 21 only — no cross-round contamination', () => {
     const s = new Serpent();
-    const subkeys = s.getSubkeys(ZERO_KEY);
+    // const subkeys = s.getSubkeys(ZERO_KEY);
     const firedRounds: number[] = [];
 
     s.roundHook = (round: number, _state: number[], _ec: number) => {
