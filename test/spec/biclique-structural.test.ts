@@ -19,8 +19,10 @@
  * 2. Deterministic — same key+plaintext always yields the same extracted byte.
  * 3. XOR reversal is non-trivial — subkeys[89] is nonzero and modifies state[4].
  * 4. Sensitive to key material — flipping a master key bit that provably affects
- *    subkeys[89] changes the extracted byte, confirming the extraction tracks
- *    state 66 rather than some fixed or unrelated value.
+ *    subkeys[89] changes the full 32-bit X1_state66 word, confirming the
+ *    extraction tracks state 66 rather than some fixed or unrelated value.
+ *    (Comparing 32 bits rather than 8 bits makes accidental cancellation
+ *    negligibly unlikely.)
  *
  * @see docs/structural-validation-mappings.md
  */
@@ -55,6 +57,26 @@ function extractState66Byte(key: Uint8Array, pt: Uint8Array): number {
 			// - Nibbles 8+9 = bits 31-24 of X1 = MSB byte
 			const X1_state66 = (state[4] ^ subkeys[89]) >>> 0; // unsigned 32-bit
 			captured = (X1_state66 >>> 24) & 0xff;
+		}
+	};
+
+	s.encrypt(key, pt);
+	return captured;
+}
+
+// ---------------------------------------------------------------------------
+// Helper: same as extractState66Byte but returns the full 32-bit X1_state66
+// word. Used in Test 4 so that the comparison is over 32 bits, making
+// accidental cancellation (false negative) negligibly unlikely.
+// ---------------------------------------------------------------------------
+function extractState66Word(key: Uint8Array, pt: Uint8Array): number {
+	const s = new Serpent();
+	const subkeys = s.getSubkeys(key);
+	let captured = -1;
+
+	s.roundHook = (round: number, state: number[], _ec: number) => {
+		if (round === 21) {
+			captured = (state[4] ^ subkeys[89]) >>> 0; // full 32-bit X1_state66
 		}
 	};
 
@@ -141,7 +163,7 @@ describe('Biclique structural validation — state 66 extraction (Section 6.2 ma
 		expect(xoredState4).not.toBe(rawState4);
 	});
 
-	it('4. Sensitive to key material — flipping a bit that changes subkeys[89] changes the extracted byte', () => {
+	it('4. Sensitive to key material — flipping a bit that changes subkeys[89] changes X1_state66', () => {
 		// Find a master key bit that provably changes subkeys[89]
 		const found = findKeyBitAffectingWord89(ZERO_KEY);
 		expect(found).not.toBeNull();
@@ -150,14 +172,15 @@ describe('Biclique structural validation — state 66 extraction (Section 6.2 ma
 		const flippedKey = new Uint8Array(ZERO_KEY);
 		flippedKey[byteIdx] ^= bitMask;
 
-		const baseVal = extractState66Byte(ZERO_KEY, ZERO_PT);
-		const flippedVal = extractState66Byte(flippedKey, ZERO_PT);
+		// Compare the full 32-bit X1_state66 word rather than just 8 bits.
+		// Because subkeys[89] XORs directly into X1_state66, any change to
+		// subkeys[89] must change X1_state66. A 32-bit comparison makes it
+		// negligibly unlikely that the cipher's internal state change and the
+		// subkey change cancel each other out (false negative).
+		const baseWord = extractState66Word(ZERO_KEY, ZERO_PT);
+		const flippedWord = extractState66Word(flippedKey, ZERO_PT);
 
-		// Changing subkeys[89] changes the XOR-out term, which must change the
-		// extracted byte. (It's theoretically possible for the cipher's internal
-		// state change to exactly cancel the subkey change, but this is astronomically
-		// unlikely for a cryptographically secure cipher.)
-		expect(flippedVal).not.toBe(baseVal);
+		expect(flippedWord).not.toBe(baseWord);
 	});
 
 	// Bonus: confirm roundHook is wired to fire once per round and that
