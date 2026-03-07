@@ -87,7 +87,7 @@ the gap between full-round and best-known-attack rounds, and a risk
 assessment for each algorithm.
 
 The Serpent implementation was verified correct against the official AES
-submission reference C implementation (floppy1) and all AES submission
+submission reference C implementation ([floppy1](https://github.com/xero/lvthn/tree/floppy1)) and all AES submission
 test vector classes: KAT, S-box entry, intermediate round values, and
 ECB/CBC Monte Carlo. The SHA-256 implementation was independently
 confirmed correct against FIPS 180-4 and RFC 4231. All implementation
