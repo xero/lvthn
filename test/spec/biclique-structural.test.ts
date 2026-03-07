@@ -78,7 +78,7 @@ function findKeyBitAffectingWord89(
 		for (let bit = 0; bit < 8; bit++) {
 			const candidate = new Uint8Array(baseKey);
 			candidate[b] ^= 1 << bit;
-			const candidateWord89 = new Serpent().getSubkeys(candidate)[89];
+			const candidateWord89 = s.getSubkeys(candidate)[89];
 			if (candidateWord89 !== baseWord89) {
 				return [b, 1 << bit];
 			}
