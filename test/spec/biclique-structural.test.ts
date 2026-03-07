@@ -160,10 +160,11 @@ describe('Biclique structural validation — state 66 extraction (Section 6.2 ma
 		expect(flippedVal).not.toBe(baseVal);
 	});
 
-	// Bonus: confirm the hook is ONLY firing at round 21, not leaking from
-	// adjacent rounds. If it fired at, say, round 20 and the round===21 guard
-	// were wrong, captured would reflect a different EC constant / register slot.
-	it('5. Hook is guarded to round 21 only — no cross-round contamination', () => {
+	// Bonus: confirm roundHook is wired to fire once per round and that
+	// round 21 is included in the sequence. This validates Serpent's
+	// roundHook invocation pattern, not the round===21 guard inside
+	// extractState66Byte.
+	it('5. roundHook fires exactly once per round and includes round 21', () => {
 		const s = new Serpent();
 		// const subkeys = s.getSubkeys(ZERO_KEY);
 		const firedRounds: number[] = [];
