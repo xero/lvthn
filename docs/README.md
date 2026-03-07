@@ -48,8 +48,8 @@
 
 | File | Description |
 | ---- | ----------- |
-| [Biclique Toolchain](https://github.com/xero/BicliqueFinder/blob/main/biclique-toolchain.md) ‡ | BicliqueFinder is a semi-automated Java tool for discovering biclique structures in block ciphers. Covers build setup, formula bug discovery, and validation against published figures. |
-| [Biclique Attack Research](https://github.com/xero/BicliqueFinder/blob/main/biclique-research.md) ‡ | BicliqueFinder was used to reproduce, validate, and optimize the best known biclique attack on full 32-round Serpent-256. |
+| [Biclique Toolchain](https://github.com/xero/BicliqueFinder/blob/main/biclique-toolchain.md)‡ | BicliqueFinder is a semi-automated Java tool for discovering biclique structures in block ciphers. Covers build setup, formula bug discovery, and validation against published figures. |
+| [Biclique Attack Research](https://github.com/xero/BicliqueFinder/blob/main/biclique-research.md)‡ | BicliqueFinder was used to reproduce, validate, and optimize the best known biclique attack on full 32-round Serpent-256. |
 
 > [!NOTE]
 > ‡ External files hosted in our [BicliqueFinder](https://github.com/xero/BicliqueFinder) fork.
